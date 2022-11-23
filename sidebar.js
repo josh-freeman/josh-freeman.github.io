@@ -11,17 +11,16 @@ function loadNavbarDiv() {
   
 
     <submenu>
-      <a href="projects.html">Projects</a>
+      <a>Projects</a>
       <subsubmenu><a>tCHu</a></subsubmenu>
       <subsubmenu><a>CRYPTKVS</a></subsubmenu>
       <subsubmenu><a>HPShape</a></subsubmenu>
     </submenu>
     <submenu><a href="poetry.html">Poetry</a></submenu>
-      <submenu><a href="misc.html">Miscellany</a>
+      <submenu><a>Miscellany</a>
         <subsubmenu><a href="notes.html">Lecture notes</a></subsubmenu>
         <subsubmenu><a href="friends.html">Friends</a></subsubmenu>
         <subsubmenu><a href="cv.html">Resume</a></submsubenu>
-
       </submenu>
   
   

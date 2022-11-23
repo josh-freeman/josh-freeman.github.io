@@ -9,9 +9,7 @@ function loadNavbarDiv() {
       <a href="index.html">Home</a>
     </submenu>
   
-    <submenu>
-      <a href="cv.html">Resume</a>
-    </submenu>
+
     <submenu>
       <a href="projects.html">Projects</a>
       <subsubmenu><a>tCHu</a></subsubmenu>
@@ -19,9 +17,12 @@ function loadNavbarDiv() {
       <subsubmenu><a>HPShape</a></subsubmenu>
     </submenu>
     <submenu><a href="poetry.html">Poetry</a></submenu>
-    <submenu><a href="misc.html">Miscellany</a>
-      <subsubmenu><a href="friends.html">Friends</a></subsubmenu>
-    </submenu>
+      <submenu><a href="misc.html">Miscellany</a>
+        <subsubmenu><a href="notes.html">Lecture notes</a></subsubmenu>
+        <subsubmenu><a href="friends.html">Friends</a></subsubmenu>
+        <subsubmenu><a href="cv.html">Resume</a></submsubenu>
+
+      </submenu>
   
   
   </div>

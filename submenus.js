@@ -1,9 +1,9 @@
 $(document).ready(function() {
     $('subsubmenu').hide();
     
-    $('submenu').click(function(event) {
+    $('submenu').hover(function(event) {
       event.stopPropagation();
-      $('> subsubmenu', this).slideToggle(300);
+      $('> subsubmenu', this).slideToggle();
   
     });
   });

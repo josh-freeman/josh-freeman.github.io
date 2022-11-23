@@ -380,25 +380,24 @@ blockquote footer {
   padding-top: 60px;
 }
 
-submenu {
+submenu *{
 	padding: 8px 8px 8px 32px;
 	text-decoration: none;
 	font-size: 25px;
 	color: #818181;
 	transition: 0.3s;
   }
+  
+  
+  subsubmenu {
+	display: block;
+  }
+  
+  
   submenu:hover {
 	color: #f1f1f1;
   }
   
-  subsubmenu {
-	display: block;
-	padding: 8px 8px 8px 32px;
-	text-decoration: none;
-	font-size: 25px;
-	color: #818181;
-	transition: 0.3s;
-  }
   
   subsubmenu:hover {
 	color: #f1f1f1;

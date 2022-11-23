@@ -383,7 +383,6 @@ blockquote footer {
 .sidebar a {
 	padding: 8px 8px 8px 32px;
 	text-decoration: none;
-	font-size: 25px;
 	color: #818181;
 	display: block;
 	transition: 0.3s;
@@ -412,9 +411,8 @@ submenu {
   
   subsubmenu {
 	display: none;
-	padding: 8px 8px 8px 64px;
-	/*
-	font-size: 25px;*/
+	padding-left: 16px;
+	font-size: 20px;
   
   }
   

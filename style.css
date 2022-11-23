@@ -395,28 +395,24 @@ submenu {
 	padding: 8px 8px 8px 32px;
 	text-decoration: none;
 	font-size: 25px;
-	display:block;
-	font-size: 25px;
 	color: #818181;
 	transition: 0.3s;
   }
   
   submenu *{
-	padding: 8px 8px 8px 32px;
 	text-decoration: none;
 	font-size: 25px;
 	color: #818181;
-	display: hidden;
+	display: block;
 	transition: 0.3s;
   }
   
   
   subsubmenu {
 	display: block;
-	font-size: 25px;
-	padding-left: 64px;
-  }
+	padding: 8px 8px 8px 64px;
   
+  }
   
   submenu:hover {
 	color: #f1f1f1;

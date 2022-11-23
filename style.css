@@ -365,7 +365,19 @@ blockquote footer {
 	color: #7a7a7a;
 	border-color: transparent;
 }
-	
+
+fieldset {
+	background-color: #eeeeee;
+	max-width:500px;
+  }
+
+legend {
+	background-color: #eeeeee;
+	border: 1px;
+	border-radius: 5px;
+	border-style:dotted;
+	color:#463F5C;
+}
 	
 .sidebar {
   height: 100%;

@@ -1,0 +1,28 @@
+section{
+    height: 300pt;
+    padding: 50px;
+    overflow: hidden;
+}
+
+section:nth-child(even){
+    background-color:#fffafa7e ;
+}
+section:nth-child(odd){
+    background-color:rgba(245, 245, 245, 0.534);
+}
+.left-of-card{
+    width: 70%;
+    float:left;
+}
+
+.right-of-card{
+    float: right;
+    width: 30%;
+}
+
+  /* Clear floats after the columns */
+  section:after {
+	content: "";
+	display: table;
+	clear: both;
+  }

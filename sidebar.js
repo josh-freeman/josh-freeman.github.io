@@ -26,7 +26,7 @@ function loadNavbarDiv() {
   
   
   </div>
-  <button id="menubtn" class="openbtn" onclick="openNav()">≡<img src="https://josh-freeman.github.io/icon_blue.png" width="26" height="26"></button>
+  <button id="menubtn" class="openbtn" onclick="openNav()">≡<img src="https://josh-freeman.github.io/resources/icon_blue.png" width="26" height="26"></button>
   <script>
 function openNav() {
   document.getElementById("mySidebar").style.width = "250px";

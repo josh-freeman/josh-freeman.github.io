@@ -369,6 +369,7 @@ blockquote footer {
 fieldset {
 	background-color: #eeeeee;
 	max-width:750px;
+	margin-bottom:10px;
   }
 
 legend {

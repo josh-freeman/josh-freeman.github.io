@@ -28,6 +28,20 @@ function loadNavbarDiv() {
   </div>
   <button id="menubtn" class="openbtn" onclick="openNav()">≡<img src="https://josh-freeman.github.io/resources/icon_blue.png" width="26" height="26"></button>
   <script>
+  
+function myFunction(x) {
+  if (x.matches) { // If media query matches
+    closeNav();
+  } else {
+   openNav();
+  }
+}
+
+var x = window.matchMedia("(max-width: 992px)")
+myFunction(x) // Call listener function at run time
+x.addListener(myFunction) // Attach listener function on state changes
+
+
 function openNav() {
   document.getElementById("mySidebar").style.width = "250px";
   document.getElementById("main").style.marginLeft = "250px";

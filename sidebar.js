@@ -8,8 +8,6 @@ function loadNavbarDiv() {
     <submenu>
       <a href="index.html">Home</a>
     </submenu>
-  
-
     <submenu>
       <a>Projects</a>
       <subsubmenu><a>tCHu</a></subsubmenu>

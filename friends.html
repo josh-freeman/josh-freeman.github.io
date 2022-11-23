@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+	<title> Joshua Freeman </title>
+	<meta name="description" content="Friends of the Website" />
+	<meta name="title" content="Joshua Freeman" />
+	<link rel="icon" href="/icon_blue.png" type="image/x-icon">
+	<meta property="og:image" content="https://josh-freeman.github.io/big_icon.jpg" />
+	<meta property="og:title" content="Joshua Freeman" />
+	<meta property="og:url" content="https://josh-freeman.github.io" />
+	<meta property="og:description" content="Friends of the Website" />
+<link href='https://fonts.loli.net/css?family=Merriweather:900,900italic,300,300italic&subset=latin-ext' rel='stylesheet' type='text/css' />
+<link href='https://fonts.loli.net/css?family=Lato:900,300&subset=latin-ext' rel='stylesheet' type='text/css' />
+<link rel="stylesheet" type="text/css" href="/style.css">
+</head>
+	
+<body class='typora-export os-windows'>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+<div id="main">
+    <sidebar> <!-- used to include sidebar-->
+        <script src="sidebar.js"></script>
+        <script>
+          $(document).ready(function(){
+              loadNavbarDiv();
+          });
+        </script> 
+      </sidebar> 
+  <body><h1 id="joshua-freeman">Friends of the Website</h1><p>Where people who helped with this website can be found.</p>
+    <fieldset>
+        <legend>Hugues</legend>
+    
+        <label>Hugues is a fellow computer science student from my school. <a href="hugues.devimeux.dev">His site can be found here.</a></label><br>
+
+      </fieldset>	
+</div>
+
+<script>
+function openNav() {
+  document.getElementById("mySidebar").style.width = "250px";
+  document.getElementById("main").style.marginLeft = "250px";
+  document.getElementById("menubtn").onclick = closeNav;
+}
+
+function closeNav() {
+  document.getElementById("mySidebar").style.width = "0";
+  document.getElementById("main").style.marginLeft= "0";
+  document.getElementById("menubtn").onclick = openNav;
+
+}
+</script>
+   
+</html>

@@ -18,34 +18,19 @@
 <body class='typora-export os-windows'>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-<script src="https://josh-freeman.github.io/submenus.js"></script>
-<div id="mySidebar" class="sidebar">
-  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
 
-
-  <submenu>
-    <a href="index.html">Home</a>
-  </submenu>
-
-  <submenu>
-    <a href="cv.html">Resume</a>
-  </submenu>
-  <submenu>
-    <a href="projects.html">Projects</a>
-    <subsubmenu><a>tCHu</a></subsubmenu>
-    <subsubmenu><a>CRYPTKVS</a></subsubmenu>
-    <subsubmenu><a>HPShape</a></subsubmenu>
-  </submenu>
-  <submenu><a href="poetry.html">Poetry</a></submenu>
-  <submenu><a href="misc.html">Miscellany</a>
-    <subsubmenu><a href="friends.html">Friends</a></subsubmenu>
-  </submenu>
-
-
-</div>
 
 <div id="main">
-  <button id="menubtn" class="openbtn" onclick="openNav()">≡<img src="icon_blue.png" width="26" height="26"></button>  
+
+  <sidebar> <!-- used to include sidebar-->
+    <script src="sidebar.js"></script>
+    <script>
+      $(document).ready(function(){
+          loadNavbarDiv();
+      });
+    </script> 
+  </sidebar> 
+
   <body><h1 id="joshua-freeman">Hello! I am Joshua Freeman.</h1>
   <p>Student in computer science. Currently curious regarding natural language processing and principles of programming languages (among other things that I don't know much about).</p>
 	

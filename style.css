@@ -393,6 +393,7 @@ fieldset {
 
 legend {
 	background-color: #eeeeee;
+	text-align: center;
 	border: 1px;
 	border-radius: 5px;
 	border-style:dotted;
@@ -466,6 +467,7 @@ legend {
   padding: 10px 15px;
   border: none;
 }
+
 
 .openbtn:hover {
   background-color: #444;

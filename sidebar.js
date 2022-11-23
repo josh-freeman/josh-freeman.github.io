@@ -26,6 +26,20 @@ function loadNavbarDiv() {
   
   </div>
   <button id="menubtn" class="openbtn" onclick="openNav()">≡<img src="https://josh-freeman.github.io/icon_blue.png" width="26" height="26"></button>
+  <script>
+function openNav() {
+  document.getElementById("mySidebar").style.width = "250px";
+  document.getElementById("main").style.marginLeft = "250px";
+  document.getElementById("menubtn").onclick = closeNav;
+}
+
+function closeNav() {
+  document.getElementById("mySidebar").style.width = "0";
+  document.getElementById("main").style.marginLeft= "0";
+  document.getElementById("menubtn").onclick = openNav;
+
+}
+</script>
   `
     $('sidebar').append(navbar_code_str);
 }

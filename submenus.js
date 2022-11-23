@@ -1,7 +1,7 @@
 $(document).ready(function() {
     $('subsubmenu').hide();
     
-    $('submenu').hover(function(event) {
+    $('submenu').click(function(event) {
       event.stopPropagation();
       $('> subsubmenu', this).slideToggle();
   

@@ -10,9 +10,9 @@ function loadNavbarDiv() {
     </submenu>
     <submenu>
       <a>Projects</a>
-      <subsubmenu><a>tCHu</a></subsubmenu>
-      <subsubmenu><a>CRYPTKVS</a></subsubmenu>
-      <subsubmenu><a>HPShape</a></subsubmenu>
+      <subsubmenu><a href="projects.html#tchu">tCHu</a></subsubmenu>
+      <subsubmenu><a href="projects.html#cryptkvs">CRYPTKVS</a></subsubmenu>
+      <subsubmenu><a href="projects.html#hpshape">HPShape</a></subsubmenu>
     </submenu>
     <submenu><a href="poetry.html">Poetry</a></submenu>
       <submenu><a>Miscellany</a>

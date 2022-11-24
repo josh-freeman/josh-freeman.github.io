@@ -39,6 +39,12 @@ myFunction(x) // Call listener function at run time
 x.addListener(myFunction) // Attach listener function on state changes
 
 
+
+</script>
+  `
+  Array.from(document.getElementsByTagName('sidebar')).forEach(e => e.innerHTML += navbar_code_str);
+}
+
 function openNav() {
   document.getElementById("mySidebar").style.width = "250px";
   document.getElementById("main").style.marginLeft = "250px";
@@ -51,9 +57,4 @@ function closeNav() {
   document.getElementById("menubtn").onclick = openNav;
 
 }
-</script>
-  `
-  Array.from(document.getElementsByTagName('sidebar')).forEach(e => e.innerHTML += navbar_code_str);
-}
-
 loadNavbarDiv();

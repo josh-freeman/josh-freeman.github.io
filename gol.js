@@ -1,11 +1,15 @@
-let width, height;
-let pixels = [];
-let BACKGROUND_COLOR = "white";
-let COLOR_UNDER_PIXEL = 'white'; // I'm not sure how these two interact.
+const BACKGROUND_COLOR = "white";
+const COLOR_UNDER_PIXEL = 'white'; // I'm not sure how these two interact.
+const PIXEL_FILL_SIZE = 63; //
+const PIXEL_UNFILLED_SIZE = 64; // this places an upper bound on PIXEL_FILL_SIZE, before overflowing.
+const MAX_NUMBER_OF_COLORED_PIXELS = 64;
+const ALPHA_DECR = 0.008;
+const DELTA = 10; // time between two animations in milliseconds
+const COLORS = ['black','black','black','black','black'];
 
-let ALPHA_DECR = 0.008;
+let pixels = [];
+let width, height;
 let coloredPixels = [];
-let colors = ['black','black','black','black','black'];
 let currentColoredPixelIndex = 0;
 const mousePosition = { x: window.innerWidth/2, y: window.innerHeight/2 };
 
@@ -21,7 +25,7 @@ const ctx = canvas.getContext('2d');
 function neighbor(x,y,d){
   //check if neighbor is in coloredPixels
 
-  coloredPixels.some(e => e.x == x+d[0] && e.y == d[1]);
+  coloredPixels.some(e => e.x == x+d[0] && e.y == y+ d[1]);
   
 }
 
@@ -37,9 +41,6 @@ function allNeighborsButNotSelf(coloredPixel){
   !  neighbor(coloredPixel.x,coloredPixel.y,[0,0]);
 }
 
-let PIXEL_FILL_SIZE = 63; //
-let PIXEL_UNFILLED_SIZE = 64; // this places an upper bound on PIXEL_FILL_SIZE, before overflowing.
-let MAX_NUMBER_OF_COLORED_PIXELS = 64;
 
 
 function movePix(coloredPixel){
@@ -108,7 +109,6 @@ const resize = () => {
   }
 }
 
-let DELTA = 10; // time between two animations in milliseconds
 let previousTimestamp;
 
 const draw = (timestamp) => {
@@ -130,7 +130,7 @@ const initColoredPixels = () => {
       x: Math.floor(Math.random()*width),
       y: Math.floor(Math.random()*height),
       alpha: 1,
-      color: colors[i%colors.length],
+      color: COLORS[i%COLORS.length],
       vx: -1 + Math.random()*4,
       vy: -1 + Math.random()*4
     })

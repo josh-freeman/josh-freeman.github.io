@@ -53,5 +53,7 @@ function closeNav() {
 }
 </script>
   `
-    $('sidebar').append(navbar_code_str);
+  Array.from(document.getElementsByTagName('sidebar')).forEach(e => e.innerHTML += navbar_code_str);
 }
+
+loadNavbarDiv();

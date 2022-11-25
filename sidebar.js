@@ -22,6 +22,8 @@ function loadNavbarDiv() {
       </submenu>
   </div>
   <button id="menubtn" class="openbtn" onclick="openNav()">≡<img src="https://josh-freeman.github.io/resources/icon_blue.png" width="26" height="26"></button>
+
+</script>
   `
   Array.from(document.getElementsByTagName('sidebar')).forEach(e => e.innerHTML += navbar_code_str);
 }

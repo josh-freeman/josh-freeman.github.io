@@ -56,8 +56,7 @@
       
       </div>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-      <script>//Unfortunately, found no better solution than to use jquery.
-        Array.from(document.getElementsByTagName('submenu')).forEach(e=>e.addEventListener('click',event => {event.stopPropagation();Array.from(e.getElementsByTagName('subsubmenu')).forEach(subsub => {console.log(subsub.text); $(subsub).slideToggle()});console.log("clicked");})) 
+      <script src="submenus.js">//Unfortunately, found no better solution than to use jquery.
       </script>
 </body>
       

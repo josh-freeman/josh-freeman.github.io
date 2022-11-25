@@ -8,18 +8,28 @@ function loadNavbarDiv() {
     <submenu>
       <a href="index.html">Home</a>
     </submenu>
+    
     <submenu>
       <a>Projects</a>
       <subsubmenu><a href="projects.html#tchu">tCHu</a></subsubmenu>
       <subsubmenu><a href="projects.html#cryptkvs">CRYPTKVS</a></subsubmenu>
       <subsubmenu><a href="projects.html#hpshape">HPShape</a></subsubmenu>
     </submenu>
-    <submenu><a href="poetry.html">Poetry</a></submenu>
-      <submenu><a>Miscellany</a>
-        <subsubmenu><a href="notes.html">Lecture notes</a></subsubmenu>
-        <subsubmenu><a href="friends.html">Friends</a></subsubmenu>
-        <subsubmenu><a href="cv.html">Resume</a></submsubenu>
-      </submenu>
+
+    <submenu><a>Miscellany</a>
+
+    <subsubmenu><a href="notes.html">Lecture notes</a></subsubmenu>
+
+    <subsubmenu><a href="friends.html">Friends</a></subsubmenu>
+    <subsubmenu><a href="cv.html">Resume</a></subsubmenu>
+    <subsubmenu><a href="https://github.com/josh-freeman/josh-freeman.github.io">Source code</a></subsubmenu>
+
+
+
+     </submenu>
+
+      <submenu><a href="poetry.html">Poetry</a></submenu>
+
   </div>
   <button id="menubtn" class="openbtn" onclick="openNav()">≡<img src="https://josh-freeman.github.io/resources/icon_blue.png" width="26" height="26"></button>
 

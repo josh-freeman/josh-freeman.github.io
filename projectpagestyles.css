@@ -15,17 +15,23 @@
 
 
 .card-body{
-    flex-direction: row;
     display:flex;
 }
 
+
+
+.left-of-card{
+    padding-left:10px;
+
+}
 .card:nth-child(even){
-    background-color:rgba(220, 220, 220, 0.5);
+    background-color:rgb(92, 92, 92);
 }
 .card:nth-child(odd){
-    background-color:rgba(240, 240, 240, 0.5);
+    background-color:rgb(122, 122, 122);
 }
 
+img { max-width: 250px;}
 
 
 .tags *{

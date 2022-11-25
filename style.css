@@ -20,7 +20,6 @@ body.typora-export { padding-left: 30px; padding-right: 30px; }
 }
 #write li > figure:last-child { margin-bottom: 0.5rem; }
 #write ol, #write ul { position: relative; }
-img { max-width: 100%; vertical-align: middle; image-orientation: from-image; }
 button, input, select, textarea { color: inherit; font: inherit; }
 input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
 *, ::after, ::before { box-sizing: border-box; }
@@ -277,10 +276,7 @@ body {
 	}
 }
 
-img {
-	width: auto;
-	max-width: 100%;
-}
+
 body {
 	font-size: 1.5rem;
 	box-sizing: border-box;

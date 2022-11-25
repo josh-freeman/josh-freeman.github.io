@@ -9,6 +9,9 @@ function loadNavbarDiv() {
       <a href="index.html">Home</a>
     </submenu>
     
+    <submenu><a href="poetry.html">Poetry</a></submenu>
+
+
     <submenu>
       <a>Projects</a>
       <subsubmenu><a href="projects.html#tchu">tCHu</a></subsubmenu>
@@ -28,7 +31,6 @@ function loadNavbarDiv() {
 
      </submenu>
 
-      <submenu><a href="poetry.html">Poetry</a></submenu>
 
   </div>
   <button id="menubtn" class="openbtn" onclick="openNav()">≡<img src="https://josh-freeman.github.io/resources/icon_blue.png" width="26" height="26"></button>

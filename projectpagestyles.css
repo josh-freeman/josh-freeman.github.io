@@ -18,7 +18,10 @@
     display:flex;
 }
 
+.card-body > .right-of-card{
+    width: 40%;
 
+}
 
 .left-of-card{
     padding-left:10px;

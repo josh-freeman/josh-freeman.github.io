@@ -46,9 +46,15 @@
 
 
 }
+
+
+.tags a:hover{
+    color: #f9ccca;
+    text-decoration: none;
+}
 .tags .language{
 
-    background-color: rgb(100,128,128);
+    background-color: #f9ccca;
     text-decoration: none;
 }
 .tags .github{

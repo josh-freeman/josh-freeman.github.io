@@ -400,6 +400,15 @@ legend {
 	color:#463F5C;
 }
 	
+
+.external{
+	display:flex;
+	align-self: stretch;
+}
+.external::after{
+	content: "⧉";
+}
+
 .sidebar {
   height: 100%;
   width: 0;
@@ -933,3 +942,4 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] {
 							stroke-width: 0;
 						}
 figure figcaption  {text-align: center}
+

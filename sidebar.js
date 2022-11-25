@@ -25,7 +25,7 @@ function loadNavbarDiv() {
 
     <subsubmenu><a href="friends.html">Friends</a></subsubmenu>
     <subsubmenu><a href="cv.html">Resume</a></subsubmenu>
-    <subsubmenu><a href="https://github.com/josh-freeman/josh-freeman.github.io">Source code</a></subsubmenu>
+    <subsubmenu><a href="https://github.com/josh-freeman/josh-freeman.github.io" target="_blank" class="external">Source code</a></subsubmenu>
 
 
 

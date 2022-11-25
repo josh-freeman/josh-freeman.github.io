@@ -21,7 +21,6 @@
 
 
 <div id="main">
-  <body>
   
     <canvas id="canvas"></canvas>
   <script src="gol.js">
@@ -30,10 +29,14 @@
       <script src="sidebar.js"></script>
   </sidebar> 
 
-  <body><h1 id="joshua-freeman">Hello! I am Joshua Freeman.</h1>
+  <h1 id="joshua-freeman">Hello! I am Joshua Freeman.</h1>
   <p background-color="">Student in computer science. Currently curious regarding natural language processing and principles of programming languages (among other things that I don't know much about).</p>
 	
 	
 </div>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script>//Unfortunately, found no better solution than to use jquery.
+	Array.from(document.getElementsByTagName('submenu')).forEach(e=>e.addEventListener('click',event => {event.stopPropagation();Array.from(e.getElementsByTagName('subsubmenu')).forEach(subsub => {console.log(subsub.text); $(subsub).slideToggle()});console.log("clicked");})) 
+</script>
+</body>
 </html>

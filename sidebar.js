@@ -1,6 +1,5 @@
 function loadNavbarDiv() {
     var navbar_code_str = `
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://josh-freeman.github.io/submenus.js" type="text/javascript"></script>
     <div id="mySidebar" class="sidebar">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>

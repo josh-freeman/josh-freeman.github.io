@@ -87,6 +87,7 @@ blockquote > :first-child, li > :first-child { margin-top: 0px; }
   .is-mac table { break-inside: avoid; }
   .typora-export-show-outline .typora-export-sidebar { display: none; }
 }
+
 .footnote-line { margin-top: 0.714em; font-size: 0.7em; }
 a img, img a { cursor: pointer; }
 pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background: rgb(204, 204, 204); display: block; overflow-x: hidden; }

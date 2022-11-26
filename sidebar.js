@@ -33,7 +33,7 @@ function loadNavbarDiv() {
 
 
   </div>
-  <button id="menubtn" class="openbtn" onclick="openNav()">≡<img src="https://josh-freeman.github.io/resources/icon_blue.png" width="26" height="26"></button>
+  <button id="menubtn" class="openbtn" onclick="openNav()">≡<img style="max-width: 100%; vertical-align: middle; image-orientation: from-image;" src="https://josh-freeman.github.io/resources/icon_blue.png" width="26" height="26"></button>
 
 </script>
   `

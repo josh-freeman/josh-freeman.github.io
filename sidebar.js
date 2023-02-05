@@ -21,7 +21,7 @@ function loadNavbarDiv() {
 
     <submenu><a>Miscellany</a>
 
-    <subsubmenu><a href="notes.html">Lecture notes</a></subsubmenu>
+    <subsubmenu><a href="notes.html">Notes</a></subsubmenu>
 
     <subsubmenu><a href="friends.html">Friends</a></subsubmenu>
     <subsubmenu><a href="cv.html">Resume</a></subsubmenu>

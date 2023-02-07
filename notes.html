@@ -2,33 +2,42 @@
 <html>
 <head>
   <meta charset='UTF-8'>
-  <meta name='viewport' content='width=device-width initial-scale=1'>
   <link rel="stylesheet" type="text/css" href="style.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="gol.css">
   <link href='https://fonts.loli.net/css?family=Merriweather:900,900italic,300,300italic&subset=latin-ext' rel='stylesheet' type='text/css' />
-<link href='https://fonts.loli.net/css?family=Lato:900,300&subset=latin-ext' rel='stylesheet' type='text/css' />
-  
+  <link href='https://fonts.loli.net/css?family=Lato:900,300&subset=latin-ext' rel='stylesheet' type='text/css' />
+  <link rel="stylesheet" type="text/css" href="/style.css">
   <title>Notes</title>
 </head>
+
+
 <body>
+  <sidebar> <!-- used to include sidebar-->
+    <script src="sidebar.js"></script>
+  </sidebar> 
+  
   <div id="notes">
     <h1>Lecture notes</h1>
     <ul>
       <li>
         <a href="#" class="toggle-description">Analysis 1</a>
         <div class="description">
-          <p>Description of Analysis 1 PDF:</p>
+          <p>My lecture notes in Analysis 1.</p>
           <object data=
-          "https://spivey.oriel.ox.ac.uk/wiki/files/compilers/book.pdf" 
+          "notes/Analyse_2.pdf" 
                           width="800" 
-                          height="500">         </div>
+                          height="500"> 
+                  </object>
+        </div>
       </li>
+
       <li>
         <a href="#" class="toggle-description">Analysis 2</a>
         <div class="description">
-          <p>Description of Analysis 2 PDF:</p>
+          <p>My lecture notes in Analysis 2.</p>
           <object data=
-          "https://spivey.oriel.ox.ac.uk/wiki/files/compilers/book.pdf" 
+          "notes/Analyse_2.pdf" 
                           width="800" 
                           height="500"> 
                   </object>
@@ -46,4 +55,6 @@
     });
   </script>
 </body>
+<script src="submenus.js">//Unfortunately, found no better solution than to use jquery.
+</script>
 </html>

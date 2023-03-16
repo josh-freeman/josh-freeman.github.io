@@ -9,7 +9,7 @@ function loadNavbarDiv() {
       <a href="index.html">Home</a>
     </submenu>
     
-    <submenu><a href="cv.pdf">Curriculum Vitae</a></submenu>
+    <submenu><a href="cv.pdf" target="_blank" class="external">Curriculum Vitae</a></submenu>
 
 
     <submenu>

@@ -4,7 +4,8 @@ function loadNavbarDiv() {
     <div id="mySidebar" class="sidebar">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
   
-  
+    <img src="https://josh-freeman.github.io/resources/profile.png">
+
     <submenu>
       <a href="index.html">Home</a>
     </submenu>
@@ -22,7 +23,6 @@ function loadNavbarDiv() {
     <submenu><a>Miscellany</a>
 
     <subsubmenu><a href="notes.html">Notes</a></subsubmenu>
-
     <subsubmenu><a href="friends.html">Friends</a></subsubmenu>
     <subsubmenu><a href="cv.html">Resume</a></subsubmenu>
     <subsubmenu><a href="https://github.com/josh-freeman/josh-freeman.github.io" target="_blank" class="external">Source code</a></subsubmenu>

@@ -9,7 +9,7 @@ function loadNavbarDiv() {
       <a href="index.html">Home</a>
     </submenu>
     
-    <submenu><a href="poetry.html">Poetry</a></submenu>
+    <submenu><a href="cv.html">Curriculum Vitae</a></submenu>
 
 
     <submenu>
@@ -23,7 +23,7 @@ function loadNavbarDiv() {
 
     <subsubmenu><a href="notes.html">Notes</a></subsubmenu>
     <subsubmenu><a href="friends.html">Friends</a></subsubmenu>
-    <subsubmenu><a href="cv.html">Resume</a></subsubmenu>
+    <subsubmenu><a href="poetry.html">Poetry</a></subsubmenu>
     <subsubmenu><a href="https://github.com/josh-freeman/josh-freeman.github.io" target="_blank" class="external">Source code</a></subsubmenu>
 
 

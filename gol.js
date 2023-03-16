@@ -5,7 +5,7 @@ const PIXEL_UNFILLED_SIZE = 64; // this places an upper bound on PIXEL_FILL_SIZE
 const MAX_NUMBER_OF_COLORED_PIXELS = 64;
 const ALPHA_DECR = 0.008;
 const DELTA = 10; // time between two animations in milliseconds
-const COLORS = ['black','black','black','black','black'];
+const COLORS = ['crimson','tomato','salmon'];
 
 let pixels = [];
 let width, height;

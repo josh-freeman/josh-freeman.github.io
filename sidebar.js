@@ -2,6 +2,7 @@ function loadNavbarDiv() {
     var navbar_code_str = `
     <script src="https://josh-freeman.github.io/submenus.js" type="text/javascript"></script>
     <div id="mySidebar" class="sidebar">
+
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
     <a href = "index.html">
     <img src="https://josh-freeman.github.io/resources/profile.png" style="padding-left:10px" width="200" height="200">

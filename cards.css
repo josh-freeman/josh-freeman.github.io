@@ -19,6 +19,11 @@
   }
   
 
+  
+  .card-back canvas {
+    display: block;
+  }
+  
 
 .card-front {
   display: flex;
@@ -56,7 +61,6 @@
   .card-front,
   .card-back {
     background-color: #f2f2f2;
-
     position: absolute;
     width: 100%;
     height: 100%;

@@ -12,7 +12,9 @@
 
 
 .card-front {
- 
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centers the thumbnail horizontally */
   padding: 20px 20px 10px 20px;
   box-sizing: border-box;
 }
@@ -25,16 +27,15 @@
 
 .card-front h2 {
   margin: 0 0 10px 0;
+  text-align: left;
 }
 
 .card-front p {
   margin: 0;
+  text-align: left;
+
 }
-.card-front img {
-  max-width: 300px;
-  max-height: 200px;
-  margin-bottom: 20px;
-}
+
   .card-inner {
     position: absolute;
     width: 100%;

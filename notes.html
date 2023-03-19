@@ -18,7 +18,7 @@
 <link rel="stylesheet" type="text/css" href="/pdf_enumeration.css">
 <link rel="stylesheet" type="text/css" href="/buttons.css">
 <link rel="stylesheet" type="text/css" href="/cards.css">
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 </head>
@@ -36,6 +36,7 @@
       <h1>Notes</h1>
       A collection of notes on various topics, mostly lecture notes.
 
+      
       <div class="card-container">
         <div class="card" id="card-1">
           <div class="card-inner">
@@ -46,7 +47,7 @@
               <a href="#card-1" class="read-more">Read More</a>
             </div>
             <div class="card-back">
-                <iframe src="notes/Analyse_1.html" width="100%" height="1000"></iframe>
+                <div id="pdf-container"></div>
               <a href="#card-1" class="read-less">Read Less</a>
             </div>
           </div>
@@ -100,6 +101,32 @@
   </script>
 	
 </div>
+<script>
+  // Get the PDF container element
+  const container = document.querySelector('#pdf-container');
 
+  // Load the PDF file using pdf.js
+  pdfjsLib.getDocument('notes/Analyse_1.pdf').promise.then(pdf => {
+    // Get the first page of the PDF
+    pdf.getPage(1).then(page => {
+      // Create a canvas element to hold the PDF page
+      const canvas = document.createElement('canvas');
+      container.appendChild(canvas);
+
+      // Set the canvas dimensions to match the PDF page size
+      const viewport = page.getViewport({ scale: 1 });
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      // Render the PDF page onto the canvas
+      const context = canvas.getContext('2d');
+      const renderContext = {
+        canvasContext: context,
+        viewport: viewport
+      };
+      page.render(renderContext);
+    });
+  });
+</script>
 </body>
 </html>

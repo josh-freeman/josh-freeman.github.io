@@ -17,6 +17,7 @@
 <link rel="stylesheet" type="text/css" href="/style.css">
 <link rel="stylesheet" type="text/css" href="/pdf_enumeration.css">
 <link rel="stylesheet" type="text/css" href="/buttons.css">
+<link rel="stylesheet" type="text/css" href="/cards.css">
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -35,7 +36,23 @@
       <h1>Poetry</h1>
       <h2>Writing</h2>
       Some poems I had the pleasure of writing.
-      <ul>
+      <div class="card">
+        <div class="card-inner">
+          <div class="card-front">
+            <img src="resources/ma-chambre.jpg" alt="Poem thumbnail">
+            <h2> Ma chambre </h2>
+            <p> The rain drizzling on my window harkened me back to a scout camp.</p>
+            <a href="#" class="read-more">Read More</a>
+          </div>
+          <div class="card-back">
+            <object data="poem.pdf" width="100%" height="500"></object>
+        
+            <a href="#" class="read-less">Read Less</a>
+          </div>
+        </div>
+      </div>
+      
+        <ul>
         <li>
           <a href="#" class="toggle-description">Ma chambre</a>
           <div class="description">
@@ -55,6 +72,29 @@
         <!-- Add additional drop down items here -->
       </ul>
     </div>
+    <script>
+      const card = document.querySelector('.card');
+const cardInner = document.querySelector('.card-inner');
+const readMoreLink = document.querySelector('.read-more');
+const readLessLink = document.querySelector('.read-less');
+
+readMoreLink.addEventListener('click', function(e) {
+  e.preventDefault();
+  cardInner.style.transform = 'rotateY(180deg)';
+  readMoreLink.style.display = 'none';
+  readLessLink.style.display = 'block';
+});
+
+readLessLink.addEventListener('click', function(e) {
+  e.preventDefault();
+  cardInner.style.transform = 'rotateY(0deg)';
+  readMoreLink.style.display = 'block';
+  readLessLink.style.display = 'none';
+});
+
+
+
+    </script>
     <script>
       $(document).ready(function() {
         $('.toggle-description').click(function(e) {

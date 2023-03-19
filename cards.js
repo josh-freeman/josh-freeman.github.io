@@ -22,4 +22,9 @@ readLessLinks.forEach((readLessLink, index) => {
 });
 
 
-    
+
+for (var i = 0; i < cards.length; i++) {
+  cards[i].addEventListener( 'click', function() {
+    this.classList.toggle('flipped');
+  });
+}

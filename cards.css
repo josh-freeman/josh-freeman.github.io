@@ -108,6 +108,7 @@
   
   .card-inner.flipped {
     transform: rotateY(180deg) scaleX(1.2);
+    height: 100%;
   }
   
   .card-back.flipped {

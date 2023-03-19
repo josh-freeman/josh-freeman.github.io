@@ -9,6 +9,7 @@ readMoreLinks.forEach((readMoreLink, index) => {
     cardInners[index].style.transform = 'rotateY(180deg)';
     readMoreLinks[index].style.display = 'none';
     readLessLinks[index].style.display = 'block';
+    cards[index].classList.add('flipped'); // add 'flipped' class to card element
   });
 });
 
@@ -18,13 +19,6 @@ readLessLinks.forEach((readLessLink, index) => {
     cardInners[index].style.transform = 'rotateY(0deg)';
     readMoreLinks[index].style.display = 'block';
     readLessLinks[index].style.display = 'none';
+    cards[index].classList.remove('flipped'); // remove 'flipped' class from card element
   });
 });
-
-
-
-for (var i = 0; i < cards.length; i++) {
-  cards[i].addEventListener( 'click', function() {
-    this.classList.toggle('flipped');
-  });
-}

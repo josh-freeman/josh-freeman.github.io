@@ -1,16 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset
-      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
-
-
-<url>
-  <loc>https://josh-freeman.github.io/</loc>
-  <lastmod>2023-03-19T17:26:17+00:00</lastmod>
-</url>
-
-
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+   <url>
+      <loc>https://josh-freeman.github.io/404.html</loc>
+   </url>
+   <url>
+      <loc>https://josh-freeman.github.io/404/404.jpg</loc>
+   </url>
+   <url>
+      <loc>https://josh-freeman.github.io/404/404.png</loc>
+   </url>
+   <url>
+      <loc>https://josh-freeman.github.io/README.md</loc>
+   </url>
+   <url>
+      <loc>https://josh-freeman.github.io/buttons.css</loc>
+   </url>
+   <url>
+      <loc>https://josh-freeman.github.io/cards.css</loc>
+   </url>
+   <url>
+      <loc>https://josh-freeman.github.io/cards.js</loc>
+   </url>
+   <url>
+      <loc>https://josh-freeman.github.io/friends.html</loc>
+   </url>
+   <url>
+      <loc>https://josh-freeman.github.io/gol.css</loc>
+   </url>
+   <url>
+      <loc>https://josh-freeman.github.io/gol.js</loc>
+   </url>
+   <url>
+      <loc>https://josh-freeman.github.io/google6903878478e0be84.html</loc>
+   </url>
+   <url>
+      <loc>https://josh-freeman.github.io/index.html</loc>
+   </url>
+   <url>
+      <loc>https://josh-freeman.github.io/ngrams.html</loc>
+   </url>
+   <url>
+      <loc>https://josh-freeman.github.io/notes.html</loc>
+   </url>
 </urlset>

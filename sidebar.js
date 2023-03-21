@@ -8,24 +8,24 @@ function loadNavbarDiv() {
     <img src="https://josh-freeman.github.io/resources/profile.png" style="padding-left:10px" width="200" height="200">
     </a>
     <submenu>
-      <a href="index.html">Home</a>
+      <a href="https://josh-freeman.github.io/index.html">Home</a>
     </submenu>
     
-    <submenu><a href="resources/cv.pdf" target="_blank" class="external">Curriculum Vitae</a></submenu>
+    <submenu><a href="https://josh-freeman.github.io/resources/cv.pdf" target="_blank" class="external">Curriculum Vitae</a></submenu>
 
 
     <submenu>
       <a>Projects</a>
-      <subsubmenu><a href="projects.html#tchu">tCHu</a></subsubmenu>
-      <subsubmenu><a href="projects.html#cryptkvs">CRYPTKVS</a></subsubmenu>
-      <subsubmenu><a href="projects.html#hpshape">HPShape</a></subsubmenu>
+      <subsubmenu><a href="https://josh-freeman.github.io/projects.html#tchu">tCHu</a></subsubmenu>
+      <subsubmenu><a href="https://josh-freeman.github.io/projects.html#cryptkvs">CRYPTKVS</a></subsubmenu>
+      <subsubmenu><a href="https://josh-freeman.github.io/projects.html#hpshape">HPShape</a></subsubmenu>
     </submenu>
 
     <submenu><a>Miscellany</a>
 
-    <subsubmenu><a href="notes.html">Notes</a></subsubmenu>
-    <subsubmenu><a href="friends.html">Friends</a></subsubmenu>
-    <subsubmenu><a href="poetry.html">Poetry</a></subsubmenu>
+    <subsubmenu><a href="https://josh-freeman.github.io/notes.html">Notes</a></subsubmenu>
+    <subsubmenu><a href="https://josh-freeman.github.io/friends.html">Friends</a></subsubmenu>
+    <subsubmenu><a href="https://josh-freeman.github.io/poetry.html">Poetry</a></subsubmenu>
     <subsubmenu><a href="https://github.com/josh-freeman/josh-freeman.github.io" target="_blank" class="external">Source code</a></subsubmenu>
 
 

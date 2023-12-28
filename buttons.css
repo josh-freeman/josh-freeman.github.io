@@ -27,7 +27,7 @@ button.email:hover {
 }
 
 button.email:hover::after {
-  content: "j lastname {at} student {dot} ethz {dot} ch"; /* Add the text for the speech bubble */
+  content: "j{lastname}{at}student{dot}ethz{dot}ch"; /* Add the text for the speech bubble */
   position: absolute;
   top: -30px; /* Position the speech bubble above the button */
   left: 50%; /* Position the speech bubble in the middle of the button */

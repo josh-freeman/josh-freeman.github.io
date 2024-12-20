@@ -27,7 +27,7 @@ function loadNavbarDiv() {
     <subsubmenu><a href="https://josh-freeman.github.io/friends.html">Friends</a></subsubmenu>
     <subsubmenu><a href="https://josh-freeman.github.io/poetry.html">Poetry</a></subsubmenu>
     <subsubmenu><a href="https://github.com/josh-freeman/josh-freeman.github.io" target="_blank" class="external">Source code</a></subsubmenu>
-
+    <subsubmenu><a href="https://www.goodreads.com/review/list/184752391?shelf=read" target="_blank" class="external">Book reviews</a></subsubmenu>
 
 
      </submenu>

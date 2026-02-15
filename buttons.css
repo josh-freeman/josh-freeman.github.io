@@ -1,41 +1,123 @@
+/* Modern Button Styles */
 button {
-    border-radius: 20px;
-    padding: 10px 20px;
-    font-size: 16px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    padding: 0.875rem 1.75rem;
+    font-size: 1rem;
+    font-weight: 600;
     border: none;
-    margin-right: 10px;
-  }
+}
+
+/* Telegram Button */
 .telegram {
-background-color: #0088cc;
-color: white;
+    background: linear-gradient(135deg, #0088cc, #00a2e8);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
 }
+
+.telegram:hover {
+    background: linear-gradient(135deg, #0077b3, #0088cc);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 136, 204, 0.4);
+}
+
+.telegram:active {
+    transform: translateY(0);
+}
+
+/* Email Button with tooltip */
 .email {
-background-color: #d3d3d3;
-color: black;
+    background: #f0f0f0;
+    color: #333;
+    border: 2px solid #e0e0e0;
+    position: relative;
 }
 
-button.email {
-  background-color: #d3d3d3;
-  color: black;
-  position: relative; /* Set the position to relative so we can position the speech bubble */
-  transition: all 0.2s ease-in-out; /* Add a transition effect to the color change */
+.email:hover {
+    background: #333;
+    color: white;
+    border-color: #333;
+    transform: translateY(-2px);
 }
 
-button.email:hover {
-  background-color: #000;
-  color: white;
+.email:active {
+    transform: translateY(0);
 }
 
-button.email:hover::after {
-  content: "j{lastname}{at}student{dot}ethz{dot}ch"; /* Add the text for the speech bubble */
-  position: absolute;
-  top: -30px; /* Position the speech bubble above the button */
-  left: 50%; /* Position the speech bubble in the middle of the button */
-  transform: translateX(-50%); /* Center the speech bubble horizontally */
-  background-color: black;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 10px;
-  font-size: 14px;
-  white-space: nowrap; /* Prevent the text from wrapping */
+/* Tooltip - shown on hover (desktop) and focus (mobile tap) */
+.email:hover::after,
+.email:focus::after {
+    content: "j{lastname}{at}student{dot}ethz{dot}ch";
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a2e;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+.email:hover::before,
+.email:focus::before {
+    content: "";
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1a1a2e;
+    z-index: 10;
+}
+
+/* Mobile tooltip positioning */
+@media (max-width: 768px) {
+    .email:focus::after,
+    .email:active::after {
+        bottom: auto;
+        top: calc(100% + 10px);
+        font-size: 0.8rem;
+        padding: 0.625rem 1rem;
+    }
+
+    .email:focus::before,
+    .email:active::before {
+        bottom: auto;
+        top: calc(100% + 2px);
+        border-top-color: transparent;
+        border-bottom-color: #1a1a2e;
+    }
+}
+
+/* Primary action button */
+.btn-primary {
+    background: linear-gradient(135deg, #463F5C, #6B5B95);
+    color: white;
+    box-shadow: 0 4px 15px rgba(70, 63, 92, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #3a3450, #5c4d80);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(70, 63, 92, 0.4);
+}
+
+/* Secondary button */
+.btn-secondary {
+    background: transparent;
+    color: #463F5C;
+    border: 2px solid #463F5C;
+}
+
+.btn-secondary:hover {
+    background: #463F5C;
+    color: white;
+    transform: translateY(-2px);
 }

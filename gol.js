@@ -1,15 +1,21 @@
 // Conway's Game of Life - Interactive Background
-const CELL_SIZE = 28;
+const CELL_SIZE_DESKTOP = 28;
+const CELL_SIZE_MOBILE = 20;
 const GRID_COLOR = 'rgba(200, 200, 200, 0.1)';
 const ALIVE_COLOR = '#463F5C';
 const DYING_COLOR = '#818181';
 const BIRTH_COLOR = '#6B5B95';
 const UPDATE_INTERVAL = 150;
+const UPDATE_INTERVAL_MOBILE = 200; // Slower on mobile for performance
 const INITIAL_DENSITY = 0.06;
 const LOGO_PROBABILITY = 0.03; // Chance a cell gets a logo (rare easter egg)
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+
+// Responsive cell size
+let CELL_SIZE = window.innerWidth <= 768 ? CELL_SIZE_MOBILE : CELL_SIZE_DESKTOP;
+let updateInterval = window.innerWidth <= 768 ? UPDATE_INTERVAL_MOBILE : UPDATE_INTERVAL;
 
 let cols, rows;
 let grid, nextGrid;
@@ -63,6 +69,10 @@ function getRandomLogoIndex() {
 function init() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
+    // Responsive sizing
+    CELL_SIZE = window.innerWidth <= 768 ? CELL_SIZE_MOBILE : CELL_SIZE_DESKTOP;
+    updateInterval = window.innerWidth <= 768 ? UPDATE_INTERVAL_MOBILE : UPDATE_INTERVAL;
 
     cols = Math.ceil(canvas.width / CELL_SIZE);
     rows = Math.ceil(canvas.height / CELL_SIZE);
@@ -274,7 +284,7 @@ function animate(timestamp) {
     updateAlphas();
     draw();
 
-    if (isRunning && timestamp - lastUpdate > UPDATE_INTERVAL) {
+    if (isRunning && timestamp - lastUpdate > updateInterval) {
         update();
         lastUpdate = timestamp;
     }

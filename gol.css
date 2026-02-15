@@ -1,11 +1,56 @@
-
-  canvas {
-    mask:linear-gradient(to top,white 10%, transparent 90%);
+/* Game of Life Canvas Styles */
+#canvas {
     position: fixed;
-    top:0;
-    left:0;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    z-index:-1;
-  }
-  
+    z-index: 0;
+    pointer-events: auto;
+    mask: linear-gradient(to top, white 10%, transparent 90%);
+    -webkit-mask: linear-gradient(to top, white 10%, transparent 90%);
+}
+
+/* Content sits above the canvas */
+.hero-content {
+    position: relative;
+    z-index: 1;
+    padding-top: 4rem;
+    max-width: 700px;
+}
+
+/* Semi-transparent backdrop for better readability */
+.hero-content h1,
+.hero-content p {
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9);
+}
+
+/* Ensure main content area allows canvas interaction when not over text */
+#main {
+    background: transparent;
+    pointer-events: none;
+    z-index: 1;
+}
+
+#main > * {
+    pointer-events: auto;
+}
+
+/* Sidebar should be fully interactive */
+.sidebar,
+.openbtn {
+    pointer-events: auto;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .hero-content {
+        padding-top: 5rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    #canvas {
+        pointer-events: none;
+    }
+}

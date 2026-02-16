@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Loading... - Joshua Freeman</title>
+    <meta name="description" id="page-description" content="">
+
+    <!-- Favicon -->
+    <link rel="icon" href="/resources/icon_blue.png" type="image/png">
+
+    <!-- Open Graph -->
+    <meta property="og:title" id="og-title" content="">
+    <meta property="og:description" id="og-description" content="">
+    <meta property="og:image" content="https://joshfreeman.me/resources/big_icon.jpg">
+    <meta property="og:url" id="og-url" content="">
+    <meta property="og:type" content="article">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/buttons.css">
+    <link rel="stylesheet" href="/blog.css">
+
+    <!-- Marked.js for markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div id="main">
+        <!-- Sidebar -->
+        <sidebar>
+            <script src="/sidebar.js"></script>
+        </sidebar>
+
+        <article class="post-container">
+            <a href="/blog.html" class="back-link">Back to blog</a>
+
+            <header class="post-header">
+                <h1 id="post-title">Loading...</h1>
+                <p class="post-meta">
+                    <time id="post-date" datetime=""></time>
+                    <span id="admin-actions" style="display: none; margin-left: 1rem;">
+                        <button class="btn-link" onclick="editPost()">edit</button>
+                        <button class="btn-link btn-danger" onclick="deletePost()">delete</button>
+                    </span>
+                </p>
+            </header>
+
+            <div id="post-content" class="post-content">
+                <p style="color: var(--text-muted);">Loading post...</p>
+            </div>
+
+            <!-- Comments Section -->
+            <section class="comments-section">
+                <h2>Comments</h2>
+                <div id="comments-container">
+                    <p class="comments-loading">Loading comments...</p>
+                </div>
+                <div id="comment-form-container">
+                    <p class="comment-login-notice">
+                        Comments are invite-only. <a href="#" id="login-link">Log in</a> to leave a comment.
+                    </p>
+                </div>
+            </section>
+        </article>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="/submenus.js"></script>
+
+    <script>
+        // Define these before comments.js loads so it can use them
+        const API_BASE = 'https://api.joshfreeman.me';
+
+        function getPostSlug() {
+            // Get slug from URL parameter
+            const params = new URLSearchParams(window.location.search);
+            return params.get('slug');
+        }
+    </script>
+
+    <script src="/comments.js" defer></script>
+
+    <script>
+        function formatPostDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        async function loadPost() {
+            const slug = getPostSlug();
+            if (!slug) {
+                document.getElementById('post-title').textContent = 'Post Not Found';
+                document.getElementById('post-content').innerHTML = '<p>No post specified. <a href="/blog.html">Back to blog</a></p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/posts/${slug}`);
+                if (response.ok) {
+                    const post = await response.json();
+
+                    // Update page metadata
+                    document.getElementById('page-title').textContent = `${post.title} - Joshua Freeman`;
+                    document.getElementById('page-description').content = post.excerpt || '';
+                    document.getElementById('og-title').content = `${post.title} - Joshua Freeman`;
+                    document.getElementById('og-description').content = post.excerpt || '';
+                    document.getElementById('og-url').content = `https://joshfreeman.me/blog/post.html?slug=${slug}`;
+
+                    // Update content
+                    document.getElementById('post-title').textContent = post.title;
+                    document.getElementById('post-date').textContent = formatPostDate(post.created_at);
+                    document.getElementById('post-date').setAttribute('datetime', post.created_at.split('T')[0]);
+
+                    // Render markdown content
+                    document.getElementById('post-content').innerHTML = marked.parse(post.content);
+                } else if (response.status === 404) {
+                    document.getElementById('post-title').textContent = 'Post Not Found';
+                    document.getElementById('post-content').innerHTML = '<p>This post does not exist or has been removed. <a href="/blog.html">Back to blog</a></p>';
+                } else {
+                    throw new Error('Failed to load');
+                }
+            } catch (error) {
+                document.getElementById('post-title').textContent = 'Error Loading Post';
+                document.getElementById('post-content').innerHTML = '<p>Failed to load post content. Please try again later. <a href="/blog.html">Back to blog</a></p>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPost);
+
+        // Check if user is admin and show edit/delete buttons
+        function checkAdminActions() {
+            const userStr = localStorage.getItem('comment_user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                if (user.is_admin) {
+                    document.getElementById('admin-actions').style.display = 'inline';
+                }
+            }
+        }
+
+        // Edit post - opens modal with markdown editor
+        function editPost() {
+            const slug = getPostSlug();
+            if (!slug) return;
+
+            const token = localStorage.getItem('comment_token');
+            if (!token) {
+                alert('Please log in first');
+                return;
+            }
+
+            // Fetch current content and show edit modal
+            fetch(`${API_BASE}/admin/posts/${slug}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(r => r.json())
+            .then(post => {
+                showEditModal(post);
+            })
+            .catch(() => alert('Failed to load post for editing'));
+        }
+
+        function showEditModal(post) {
+            const modal = document.createElement('div');
+            modal.id = 'edit-post-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                padding: 1rem;
+            `;
+            modal.innerHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto;">
+                    <h3 style="margin-bottom: 1rem;">Edit Post</h3>
+                    <form id="edit-post-form">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Title</label>
+                            <input type="text" id="edit-post-title" value="${post.title.replace(/"/g, '&quot;')}" style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1rem;">
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Excerpt</label>
+                            <input type="text" id="edit-post-excerpt" value="${(post.excerpt || '').replace(/"/g, '&quot;')}" style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1rem;">
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Content (Markdown)</label>
+                            <textarea id="edit-post-content" style="width: 100%; min-height: 300px; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-family: Monaco, Menlo, monospace; font-size: 0.9rem; resize: vertical;">${post.content.replace(/</g, '&lt;')}</textarea>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" id="edit-post-published" ${post.is_published ? 'checked' : ''}>
+                                Published
+                            </label>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button type="submit" class="btn btn-primary" style="flex: 1;">Save</button>
+                            <button type="button" onclick="closeEditModal()" class="btn" style="flex: 1; background: #e0e0e0;">Cancel</button>
+                        </div>
+                        <p id="edit-post-error" style="color: #e74c3c; margin-top: 1rem; display: none;"></p>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            document.getElementById('edit-post-form').onsubmit = (e) => {
+                e.preventDefault();
+                savePostEdit(post.slug);
+            };
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('edit-post-modal');
+            if (modal) modal.remove();
+        }
+
+        async function savePostEdit(slug) {
+            const token = localStorage.getItem('comment_token');
+            const errorEl = document.getElementById('edit-post-error');
+
+            const postData = {
+                title: document.getElementById('edit-post-title').value,
+                excerpt: document.getElementById('edit-post-excerpt').value,
+                content: document.getElementById('edit-post-content').value,
+                is_published: document.getElementById('edit-post-published').checked
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/posts/${slug}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(postData)
+                });
+
+                if (response.ok) {
+                    closeEditModal();
+                    loadPost(); // Reload the post content
+                } else {
+                    const error = await response.json();
+                    errorEl.textContent = error.detail || 'Failed to save';
+                    errorEl.style.display = 'block';
+                }
+            } catch (error) {
+                errorEl.textContent = 'Failed to save post';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        // Delete post
+        async function deletePost() {
+            const slug = getPostSlug();
+            if (!slug) return;
+
+            if (!confirm('Are you sure you want to delete this post? This will also delete all comments.')) return;
+
+            const token = localStorage.getItem('comment_token');
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/posts/${slug}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    window.location.href = '/blog.html';
+                } else {
+                    alert('Failed to delete post');
+                }
+            } catch (error) {
+                alert('Failed to delete post');
+            }
+        }
+
+        // Run after page loads
+        document.addEventListener('DOMContentLoaded', checkAdminActions);
+    </script>
+</body>
+</html>

@@ -1,13 +1,24 @@
 // Comments System
 // Connects to api.joshfreeman.me for comment data
 
-const API_BASE = 'https://api.joshfreeman.me';
+// Only define if not already defined (allows page to override)
+if (typeof API_BASE === 'undefined') {
+    var API_BASE = 'https://api.joshfreeman.me';
+}
 
-// Get post slug from URL
-function getPostSlug() {
-    const path = window.location.pathname;
-    const match = path.match(/\/blog\/([^\/]+)\.html$/);
-    return match ? match[1] : null;
+// Get post slug from URL - can be overridden by page
+if (typeof getPostSlug === 'undefined') {
+    var getPostSlug = function() {
+        // Try URL parameter first
+        const params = new URLSearchParams(window.location.search);
+        const paramSlug = params.get('slug');
+        if (paramSlug) return paramSlug;
+
+        // Fall back to path-based slug
+        const path = window.location.pathname;
+        const match = path.match(/\/blog\/([^\/]+)\.html$/);
+        return match ? match[1] : null;
+    };
 }
 
 // Format date

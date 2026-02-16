@@ -141,6 +141,7 @@
                                 <h2>${escapeHtml(post.title)}</h2>
                                 <time datetime="${post.created_at.split('T')[0]}">${formatDate(post.created_at)}</time>
                                 <p>${escapeHtml(post.excerpt || '')}</p>
+                                <span class="read-more">Read more &rarr;</span>
                             </a>
                         </article>
                     `).join('');

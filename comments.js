@@ -32,6 +32,9 @@ function formatDate(dateString) {
     });
 }
 
+// Track which comments the user has liked
+let userLikedComments = new Set();
+
 // Render comments
 function renderComments(comments) {
     const container = document.getElementById('comments-container');
@@ -45,6 +48,7 @@ function renderComments(comments) {
     const html = comments.map(comment => {
         const canEdit = user && (user.id === comment.author_id || user.is_admin);
         const canDelete = user && (user.id === comment.author_id || user.is_admin);
+        const isLiked = userLikedComments.has(comment.id);
 
         return `
             <div class="comment" data-id="${comment.id}">
@@ -61,11 +65,78 @@ function renderComments(comments) {
                 <div class="comment-body">
                     <p>${escapeHtml(comment.content)}</p>
                 </div>
+                <div class="comment-footer" style="margin-top: 0.5rem;">
+                    <button onclick="toggleCommentLike(${comment.id})" style="background: none; border: none; cursor: pointer; font-size: 0.9rem; padding: 0.25rem 0.5rem; border-radius: 4px; color: var(--text-muted);" id="like-btn-${comment.id}">
+                        <span id="like-icon-${comment.id}">${isLiked ? '❤️' : '🤍'}</span>
+                        <span id="like-count-${comment.id}">${comment.like_count || 0}</span>
+                    </button>
+                </div>
             </div>
         `;
     }).join('');
 
     container.innerHTML = html;
+
+    // Load user's likes if logged in
+    if (user) {
+        loadUserLikes(comments.map(c => c.id));
+    }
+}
+
+// Load which comments the user has liked
+async function loadUserLikes(commentIds) {
+    const token = localStorage.getItem('comment_token');
+    if (!token) return;
+
+    for (const commentId of commentIds) {
+        try {
+            const response = await fetch(`${window.COMMENTS_API_BASE}/comments/${commentId}/likes/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.user_liked) {
+                    userLikedComments.add(commentId);
+                    document.getElementById(`like-icon-${commentId}`).textContent = '❤️';
+                }
+            }
+        } catch (e) {}
+    }
+}
+
+// Toggle like on a comment
+async function toggleCommentLike(commentId) {
+    const token = localStorage.getItem('comment_token');
+    if (!token) {
+        alert('Please log in to like comments');
+        return;
+    }
+
+    const isLiked = userLikedComments.has(commentId);
+    const method = isLiked ? 'DELETE' : 'POST';
+
+    try {
+        const response = await fetch(`${window.COMMENTS_API_BASE}/comments/${commentId}/likes`, {
+            method,
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById(`like-count-${commentId}`).textContent = data.count;
+            document.getElementById(`like-icon-${commentId}`).textContent = data.user_liked ? '❤️' : '🤍';
+
+            if (data.user_liked) {
+                userLikedComments.add(commentId);
+            } else {
+                userLikedComments.delete(commentId);
+            }
+        } else if (response.status === 401) {
+            alert('Please log in to like comments');
+        }
+    } catch (error) {
+        console.log('Could not update like');
+    }
 }
 
 // Escape HTML to prevent XSS

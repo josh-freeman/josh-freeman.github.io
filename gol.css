@@ -42,6 +42,15 @@
     pointer-events: auto;
 }
 
+/* Ensure footer buttons are always clickable */
+footer,
+footer a,
+footer button {
+    pointer-events: auto;
+    position: relative;
+    z-index: 10;
+}
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
     #canvas {

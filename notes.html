@@ -1,105 +1,123 @@
-
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
-	<title> Joshua Freeman </title>
-	<meta name="description" content="Notes" />
-	<meta name="title" content="Notes" />
-	<link rel="icon" href="/resources/icon_blue.png" type="image/x-icon">
-	<meta property="og:image" content="https://josh-freeman.github.io/resources/big_icon.jpg" />
-	<meta property="og:title" content="Notes" />
-	<meta property="og:url" content="https://josh-freeman.github.io/notes.html" />
-	<meta property="og:description" content="Personal website" />
-  <link rel="stylesheet" type="text/css" href="gol.css">
-<link href='https://fonts.loli.net/css?family=Merriweather:900,900italic,300,300italic&subset=latin-ext' rel='stylesheet' type='text/css' />
-<link href='https://fonts.loli.net/css?family=Lato:900,300&subset=latin-ext' rel='stylesheet' type='text/css' />
-<link rel="stylesheet" type="text/css" href="/style.css">
-<link rel="stylesheet" type="text/css" href="/pdf_enumeration.css">
-<link rel="stylesheet" type="text/css" href="/buttons.css">
-<link rel="stylesheet" type="text/css" href="/cards.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes - Joshua Freeman</title>
+    <meta name="description" content="Lecture notes and resources">
 
+    <!-- Favicon -->
+    <link rel="icon" href="/resources/icon_blue.png" type="image/png">
 
+    <!-- Open Graph -->
+    <meta property="og:title" content="Notes - Joshua Freeman">
+    <meta property="og:description" content="Lecture notes and resources">
+    <meta property="og:image" content="https://josh-freeman.github.io/resources/big_icon.jpg">
+    <meta property="og:url" content="https://josh-freeman.github.io/notes.html">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/buttons.css">
+    <style>
+        .notes-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .notes-container h1 {
+            margin-bottom: 0.5rem;
+        }
+
+        .notes-intro {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .note-card {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .note-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .note-card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .note-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .note-card a.btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .notes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-	
 <body>
+    <div id="main">
+        <!-- Sidebar -->
+        <sidebar>
+            <script src="sidebar.js"></script>
+        </sidebar>
 
+        <div class="notes-container">
+            <h1>Notes</h1>
+            <p class="notes-intro">A collection of lecture notes and resources.</p>
 
+            <div class="notes-grid">
+                <div class="note-card">
+                    <h2>Analysis 1</h2>
+                    <p>My lecture notes in Analysis 1 from EPFL.</p>
+                    <a href="/notes/Analyse_1.pdf" target="_blank" class="btn btn-primary">View PDF</a>
+                </div>
 
-<div id="main">
-    <sidebar> <!-- used to include sidebar-->
-      <script src="sidebar.js"></script>
-    </sidebar> 
-    
-    <div id="notes">
-      <h1>Notes</h1>
-      A collection of notes on various topics, mostly lecture notes.
+                <div class="note-card">
+                    <h2>Analysis 2</h2>
+                    <p>My lecture notes in Analysis 2 from EPFL.</p>
+                    <a href="/notes/Analyse_2.pdf" target="_blank" class="btn btn-primary">View PDF</a>
+                </div>
 
-      <div class="card-container">
-        <div class="card" id="card-1">
-          <div class="card-inner">
-            <div class="card-front">
-              <h2>Analysis 1</h2>
-              <p>My lecture notes in Analysis 1.</p>
-
-              <a href="#card-1" class="read-more">Read More</a>
+                <div class="note-card">
+                    <h2>Physics Lesson for S4S 2021</h2>
+                    <p>Physics lesson from the first edition of <a href="https://s4s.fun">S4S</a>, co-authored with Elias, Aymeric and Gaëtan.</p>
+                    <a href="/notes/Cours_physique_pr__rentr_e.pdf" target="_blank" class="btn btn-primary">View PDF</a>
+                </div>
             </div>
-            <div class="card-back">
-              <object data="https://mozilla.github.io/pdf.js/web/viewer.html?file=https://josh-freeman.github.io/notes/Analyse_1.pdf&pagemode=none" width="800" height="500"></object>
-              <a href="#card-1" class="read-less">Read Less</a>
-            </div>
-          </div>
         </div>
-      
-        <div class="card" id="card-2">
-          <div class="card-inner">
-            <div class="card-front">
-              <h2>Analysis 2</h2>
-              <p>My lecture notes in Analysis 2.</p>
-              <a href="#card-2" class="read-more">Read More</a>
-            </div>
-            <div class="card-back">
-              
-              <object data="https://mozilla.github.io/pdf.js/web/viewer.html?file=https://josh-freeman.github.io/notes/Analyse_2.pdf&pagemode=none" width="800" height="500"></object>
-
-              <a href="#card-2" class="read-less">Read Less</a>
-            </div>
-          </div>
-        </div>
-      
-        <div class="card" id="card-3">
-          <div class="card-inner">
-            <div class="card-front">
-              <h2>Physics lesson for S4S 2021</h2>
-              <p>Physics lesson of the first edition of <a href="https://s4s.fun">S4S</a>, co-authored with Elias, Aymeric and Gaëtan.</p>
-
-              <a href="#card-3" class="read-more">Read More</a>
-            </div>
-            <div class="card-back">
-              <object data="https://mozilla.github.io/pdf.js/web/viewer.html?file=https://josh-freeman.github.io/notes/Cours_physique_pr__rentr_e.pdf&pagemode=none" width="800" height="500" hideOutline></object>
-              <a href="#card-3" class="read-less">Read Less</a>
-            </div>
-          </div>
-        </div>
-        <!-- Add additional cards here -->
-      </div>
-      
-
     </div>
-    <script src="cards.js"></script>
-    <script>
-      $(document).ready(function() {
-        $('.toggle-description').click(function(e) {
-          e.preventDefault();
-          $(this).next('.description').slideToggle();
-        });
-      });
-    </script>
-  <script src="submenus.js">//Unfortunately, found no better solution than to use jquery.
-  </script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 
-</div>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="submenus.js"></script>
 </body>
 </html>

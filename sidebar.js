@@ -1,5 +1,20 @@
 // Sidebar Navigation Component
+function isAdminLoggedIn() {
+    try {
+        const user = localStorage.getItem('comment_user');
+        if (user) {
+            const userData = JSON.parse(user);
+            return userData.is_admin === true;
+        }
+    } catch (e) {}
+    return false;
+}
+
 function loadNavbarDiv() {
+    const adminLink = isAdminLoggedIn()
+        ? '<submenu><a href="https://joshfreeman.me/admin.html">Admin Console</a></submenu>'
+        : '';
+
     const navbarHTML = `
         <div id="mySidebar" class="sidebar">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
@@ -36,6 +51,8 @@ function loadNavbarDiv() {
                 <subsubmenu><a href="https://github.com/josh-freeman/josh-freeman.github.io" target="_blank" class="external">Source code</a></subsubmenu>
                 <subsubmenu><a href="https://www.goodreads.com/review/list/184752391?shelf=read" target="_blank" class="external">Book reviews</a></subsubmenu>
             </submenu>
+
+            ${adminLink}
         </div>
 
         <button id="menubtn" class="openbtn" onclick="openNav()">

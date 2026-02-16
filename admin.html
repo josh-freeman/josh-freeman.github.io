@@ -795,12 +795,29 @@
             }
         }
 
+        // Handle hash-based navigation for editing posts
+        function handleHashNavigation() {
+            const hash = window.location.hash;
+            if (hash && hash.startsWith('#edit/')) {
+                const slug = hash.substring(6); // Remove '#edit/'
+                if (slug) {
+                    showEditor(slug);
+                }
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             if (!checkAuth()) {
                 document.getElementById('login-section').style.display = 'block';
+            } else {
+                // Check for edit hash after auth
+                handleHashNavigation();
             }
         });
+
+        // Also handle hash changes
+        window.addEventListener('hashchange', handleHashNavigation);
     </script>
 </body>
 </html>

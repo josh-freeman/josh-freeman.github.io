@@ -44,8 +44,59 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="submenus.js"></script>
+    <style>
+        .admin-controls {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1rem;
+        }
+        .admin-controls .btn {
+            padding: 0.5rem 1rem;
+            background: var(--primary-color, #2563eb);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+        .admin-controls .btn:hover {
+            opacity: 0.9;
+        }
+        .post-preview {
+            position: relative;
+        }
+        .post-edit-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.35rem 0.75rem;
+            background: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-decoration: none;
+            opacity: 0.8;
+        }
+        .post-edit-btn:hover {
+            opacity: 1;
+        }
+    </style>
     <script>
         const API_BASE = 'https://api.joshfreeman.me';
+
+        function isAdminLoggedIn() {
+            try {
+                const user = localStorage.getItem('comment_user');
+                if (user) {
+                    const userData = JSON.parse(user);
+                    return userData.is_admin === true;
+                }
+            } catch (e) {}
+            return false;
+        }
 
         function formatDate(dateString) {
             const date = new Date(dateString);
@@ -64,6 +115,15 @@
 
         async function loadPosts() {
             const container = document.getElementById('posts-list');
+            const isAdmin = isAdminLoggedIn();
+
+            // Show admin controls if admin
+            if (isAdmin) {
+                const adminControls = document.createElement('div');
+                adminControls.className = 'admin-controls';
+                adminControls.innerHTML = '<a href="/admin.html" class="btn">New Post</a>';
+                container.parentNode.insertBefore(adminControls, container);
+            }
 
             try {
                 const response = await fetch(`${API_BASE}/posts`);
@@ -76,6 +136,7 @@
 
                     container.innerHTML = posts.map(post => `
                         <article class="post-preview">
+                            ${isAdmin ? `<a href="/admin.html#edit/${post.slug}" class="post-edit-btn">Edit</a>` : ''}
                             <a href="/blog/post.html?slug=${post.slug}">
                                 <h2>${escapeHtml(post.title)}</h2>
                                 <time datetime="${post.created_at.split('T')[0]}">${formatDate(post.created_at)}</time>

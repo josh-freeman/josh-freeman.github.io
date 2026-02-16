@@ -1,75 +1,175 @@
-
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
-	<title> Joshua Freeman </title>
-	<meta name="description" content="Notes" />
-	<meta name="title" content="Notes" />
-	<link rel="icon" href="/resources/icon_blue.png" type="image/x-icon">
-	<meta property="og:image" content="https://josh-freeman.github.io/resources/big_icon.jpg" />
-	<meta property="og:title" content="Poetry" />
-	<meta property="og:url" content="https://josh-freeman.github.io/poetry.html" />
-	<meta property="og:description" content="Personal website" />
-  <link rel="stylesheet" type="text/css" href="gol.css">
-<link href='https://fonts.loli.net/css?family=Merriweather:900,900italic,300,300italic&subset=latin-ext' rel='stylesheet' type='text/css' />
-<link href='https://fonts.loli.net/css?family=Lato:900,300&subset=latin-ext' rel='stylesheet' type='text/css' />
-<link rel="stylesheet" type="text/css" href="/style.css">
-<link rel="stylesheet" type="text/css" href="/pdf_enumeration.css">
-<link rel="stylesheet" type="text/css" href="/buttons.css">
-<link rel="stylesheet" type="text/css" href="/cards.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poetry - Joshua Freeman</title>
+    <meta name="description" content="French poetry by Joshua Freeman">
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Favicon -->
+    <link rel="icon" href="/resources/icon_blue.png" type="image/png">
 
+    <!-- Open Graph -->
+    <meta property="og:title" content="Poetry - Joshua Freeman">
+    <meta property="og:description" content="French poetry">
+    <meta property="og:image" content="https://josh-freeman.github.io/resources/big_icon.jpg">
+    <meta property="og:url" content="https://josh-freeman.github.io/poetry.html">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/buttons.css">
+    <style>
+        .poetry-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .poetry-container > h1 {
+            margin-bottom: 0.5rem;
+        }
+
+        .poetry-intro {
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+        }
+
+        .poem {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .poem-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .poem h2 {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: 1.75rem;
+            margin-bottom: 0.25rem;
+            color: var(--text-color);
+        }
+
+        .poem-date {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .poem-content {
+            font-family: 'Libre Baskerville', Georgia, serif;
+            font-size: 1.05rem;
+            line-height: 1.9;
+            color: var(--text-color);
+        }
+
+        .poem-content .stanza {
+            margin-bottom: 1.5rem;
+        }
+
+        .poem-content .stanza:last-child {
+            margin-bottom: 0;
+        }
+
+        .poem-content .line {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .poem {
+                padding: 1.5rem;
+            }
+
+            .poem h2 {
+                font-size: 1.4rem;
+            }
+
+            .poem-content {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
-	
 <body>
+    <div id="main">
+        <!-- Sidebar -->
+        <sidebar>
+            <script src="sidebar.js"></script>
+        </sidebar>
 
+        <div class="poetry-container">
+            <h1>Poetry</h1>
+            <p class="poetry-intro">Some poems I had the pleasure of writing.</p>
 
-
-<div id="main">
-    <sidebar> <!-- used to include sidebar-->
-      <script src="sidebar.js"></script>
-    </sidebar> 
-    
-    <div id="poetry">
-      <h1>Poetry</h1>
-      <h2>Writing</h2>
-      Some poems I had the pleasure of writing.
-      <div class="card-container">
-        <div class="card">
-          <div class="card-inner">
-            <div class="card-front">
-              <img src="resources/ma-chambre.jpg" alt="Poem thumbnail">
-              <h2> Ma chambre </h2>
-              <p> The rain drizzling on my window harkened me back to a scout camp.</p>
-              <a href="#" class="read-more">Read More</a>
-            </div>
-            <div class="card-back">
-              <object data="https://mozilla.github.io/pdf.js/web/viewer.html?file=https://josh-freeman.github.io/resources/ma-chambre.pdf&pagemode=none" width="100%"></object>
-
-              <a href="#" class="read-less">Read Less</a>
-            </div>
-          </div>
+            <article class="poem">
+                <header class="poem-header">
+                    <h2>Ma chambre</h2>
+                    <span class="poem-date">March 2023</span>
+                </header>
+                <div class="poem-content">
+                    <div class="stanza">
+                        <span class="line">Faite de bon temps, de vielle pierre, d'émoi</span>
+                        <span class="line">Ma chambre n'est pas qu'un lieu où l'on fait sa vie</span>
+                        <span class="line">Intarie, cette source est ma meilleure amie</span>
+                        <span class="line">Sous la voûte celeste elle est faite de bois</span>
+                    </div>
+                    <div class="stanza">
+                        <span class="line">La pluie résonne en moi comme un vieux souvenir</span>
+                        <span class="line">Sur l'alcôve le ciel joue une mélodie</span>
+                        <span class="line">Ma chambre n'est pas qu'un lieu où l'on fait sa vie</span>
+                        <span class="line">L'eau percolant des cieux alimente ma lyr'</span>
+                    </div>
+                    <div class="stanza">
+                        <span class="line">Quand la pluie rebondit sur ce petit logis</span>
+                        <span class="line">Le toit devient tente, me voilà sous la toile</span>
+                        <span class="line">Couchés, enveloppés, ta beauté se dévoile</span>
+                        <span class="line">Ah! Ma chambre n'est pas qu'un endroit où l'on vit.</span>
+                    </div>
+                    <div class="stanza">
+                        <span class="line">Une voie lactée vue d'un regard innocent</span>
+                        <span class="line">Les harpes du vent font de mon âme une voile</span>
+                        <span class="line">Je suis transporté vers la clarté des étoiles</span>
+                        <span class="line">Vers nos étreintes, nous deux timides enfants</span>
+                    </div>
+                    <div class="stanza">
+                        <span class="line">Faite de bon temps, de vielle pierre, d'émoi</span>
+                        <span class="line">Ma chambre n'est pas qu'un lieu où l'on fait sa vie</span>
+                        <span class="line">Intarie, cette source est ma meilleure amie</span>
+                        <span class="line">Sous la voûte celeste elle est faite de bois</span>
+                    </div>
+                    <div class="stanza">
+                        <span class="line">Assis à une table en bois bien ficelé</span>
+                        <span class="line">Je me vois enfoui dans tes cheveux de paille</span>
+                        <span class="line">Hautes herbes, buissons, champ de blé en bataille</span>
+                        <span class="line">Je découvre sans vin que je suis enivré</span>
+                    </div>
+                    <div class="stanza">
+                        <span class="line">Nous laissant porter par le courant des amours</span>
+                        <span class="line">Nous en venons à oublier le temps qui passe</span>
+                        <span class="line">Le camp doit se finir, tous les étés s'effacent</span>
+                        <span class="line">On se dit au revoir, ou peut-être à toujours</span>
+                    </div>
+                    <div class="stanza">
+                        <span class="line">Ses poutres sont les mâts d'une tente d'antan.</span>
+                        <span class="line">Même si bien souvent c'est elle qui décide</span>
+                        <span class="line">Que ne ferais-je pour ces voyages splendides.</span>
+                        <span class="line">La voilà ma machine à remonter le temps.</span>
+                    </div>
+                </div>
+            </article>
         </div>
-        
-      </div>
-      
-
     </div>
-    <script src="cards.js"></script>
-    <script>
-      $(document).ready(function() {
-        $('.toggle-description').click(function(e) {
-          e.preventDefault();
-          $(this).next('.description').slideToggle();
-        });
-      });
-    </script>
-  <script src="submenus.js">//Unfortunately, found no better solution than to use jquery.
-  </script>
-	
-</div>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="submenus.js"></script>
 </body>
 </html>

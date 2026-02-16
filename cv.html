@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV - Joshua Freeman</title>
+    <meta name="description" content="Curriculum Vitae - Joshua Freeman">
+
+    <!-- Favicon -->
+    <link rel="icon" href="/resources/icon_blue.png" type="image/png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/buttons.css">
+    <style>
+        .cv-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .cv-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .cv-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cv-contact {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .cv-contact a {
+            color: var(--primary-color);
+        }
+
+        .cv-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .cv-section h2 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .cv-entry {
+            margin-bottom: 1.5rem;
+        }
+
+        .cv-entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .cv-entry-title {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--text-color);
+        }
+
+        .cv-entry-org {
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .cv-entry-date {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .cv-entry-details {
+            margin-top: 0.5rem;
+            padding-left: 1.25rem;
+        }
+
+        .cv-entry-details li {
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+            line-height: 1.5;
+        }
+
+        .cv-paper {
+            margin-bottom: 1.25rem;
+        }
+
+        .cv-paper-title {
+            font-weight: 600;
+            color: var(--text-color);
+            line-height: 1.4;
+        }
+
+        .cv-paper-authors {
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .cv-paper-venue {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .cv-distinction {
+            margin-bottom: 0.75rem;
+        }
+
+        .cv-distinction-date {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .cv-download {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .cv-header h1 {
+                font-size: 2rem;
+            }
+
+            .cv-entry-header {
+                flex-direction: column;
+            }
+
+            .cv-contact {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        @media print {
+            .cv-download, .openbtn, .sidebar {
+                display: none !important;
+            }
+
+            #main {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <!-- Sidebar -->
+        <sidebar>
+            <script src="sidebar.js"></script>
+        </sidebar>
+
+        <div class="cv-container">
+            <header class="cv-header">
+                <h1>Joshua Freeman</h1>
+                <div class="cv-contact">
+                    <span>+33 6 95 76 25 30</span>
+                    <a href="mailto:jfreeman@ethz.ch">jfreeman@ethz.ch</a>
+                    <a href="https://josh-freeman.github.io">josh-freeman.github.io</a>
+                </div>
+            </header>
+
+            <!-- Education -->
+            <section class="cv-section">
+                <h2>Education</h2>
+
+                <div class="cv-entry">
+                    <div class="cv-entry-header">
+                        <span class="cv-entry-title">MSc., Computer Science</span>
+                        <span class="cv-entry-org">ETHZ</span>
+                    </div>
+                    <div class="cv-entry-date">09/2023 – Present, Expected 5.4/6</div>
+                </div>
+
+                <div class="cv-entry">
+                    <div class="cv-entry-header">
+                        <span class="cv-entry-title">BSc. Year Abroad, Computer Science</span>
+                        <span class="cv-entry-org">University of Oxford</span>
+                    </div>
+                    <div class="cv-entry-date">10/2022 – 08/2023</div>
+                </div>
+
+                <div class="cv-entry">
+                    <div class="cv-entry-header">
+                        <span class="cv-entry-title">Bachelor of Science, Computer Science</span>
+                        <span class="cv-entry-org">EPFL</span>
+                    </div>
+                    <div class="cv-entry-date">09/2020 – 08/2023, 5.25/6</div>
+                </div>
+            </section>
+
+            <!-- Experience -->
+            <section class="cv-section">
+                <h2>Experience</h2>
+
+                <div class="cv-entry">
+                    <div class="cv-entry-header">
+                        <span class="cv-entry-title">Research Associate</span>
+                        <span class="cv-entry-org">Harvard Med. School, MIT, Mass Gen B., Broad Ins.</span>
+                    </div>
+                    <div class="cv-entry-date">2/2026 –</div>
+                    <ul class="cv-entry-details">
+                        <li>Developing virtual cell.</li>
+                    </ul>
+                </div>
+
+                <div class="cv-entry">
+                    <div class="cv-entry-header">
+                        <span class="cv-entry-title">Research Assistant</span>
+                        <span class="cv-entry-org">UZH Inst. for Quantitative Biomedicine</span>
+                    </div>
+                    <div class="cv-entry-date">9/2025 – 2/2026</div>
+                    <ul class="cv-entry-details">
+                        <li>EHR dashboard for cancer diagnosis and line of treatment. Innosuisse-funded.</li>
+                    </ul>
+                </div>
+
+                <div class="cv-entry">
+                    <div class="cv-entry-header">
+                        <span class="cv-entry-title">Software Developer Intern</span>
+                        <span class="cv-entry-org">Meta</span>
+                    </div>
+                    <div class="cv-entry-date">6/2025 – 9/2025</div>
+                    <ul class="cv-entry-details">
+                        <li>Creating feedback mechanisms for WhatsApp Web (shipping code to 260 million users)</li>
+                        <li>Most selective software engineering internship program of FAANG (2 to 3 candidates accepted per 1000).</li>
+                        <li>Secured return offer.</li>
+                    </ul>
+                </div>
+
+                <div class="cv-entry">
+                    <div class="cv-entry-header">
+                        <span class="cv-entry-title">Postgraduate Research Fellow</span>
+                        <span class="cv-entry-org">Yale School of Medicine</span>
+                    </div>
+                    <div class="cv-entry-date">06/2024 – 09/2024</div>
+                    <ul class="cv-entry-details">
+                        <li>Designing and running 3 experiments for a fine-tuned model that recognizes antibiotic pellets.</li>
+                        <li>Writing tests for the distributed computing DiSCO platform.</li>
+                    </ul>
+                </div>
+
+                <div class="cv-entry">
+                    <div class="cv-entry-header">
+                        <span class="cv-entry-title">Software Developer Intern</span>
+                        <span class="cv-entry-org">Neur-on.ai</span>
+                    </div>
+                    <div class="cv-entry-date">12/2023 – 05/2024</div>
+                    <ul class="cv-entry-details">
+                        <li>Unit and Endpoint Testing: multiplying test coverage by four.</li>
+                        <li>Backend and frontend development of a statistics dashboard with 8 metrics.</li>
+                    </ul>
+                </div>
+
+                <div class="cv-entry">
+                    <div class="cv-entry-header">
+                        <span class="cv-entry-title">Undergraduate Teaching Assistant</span>
+                        <span class="cv-entry-org">EPFL</span>
+                    </div>
+                    <div class="cv-entry-date">09/2021 – 12/2021</div>
+                    <ul class="cv-entry-details">
+                        <li>Mentored 50+ first-year students in Physics-101, 15 weekly interactive classes on Newtonian mechanics.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Selected Papers -->
+            <section class="cv-section">
+                <h2>Selected Papers</h2>
+
+                <div class="cv-paper">
+                    <div class="cv-paper-title">Machine Learning-Based Graft Rejection Detection in Skin and Buccal Mucosa</div>
+                    <div class="cv-paper-authors">Felix J Klimitz, Joshua Freeman, et al.</div>
+                    <div class="cv-paper-venue">Ongoing</div>
+                    <ul class="cv-entry-details">
+                        <li>Achieving higher accuracy than humans.</li>
+                    </ul>
+                </div>
+
+                <div class="cv-paper">
+                    <div class="cv-paper-title">The Five-Item Modified Frailty Index (mFI-5) Predicts Adverse Surgical Outcomes in Patients Undergoing Mastectomy</div>
+                    <div class="cv-paper-authors">Felix J Klimitz, Fortunay Diatta, Joshua Freeman, et al.</div>
+                    <div class="cv-paper-venue">Clinical Breast Cancer</div>
+                    <ul class="cv-entry-details">
+                        <li>Analysing of the effect of 100+ factors over adverse outcomes of Mastectomies from the American College of Surgeons, on 700,000+ cases and 15 years of data.</li>
+                    </ul>
+                </div>
+
+                <div class="cv-paper">
+                    <div class="cv-paper-title">Exploring Memorization and Copyright Violation in Frontier LLMs</div>
+                    <div class="cv-paper-authors">J. Freeman et al.</div>
+                    <div class="cv-paper-venue">NeurIPS SafeGenAI</div>
+                    <ul class="cv-entry-details">
+                        <li>The articles of the New York Times lawsuit are extremely memorized, as shown through my 3 experiments and 8 metrics, comparing 4 different model providers.</li>
+                        <li>Presented at the NeurIPS conference's Safe Generative AI workshop.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Distinctions -->
+            <section class="cv-section">
+                <h2>Distinctions</h2>
+
+                <p class="cv-distinction">
+                    <span class="cv-distinction-date">04/2023:</span> Talk at TEDxEcublens x EPFL Open Days on Transfer Learning in the AI revolution.
+                </p>
+
+                <p class="cv-distinction">
+                    <span class="cv-distinction-date">06/2024:</span> Research fellowship for Yale. 12'800$ Total fellowship from LiGHT. 13'400$ Total fellowship from 3 Swiss foundations combined (Mil and Braginsky Stiftungs, and AKL).
+                </p>
+            </section>
+
+            <!-- Volunteering -->
+            <section class="cv-section">
+                <h2>Volunteering</h2>
+
+                <div class="cv-entry">
+                    <div class="cv-entry-header">
+                        <span class="cv-entry-title">Founder, Teacher</span>
+                        <span class="cv-entry-org">Student for Students</span>
+                    </div>
+                    <div class="cv-entry-date">08/2021 – 09/2021</div>
+                    <ul class="cv-entry-details">
+                        <li>Free high-quality classes for first year EPFL students. Led 73 people. Gave keynote talk for >600 people.</li>
+                    </ul>
+                </div>
+
+                <div class="cv-entry">
+                    <div class="cv-entry-header">
+                        <span class="cv-entry-title">Founder, Hon. Member</span>
+                        <span class="cv-entry-org">EPFL Philosophy Society</span>
+                    </div>
+                    <div class="cv-entry-date">2021</div>
+                </div>
+
+                <div class="cv-entry">
+                    <div class="cv-entry-header">
+                        <span class="cv-entry-title">Meals Officer</span>
+                        <span class="cv-entry-org">Oxford Jewish Society</span>
+                    </div>
+                    <div class="cv-entry-date">2023</div>
+                </div>
+
+                <div class="cv-entry">
+                    <div class="cv-entry-header">
+                        <span class="cv-entry-title">Volunteer</span>
+                        <span class="cv-entry-org">Soup Kitchens</span>
+                    </div>
+                    <div class="cv-entry-date">2020 – Present</div>
+                    <ul class="cv-entry-details">
+                        <li>Volunteer in the US in Masbia, in Oxford at the Gatehouse, and in Lausanne at the Fondation Mère Sofia.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <div class="cv-download">
+                <a href="/resources/cv.pdf" target="_blank" class="btn btn-primary">Download PDF</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="submenus.js"></script>
+</body>
+</html>

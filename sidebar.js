@@ -17,7 +17,7 @@ function loadNavbarDiv() {
             </submenu>
 
             <submenu>
-                <a href="https://josh-freeman.github.io/resources/cv.pdf" target="_blank" class="external">
+                <a href="https://josh-freeman.github.io/cv.html">
                     Curriculum Vitae
                 </a>
             </submenu>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Joshua Freeman Blog</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Favicon -->
+    <link rel="icon" href="/resources/icon_blue.png" type="image/png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/buttons.css">
+
+    <style>
+        .register-container {
+            max-width: 400px;
+            margin: 4rem auto;
+            padding: 2rem;
+            background: #fafafa;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .register-container h1 {
+            margin-bottom: 0.5rem;
+            font-size: 1.75rem;
+        }
+
+        .register-container .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-group .hint {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #fdeaea;
+            border-radius: 8px;
+        }
+
+        .success-message {
+            color: #155724;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #d4edda;
+            border-radius: 8px;
+        }
+
+        .invalid-invite {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .invalid-invite h2 {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div id="main" style="margin-left: 0;">
+        <div class="register-container">
+            <div id="loading">
+                <p>Validating invite...</p>
+            </div>
+
+            <div id="invalid-section" class="invalid-invite" style="display: none;">
+                <h2>Invalid Invite</h2>
+                <p>This invite link is invalid, expired, or has already been used.</p>
+                <p style="margin-top: 1rem;"><a href="/blog.html">Go to blog</a></p>
+            </div>
+
+            <div id="register-section" style="display: none;">
+                <h1>Create Account</h1>
+                <p class="subtitle">Join the conversation on Joshua's blog</p>
+
+                <form id="register-form" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" required minlength="2" maxlength="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                        <p class="hint" id="email-hint" style="display: none;"></p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required minlength="12" maxlength="128">
+                        <p class="hint">At least 12 characters</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password-confirm">Confirm Password</label>
+                        <input type="password" id="password-confirm" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+
+                    <div id="error-message" class="error-message" style="display: none;"></div>
+                </form>
+            </div>
+
+            <div id="success-section" style="display: none;">
+                <h1>Welcome!</h1>
+                <p class="success-message">Your account has been created and you're now logged in.</p>
+                <p style="margin-top: 1rem;"><a href="/blog.html" class="btn btn-primary" style="display: inline-block;">Go to Blog</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://api.joshfreeman.me';
+        let inviteToken = null;
+        let restrictedEmail = null;
+
+        // Get token from URL
+        function getToken() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('token');
+        }
+
+        // Validate invite on page load
+        async function validateInvite() {
+            inviteToken = getToken();
+
+            if (!inviteToken) {
+                showInvalid();
+                return;
+            }
+
+            // We can't validate the token without an endpoint, so just show the form
+            // The actual validation happens on submit
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('register-section').style.display = 'block';
+        }
+
+        function showInvalid() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('invalid-section').style.display = 'block';
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('password-confirm').value;
+            const errorEl = document.getElementById('error-message');
+
+            // Validate passwords match
+            if (password !== passwordConfirm) {
+                errorEl.textContent = 'Passwords do not match';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token: inviteToken,
+                        name,
+                        email,
+                        password
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // Store login info
+                    localStorage.setItem('comment_token', data.token);
+                    localStorage.setItem('comment_user', JSON.stringify(data.user));
+
+                    // Show success
+                    document.getElementById('register-section').style.display = 'none';
+                    document.getElementById('success-section').style.display = 'block';
+                } else {
+                    const error = await response.json();
+                    errorEl.textContent = error.detail || 'Registration failed';
+                    errorEl.style.display = 'block';
+                }
+            } catch (error) {
+                errorEl.textContent = 'Unable to connect. Please try again.';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', validateInvite);
+    </script>
+</body>
+</html>

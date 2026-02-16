@@ -69,15 +69,9 @@
     <script src="/submenus.js"></script>
     <script src="/comments.js"></script>
     <script>
-        const API_BASE = 'https://api.joshfreeman.me';
+        // API_BASE and getPostSlug() are already defined in comments.js
 
-        function getPostSlug() {
-            const path = window.location.pathname;
-            const match = path.match(/\/blog\/([^\/]+)\.html$/);
-            return match ? match[1] : null;
-        }
-
-        function formatDate(dateString) {
+        function formatPostDate(dateString) {
             const date = new Date(dateString);
             return date.toLocaleDateString('en-US', {
                 year: 'numeric',
@@ -108,7 +102,7 @@
 
                     // Update content
                     document.getElementById('post-title').textContent = post.title;
-                    document.getElementById('post-date').textContent = formatDate(post.created_at);
+                    document.getElementById('post-date').textContent = formatPostDate(post.created_at);
                     document.getElementById('post-date').setAttribute('datetime', post.created_at.split('T')[0]);
 
                     // Render markdown content

@@ -75,16 +75,23 @@
                     .forest-legend span { display: flex; align-items: center; gap: 0.3rem; }
                 </style>
                 <div class="forest-container">
-                    <div class="forest-header" onclick="toggleReactionForest()">
-                        <span id="forest-toggle-icon" style="font-size: 0.8rem; transition: transform 0.2s;">▼</span>
-                        <h3>Reaction Forest <span id="forest-count" style="font-weight: normal; color: var(--text-muted);"></span></h3>
+                    <div class="forest-header">
+                        <div onclick="toggleReactionForest()" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <span id="forest-toggle-icon" style="font-size: 0.8rem; transition: transform 0.2s;">▼</span>
+                            <h3>Reaction Forest <span id="forest-count" style="font-weight: normal; color: var(--text-muted);"></span></h3>
+                        </div>
+                        <div id="view-toggle" style="margin-left: auto; display: flex; gap: 0.25rem; background: #eee; padding: 0.2rem; border-radius: 6px;">
+                            <button onclick="setForestView('tree')" id="view-tree-btn" style="padding: 0.3rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; background: white;">Tree</button>
+                            <button onclick="setForestView('graph')" id="view-graph-btn" style="padding: 0.3rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; background: transparent;">Graph</button>
+                        </div>
                     </div>
                     <p class="forest-subtitle">Click on hearts to react to reactions</p>
-                    <div id="forest-graph"></div>
+                    <div id="forest-tree" style="display: block;"></div>
+                    <div id="forest-graph" style="display: none;"></div>
                     <div class="forest-legend" id="forest-legend">
                         <span>❤️ = reaction</span>
                         <span>💛 = yours</span>
-                        <span>Click to react · Hover for name</span>
+                        <span>Click to react · Right-click to delete yours</span>
                     </div>
                 </div>
             </section>
@@ -376,13 +383,50 @@
         }
 
         let forestCollapsed = false;
+        let forestView = 'tree'; // 'tree' or 'graph'
+        let cachedReactions = null;
 
         function toggleReactionForest() {
             forestCollapsed = !forestCollapsed;
-            const tree = document.getElementById('reactions-tree');
+            const tree = document.getElementById('forest-tree');
+            const graph = document.getElementById('forest-graph');
             const icon = document.getElementById('forest-toggle-icon');
-            tree.style.display = forestCollapsed ? 'none' : 'block';
+            const legend = document.getElementById('forest-legend');
+            const viewToggle = document.getElementById('view-toggle');
+
+            if (forestCollapsed) {
+                tree.style.display = 'none';
+                graph.style.display = 'none';
+                legend.style.display = 'none';
+                viewToggle.style.display = 'none';
+            } else {
+                viewToggle.style.display = 'flex';
+                legend.style.display = 'flex';
+                if (forestView === 'tree') {
+                    tree.style.display = 'block';
+                    graph.style.display = 'none';
+                } else {
+                    tree.style.display = 'none';
+                    graph.style.display = 'block';
+                }
+            }
             icon.textContent = forestCollapsed ? '▶' : '▼';
+        }
+
+        function setForestView(view) {
+            forestView = view;
+            document.getElementById('view-tree-btn').style.background = view === 'tree' ? 'white' : 'transparent';
+            document.getElementById('view-graph-btn').style.background = view === 'graph' ? 'white' : 'transparent';
+
+            if (view === 'tree') {
+                document.getElementById('forest-tree').style.display = 'block';
+                document.getElementById('forest-graph').style.display = 'none';
+                if (cachedReactions) renderTreeView(cachedReactions);
+            } else {
+                document.getElementById('forest-tree').style.display = 'none';
+                document.getElementById('forest-graph').style.display = 'block';
+                if (cachedReactions) renderGraphView(cachedReactions);
+            }
         }
 
         function getDistinctUsers(reaction) {
@@ -400,7 +444,7 @@
         let cy = null; // Cytoscape instance
 
         function renderReactionTree(reactions) {
-            const container = document.getElementById('forest-graph');
+            cachedReactions = reactions;
             const token = localStorage.getItem('comment_token');
 
             // Calculate total distinct users
@@ -422,7 +466,7 @@
             document.getElementById('reaction-btn').style.background = userHasReaction ? 'rgba(239, 68, 68, 0.1)' : 'none';
 
             if (!reactions || reactions.length === 0) {
-                container.innerHTML = `
+                const emptyHtml = `
                     <div class="forest-empty">
                         <div style="font-size: 3rem; margin-bottom: 0.75rem;">🌱</div>
                         <div style="font-size: 1.1rem;">No reactions yet</div>
@@ -430,12 +474,57 @@
                         ${token ? `<button onclick="toggleReaction()" style="margin-top: 1.25rem; padding: 0.6rem 1.25rem; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; box-shadow: 0 2px 8px rgba(239,68,68,0.3);">❤️ Add Reaction</button>` : ''}
                     </div>
                 `;
+                document.getElementById('forest-tree').innerHTML = emptyHtml;
+                document.getElementById('forest-graph').innerHTML = emptyHtml;
                 document.getElementById('forest-legend').style.display = 'none';
                 return;
             }
 
             document.getElementById('forest-legend').style.display = 'flex';
+
+            // Render active view
+            if (forestView === 'tree') {
+                renderTreeView(reactions);
+            } else {
+                renderGraphView(reactions);
+            }
+        }
+
+        function renderTreeView(reactions) {
+            const container = document.getElementById('forest-tree');
+            const token = localStorage.getItem('comment_token');
+
+            function renderNode(r, depth = 0) {
+                const indent = depth > 0 ? `<span style="color: #ddd; margin-right: 0.25rem;">${'│ '.repeat(depth - 1)}├─</span>` : '';
+                const isOwn = currentUser && currentUser.id === r.user_id;
+                const canReact = token && r.depth < maxReactionDepth;
+                const canDelete = isOwn || (currentUser && currentUser.is_admin);
+
+                let childrenHtml = '';
+                if (r.children && r.children.length > 0) {
+                    childrenHtml = r.children.map(c => renderNode(c, depth + 1)).join('');
+                }
+
+                return `
+                    <div class="tree-node" style="padding: 0.35rem 0; font-size: 0.95rem; display: flex; align-items: center; gap: 0.4rem;">
+                        ${indent}
+                        <span style="cursor: ${canReact ? 'pointer' : 'default'};" onclick="${canReact ? `reactToReaction(${r.id})` : ''}" title="${canReact ? 'Click to react' : ''}">${isOwn ? '💛' : '❤️'}</span>
+                        <span style="font-weight: 500;">${r.user_name}</span>
+                        ${canDelete ? `<button onclick="removeReaction(${r.id})" style="background: none; border: none; cursor: pointer; color: #ccc; font-size: 0.8rem; padding: 0 0.25rem;" title="Remove">✕</button>` : ''}
+                    </div>
+                    ${childrenHtml}
+                `;
+            }
+
+            container.innerHTML = reactions.map(r => renderNode(r, 0)).join('');
+        }
+
+        function renderGraphView(reactions) {
+            const container = document.getElementById('forest-graph');
+            const token = localStorage.getItem('comment_token');
+
             container.innerHTML = '';
+            container.style.height = '250px';
 
             // Build nodes and edges for Cytoscape
             const elements = [];
@@ -510,7 +599,11 @@
                 boxSelectionEnabled: false
             });
 
-            // Show name on hover using a simple div tooltip
+            // Remove old tooltip if exists
+            const oldTooltip = document.getElementById('cy-tooltip');
+            if (oldTooltip) oldTooltip.remove();
+
+            // Show name on hover
             const tooltip = document.createElement('div');
             tooltip.id = 'cy-tooltip';
             tooltip.style.cssText = 'position: fixed; background: #333; color: white; padding: 6px 12px; border-radius: 6px; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); pointer-events: none; display: none; z-index: 1000;';
@@ -531,21 +624,31 @@
                 tooltip.style.display = 'none';
             });
 
-            // Click to react
+            // Click to react (not delete)
             cy.on('tap', 'node', function(e) {
                 const node = e.target;
                 const reactionId = node.data('reactionId');
                 const depth = node.data('depth');
+
+                if (token && depth < maxReactionDepth) {
+                    reactToReaction(reactionId);
+                } else if (!token) {
+                    alert('Please log in to react');
+                } else {
+                    alert('Maximum reaction depth reached');
+                }
+            });
+
+            // Right-click to delete (if own or admin)
+            cy.on('cxttap', 'node', function(e) {
+                const node = e.target;
+                const reactionId = node.data('reactionId');
                 const isOwn = node.data('isOwn');
 
                 if (isOwn || (currentUser && currentUser.is_admin)) {
                     if (confirm(`Remove ${node.data('name')}'s reaction?`)) {
                         removeReaction(reactionId);
                     }
-                } else if (token && depth < maxReactionDepth) {
-                    reactToReaction(reactionId);
-                } else if (!token) {
-                    alert('Please log in to react');
                 }
             });
 

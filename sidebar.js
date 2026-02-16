@@ -5,7 +5,7 @@ function loadNavbarDiv() {
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 
             <a href="index.html">
-                <img src="https://josh-freeman.github.io/resources/profile.png"
+                <img src="https://josh-freeman.github.io/resources/profile.png?v=2"
                      alt="Joshua Freeman"
                      width="180"
                      height="180"

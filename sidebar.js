@@ -23,13 +23,6 @@ function loadNavbarDiv() {
             </submenu>
 
             <submenu>
-                <a>Projects</a>
-                <subsubmenu><a href="https://josh-freeman.github.io/projects.html#tchu">tCHu</a></subsubmenu>
-                <subsubmenu><a href="https://josh-freeman.github.io/projects.html#cryptkvs">CRYPTKVS</a></subsubmenu>
-                <subsubmenu><a href="https://josh-freeman.github.io/projects.html#hpshape">HPShape</a></subsubmenu>
-            </submenu>
-
-            <submenu>
                 <a>Miscellany</a>
                 <subsubmenu><a href="https://josh-freeman.github.io/notes.html">Notes</a></subsubmenu>
                 <subsubmenu><a href="https://josh-freeman.github.io/friends.html">Friends</a></subsubmenu>

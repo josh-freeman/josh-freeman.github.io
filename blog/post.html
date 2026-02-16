@@ -413,6 +413,14 @@
             const count = allUsers.size;
             document.getElementById('forest-count').textContent = count > 0 ? `· ${count} ${count === 1 ? 'person' : 'people'}` : '';
 
+            // Update the top heart count with total distinct users
+            document.getElementById('reaction-count').textContent = count;
+
+            // Check if current user has any reaction in the forest
+            const userHasReaction = currentUser && allUsers.has(currentUser.id);
+            document.getElementById('reaction-icon').textContent = userHasReaction ? '❤️' : '🤍';
+            document.getElementById('reaction-btn').style.background = userHasReaction ? 'rgba(239, 68, 68, 0.1)' : 'none';
+
             if (!reactions || reactions.length === 0) {
                 container.innerHTML = `
                     <div class="forest-empty">
@@ -544,10 +552,11 @@
             cy.fit(30);
         }
 
-        function updateReactionUI(count, reacted) {
+        function updateReactionUI(count, reacted, totalDistinct = null) {
             userReacted = reacted;
             const countEl = document.getElementById('reaction-count');
-            countEl.textContent = count;
+            // Show total distinct users if available, otherwise top-level count
+            countEl.textContent = totalDistinct !== null ? totalDistinct : count;
             document.getElementById('reaction-icon').textContent = reacted ? '❤️' : '🤍';
             document.getElementById('reaction-btn').style.background = reacted ? 'rgba(239, 68, 68, 0.1)' : 'none';
         }
@@ -560,6 +569,7 @@
             }
 
             const slug = getPostSlug();
+            // Only toggle top-level reaction - add if no top-level, remove if has top-level
             const method = userReacted ? 'DELETE' : 'POST';
 
             try {
@@ -572,10 +582,13 @@
                     const data = await response.json();
                     userReacted = data.user_reacted;
                     userReactionId = data.reaction_id;
-                    updateReactionUI(data.count, data.user_reacted);
-                    loadReactionTree(); // Refresh the tree
+                    loadReactionTree(); // Refresh the tree (this also updates the top count)
                 } else if (response.status === 401) {
                     alert('Please log in to react');
+                } else if (response.status === 400) {
+                    // Already reacted at top level
+                    const err = await response.json();
+                    console.log(err.detail);
                 }
             } catch (error) {
                 console.log('Could not update reaction');

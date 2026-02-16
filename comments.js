@@ -68,7 +68,7 @@ function renderComments(comments) {
                 <div class="comment-footer" style="margin-top: 0.5rem;">
                     <button onclick="toggleCommentLike(${comment.id})" style="background: none; border: none; cursor: pointer; font-size: 0.9rem; padding: 0.25rem 0.5rem; border-radius: 4px; color: var(--text-muted);" id="like-btn-${comment.id}">
                         <span id="like-icon-${comment.id}">${isLiked ? '❤️' : '🤍'}</span>
-                        <span id="like-count-${comment.id}" ${user && user.is_admin ? `onclick="showCommentLikers(${comment.id}, event)" style="cursor: pointer; text-decoration: underline;"` : ''}>${comment.like_count || 0}</span>
+                        <span id="like-count-${comment.id}" ${user && (user.is_admin || user.id === comment.author_id) ? `onclick="showCommentLikers(${comment.id}, event)" style="cursor: pointer; text-decoration: underline;"` : ''}>${comment.like_count || 0}</span>
                     </button>
                 </div>
             </div>
@@ -424,14 +424,14 @@ async function deleteComment(commentId) {
     }
 }
 
-// Show who liked a comment (admin only)
+// Show who liked a comment (admin or comment author)
 async function showCommentLikers(commentId, event) {
     event.stopPropagation();
     const token = localStorage.getItem('comment_token');
     if (!token) return;
 
     try {
-        const response = await fetch(`${window.COMMENTS_API_BASE}/admin/comments/${commentId}/likers`, {
+        const response = await fetch(`${window.COMMENTS_API_BASE}/comments/${commentId}/likers`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 

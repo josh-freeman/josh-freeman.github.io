@@ -62,8 +62,12 @@
 
             <!-- Reaction Forest Section -->
             <section id="reactions-section" class="reactions-section" style="margin-top: 2rem; padding: 1.5rem; background: #fafafa; border-radius: 12px; border: 1px solid #e0e0e0;">
-                <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">Reaction Forest</h3>
-                <div id="reactions-tree"></div>
+                <h3 onclick="toggleReactionForest()" style="margin-bottom: 0; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+                    <span id="forest-toggle-icon">▼</span>
+                    Reaction Forest
+                    <span id="forest-count" style="font-weight: normal; color: var(--text-muted); font-size: 0.9rem;"></span>
+                </h3>
+                <div id="reactions-tree" style="margin-top: 1rem;"></div>
             </section>
 
             <!-- Comments Section -->
@@ -352,9 +356,40 @@
             }
         }
 
+        let forestCollapsed = false;
+
+        function toggleReactionForest() {
+            forestCollapsed = !forestCollapsed;
+            const tree = document.getElementById('reactions-tree');
+            const icon = document.getElementById('forest-toggle-icon');
+            tree.style.display = forestCollapsed ? 'none' : 'block';
+            icon.textContent = forestCollapsed ? '▶' : '▼';
+        }
+
+        function getDistinctUsers(reaction) {
+            // Get all distinct user IDs in this reaction's subtree
+            const users = new Set([reaction.user_id]);
+            if (reaction.children) {
+                for (const child of reaction.children) {
+                    const childUsers = getDistinctUsers(child);
+                    childUsers.forEach(u => users.add(u));
+                }
+            }
+            return users;
+        }
+
         function renderReactionTree(reactions) {
             const container = document.getElementById('reactions-tree');
             const token = localStorage.getItem('comment_token');
+
+            // Calculate total distinct users across all reactions
+            const allUsers = new Set();
+            function collectUsers(r) {
+                allUsers.add(r.user_id);
+                if (r.children) r.children.forEach(collectUsers);
+            }
+            reactions.forEach(collectUsers);
+            document.getElementById('forest-count').textContent = allUsers.size > 0 ? `(${allUsers.size} people)` : '';
 
             if (!reactions || reactions.length === 0) {
                 container.innerHTML = '<p style="color: var(--text-muted); font-style: italic;">No reactions yet. Be the first to react!</p>';
@@ -366,6 +401,11 @@
                 const canReact = token && depth < maxReactionDepth;
                 const isOwn = currentUser && currentUser.id === r.user_id;
 
+                // Count distinct users in subtree (excluding self)
+                const subtreeUsers = getDistinctUsers(r);
+                subtreeUsers.delete(r.user_id);
+                const distinctCount = subtreeUsers.size;
+
                 let childrenHtml = '';
                 if (r.children && r.children.length > 0) {
                     childrenHtml = r.children.map(c => renderReaction(c, depth + 1)).join('');
@@ -376,9 +416,9 @@
                         <span style="font-size: 1.1rem;">❤️</span>
                         <span style="font-weight: 500;">${r.user_name}</span>
                         <span style="color: var(--text-muted); font-size: 0.8rem;">${new Date(r.created_at).toLocaleDateString()}</span>
+                        ${distinctCount > 0 ? `<span style="color: var(--text-muted); font-size: 0.8rem;">(${distinctCount})</span>` : ''}
                         ${canReact ? `<button onclick="reactToReaction(${r.id})" style="background: none; border: none; cursor: pointer; font-size: 0.8rem; color: var(--primary-color);" title="React to this">+❤️</button>` : ''}
                         ${isOwn || (currentUser && currentUser.is_admin) ? `<button onclick="removeReaction(${r.id})" style="background: none; border: none; cursor: pointer; font-size: 0.8rem; color: #e74c3c;" title="Remove">×</button>` : ''}
-                        ${r.child_count > 0 ? `<span style="color: var(--text-muted); font-size: 0.75rem;">(${r.child_count} nested)</span>` : ''}
                     </div>
                     ${childrenHtml}
                 `;

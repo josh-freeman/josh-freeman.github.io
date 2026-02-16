@@ -774,6 +774,7 @@
                                 </div>
                             </div>
                             <div class="post-item-actions">
+                                <button class="btn" onclick="editUserName(${user.id}, '${escapeHtml(user.name).replace(/'/g, "\\'")}')">Rename</button>
                                 ${!user.is_admin ? `<button class="btn" onclick="deleteUser(${user.id})" style="background: #e74c3c; color: white;">Delete</button>` : ''}
                             </div>
                         </div>
@@ -781,6 +782,37 @@
                 }
             } catch (error) {
                 container.innerHTML = '<p class="error-message">Failed to load users</p>';
+            }
+        }
+
+        function editUserName(userId, currentName) {
+            const newName = prompt('Enter new name:', currentName);
+            if (newName && newName.trim() && newName.trim() !== currentName) {
+                updateUserName(userId, newName.trim());
+            }
+        }
+
+        async function updateUserName(userId, newName) {
+            const token = localStorage.getItem('comment_token');
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name: newName })
+                });
+
+                if (response.ok) {
+                    loadUsers();
+                } else {
+                    const error = await response.json();
+                    alert(error.detail || 'Failed to update user');
+                }
+            } catch (error) {
+                alert('Failed to update user');
             }
         }
 

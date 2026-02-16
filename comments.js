@@ -113,11 +113,12 @@ function updateCommentForm() {
     const user = getUser();
 
     if (user) {
+        const adminLink = user.is_admin ? ' &middot; <a href="/admin.html">admin</a>' : '';
         container.innerHTML = `
             <form class="comment-form" onsubmit="submitComment(event)">
                 <p style="margin-bottom: 0.5rem; color: var(--text-muted);">
                     Commenting as <strong>${escapeHtml(user.name)}</strong>
-                    (<a href="#" onclick="logout(); return false;">logout</a>)
+                    (<a href="#" onclick="logout(); return false;">logout</a>${adminLink})
                 </p>
                 <textarea
                     id="comment-content"
@@ -213,7 +214,7 @@ async function handleLogin(event) {
             errorEl.style.display = 'block';
         }
     } catch (error) {
-        errorEl.textContent = 'Login service not available yet';
+        errorEl.textContent = 'Unable to connect. Please try again.';
         errorEl.style.display = 'block';
     }
 }

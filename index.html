@@ -1,48 +1,61 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
-	<title> Joshua Freeman </title>
-	<meta name="description" content="Personal Website" />
-	<meta name="title" content="Joshua Freeman" />
-	<link rel="icon" href="/resources/icon_blue.png" type="image/x-icon">
-	<meta property="og:image" content="https://josh-freeman.github.io/resources/big_icon.jpg" />
-	<meta property="og:title" content="Joshua Freeman" />
-	<meta property="og:url" content="https://josh-freeman.github.io" />
-	<meta property="og:description" content="Personal website" />
-  <link rel="stylesheet" type="text/css" href="gol.css">
-<link href='https://fonts.loli.net/css?family=Merriweather:900,900italic,300,300italic&subset=latin-ext' rel='stylesheet' type='text/css' />
-<link href='https://fonts.loli.net/css?family=Lato:900,300&subset=latin-ext' rel='stylesheet' type='text/css' />
-<link rel="stylesheet" type="text/css" href="/style.css">
-<link rel="stylesheet" type="text/css" href="/buttons.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joshua Freeman</title>
+    <meta name="description" content="Personal Website - CS student at ETH Zurich">
+    <meta name="author" content="Joshua Freeman">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Joshua Freeman">
+    <meta property="og:description" content="Personal website">
+    <meta property="og:image" content="https://josh-freeman.github.io/resources/big_icon.jpg">
+    <meta property="og:url" content="https://josh-freeman.github.io">
+    <meta property="og:type" content="website">
+
+    <!-- Favicon -->
+    <link rel="icon" href="/resources/icon_blue.png" type="image/png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/buttons.css">
+    <link rel="stylesheet" href="/gol.css">
 </head>
-	
-<body class='typora-export os-windows'>
+<body>
+    <!-- Game of Life Background -->
+    <canvas id="canvas"></canvas>
 
+    <div id="main">
+        <!-- Sidebar -->
+        <sidebar>
+            <script src="sidebar.js"></script>
+        </sidebar>
 
+        <!-- Hero Content -->
+        <div class="hero-content">
+            <h1>Hello! I'm Joshua Freeman.</h1>
+            <p>
+                CS student at ETH Zurich interested in applications of AI to health,
+                AI safety research, and software engineering. I also read books,
+                write French poetry, and play guitar.
+            </p>
 
-<div id="main">
-  
-  <canvas id="canvas"></canvas>
-  <script src="gol.js">
-  </script>
+            <footer>
+                <a href="https://telegram.me/josh_freeman" target="_blank" rel="noopener" class="btn telegram">Telegram</a>
+                <button class="btn email">E-mail</button>
+            </footer>
+        </div>
+    </div>
 
-    <sidebar> <!-- used to include sidebar-->
-      <script src="sidebar.js"></script>
-  </sidebar> 
-
-  <h1 id="joshua-freeman">Hello! I am Joshua Freeman. </h1>
-  <p background-color="">Budding ETHZ CS student interested in applications of AI to health, applications of AI to safety, and software engineering. I also read books, write French poetry, and play guitar.</p>
-  <footer>
-    <a href="https://telegram.me/josh_freeman" target="_blank" style="color:white"><button class="telegram">Telegram ⧉</a></button><button class="email" style="background-color: #d3d3d3; color: black;">E-mail</button>
-  </footer>
-	
-</div>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-<script src="submenus.js">//Unfortunately, found no better solution than to use jquery.
-</script>
+    <!-- Scripts -->
+    <script src="gol.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="submenus.js"></script>
 </body>
 </html>
-
-

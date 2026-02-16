@@ -68,7 +68,7 @@ function renderComments(comments) {
                 <div class="comment-footer" style="margin-top: 0.5rem;">
                     <button onclick="toggleCommentLike(${comment.id})" style="background: none; border: none; cursor: pointer; font-size: 0.9rem; padding: 0.25rem 0.5rem; border-radius: 4px; color: var(--text-muted);" id="like-btn-${comment.id}">
                         <span id="like-icon-${comment.id}">${isLiked ? '❤️' : '🤍'}</span>
-                        <span id="like-count-${comment.id}">${comment.like_count || 0}</span>
+                        <span id="like-count-${comment.id}" ${user && user.is_admin ? `onclick="showCommentLikers(${comment.id}, event)" style="cursor: pointer; text-decoration: underline;"` : ''}>${comment.like_count || 0}</span>
                     </button>
                 </div>
             </div>
@@ -422,6 +422,62 @@ async function deleteComment(commentId) {
     } catch (error) {
         alert('Failed to delete comment');
     }
+}
+
+// Show who liked a comment (admin only)
+async function showCommentLikers(commentId, event) {
+    event.stopPropagation();
+    const token = localStorage.getItem('comment_token');
+    if (!token) return;
+
+    try {
+        const response = await fetch(`${window.COMMENTS_API_BASE}/admin/comments/${commentId}/likers`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            showLikersModal(data.likers, 'Comment Likes');
+        }
+    } catch (error) {
+        console.log('Could not load likers');
+    }
+}
+
+// Show likers modal
+function showLikersModal(likers, title) {
+    const modal = document.createElement('div');
+    modal.id = 'likers-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    `;
+
+    const likersList = likers.length > 0
+        ? likers.map(l => `<li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">${l.name} <span style="color: #999; font-size: 0.85rem;">(${new Date(l.liked_at).toLocaleDateString()})</span></li>`).join('')
+        : '<li style="color: #999;">No likes yet</li>';
+
+    modal.innerHTML = `
+        <div style="background: white; padding: 1.5rem; border-radius: 12px; max-width: 350px; width: 90%;">
+            <h3 style="margin-bottom: 1rem;">${title}</h3>
+            <ul style="list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto;">
+                ${likersList}
+            </ul>
+            <button onclick="document.getElementById('likers-modal').remove()" style="margin-top: 1rem; width: 100%; padding: 0.75rem; background: #e0e0e0; border: none; border-radius: 8px; cursor: pointer;">Close</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+    });
 }
 
 // Initialize

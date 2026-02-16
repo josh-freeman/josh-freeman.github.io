@@ -23,23 +23,35 @@ function formatDate(dateString) {
 // Render comments
 function renderComments(comments) {
     const container = document.getElementById('comments-container');
+    const user = getUser();
 
     if (!comments || comments.length === 0) {
         container.innerHTML = '<p class="no-comments">No comments yet. Be the first to comment!</p>';
         return;
     }
 
-    const html = comments.map(comment => `
-        <div class="comment">
-            <div class="comment-header">
-                <span class="comment-author">${escapeHtml(comment.author_name)}</span>
-                <span class="comment-date">${formatDate(comment.created_at)}</span>
+    const html = comments.map(comment => {
+        const canEdit = user && (user.id === comment.author_id || user.is_admin);
+        const canDelete = user && (user.id === comment.author_id || user.is_admin);
+
+        return `
+            <div class="comment" data-id="${comment.id}">
+                <div class="comment-header">
+                    <span class="comment-author">${escapeHtml(comment.author_name)}</span>
+                    <span class="comment-date">${formatDate(comment.created_at)}</span>
+                    ${canEdit || canDelete ? `
+                        <span class="comment-actions">
+                            ${canEdit ? `<button class="btn-link" onclick="editComment(${comment.id}, '${escapeHtml(comment.content).replace(/'/g, "\\'")}')">edit</button>` : ''}
+                            ${canDelete ? `<button class="btn-link btn-danger" onclick="deleteComment(${comment.id})">delete</button>` : ''}
+                        </span>
+                    ` : ''}
+                </div>
+                <div class="comment-body">
+                    <p>${escapeHtml(comment.content)}</p>
+                </div>
             </div>
-            <div class="comment-body">
-                <p>${escapeHtml(comment.content)}</p>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 
     container.innerHTML = html;
 }
@@ -230,6 +242,101 @@ async function submitComment(event) {
         }
     } catch (error) {
         alert('Comment service not available yet');
+    }
+}
+
+// Edit comment
+function editComment(commentId, currentContent) {
+    const modal = document.createElement('div');
+    modal.id = 'edit-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    `;
+    modal.innerHTML = `
+        <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;">
+            <h3 style="margin-bottom: 1rem;">Edit Comment</h3>
+            <form onsubmit="submitEdit(event, ${commentId})">
+                <textarea
+                    id="edit-content"
+                    style="width: 100%; min-height: 100px; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1rem; resize: vertical;"
+                >${currentContent}</textarea>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Save</button>
+                    <button type="button" onclick="closeEditModal()" class="btn" style="flex: 1; background: #e0e0e0;">Cancel</button>
+                </div>
+                <p id="edit-error" style="color: #e74c3c; margin-top: 1rem; display: none;"></p>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function closeEditModal() {
+    const modal = document.getElementById('edit-modal');
+    if (modal) modal.remove();
+}
+
+async function submitEdit(event, commentId) {
+    event.preventDefault();
+    const content = document.getElementById('edit-content').value;
+    const token = localStorage.getItem('comment_token');
+    const errorEl = document.getElementById('edit-error');
+
+    try {
+        const response = await fetch(`${API_BASE}/comments/${commentId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ content })
+        });
+
+        if (response.ok) {
+            closeEditModal();
+            loadComments();
+        } else {
+            const error = await response.json();
+            errorEl.textContent = error.detail || 'Failed to edit comment';
+            errorEl.style.display = 'block';
+        }
+    } catch (error) {
+        errorEl.textContent = 'Failed to edit comment';
+        errorEl.style.display = 'block';
+    }
+}
+
+// Delete comment
+async function deleteComment(commentId) {
+    if (!confirm('Are you sure you want to delete this comment?')) return;
+
+    const token = localStorage.getItem('comment_token');
+
+    try {
+        const response = await fetch(`${API_BASE}/comments/${commentId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            loadComments();
+        } else {
+            const error = await response.json();
+            alert(error.detail || 'Failed to delete comment');
+        }
+    } catch (error) {
+        alert('Failed to delete comment');
     }
 }
 

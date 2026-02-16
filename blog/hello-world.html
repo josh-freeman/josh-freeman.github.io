@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World - Joshua Freeman</title>
-    <meta name="description" content="Welcome to my blog">
+    <title id="page-title">Loading... - Joshua Freeman</title>
+    <meta name="description" id="page-description" content="">
 
     <!-- Favicon -->
     <link rel="icon" href="/resources/icon_blue.png" type="image/png">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Hello World - Joshua Freeman">
-    <meta property="og:description" content="Welcome to my blog">
+    <meta property="og:title" id="og-title" content="">
+    <meta property="og:description" id="og-description" content="">
     <meta property="og:image" content="https://joshfreeman.me/resources/big_icon.jpg">
-    <meta property="og:url" content="https://joshfreeman.me/blog/hello-world.html">
+    <meta property="og:url" id="og-url" content="">
     <meta property="og:type" content="article">
 
     <!-- Fonts -->
@@ -25,6 +25,9 @@
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/buttons.css">
     <link rel="stylesheet" href="/blog.css">
+
+    <!-- Marked.js for markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <div id="main">
@@ -37,42 +40,14 @@
             <a href="/blog.html" class="back-link">Back to blog</a>
 
             <header class="post-header">
-                <h1>Hello World</h1>
+                <h1 id="post-title">Loading...</h1>
                 <p class="post-meta">
-                    <time datetime="2025-02-16">February 16, 2025</time>
+                    <time id="post-date" datetime=""></time>
                 </p>
             </header>
 
-            <div class="post-content">
-                <p>
-                    Welcome to my blog. This is where I'll share thoughts on AI safety,
-                    software engineering, and whatever else is on my mind.
-                </p>
-
-                <p>
-                    I'm a CS student at ETH Zurich, interested in applications of AI to health
-                    and AI safety research. When I'm not coding, you might find me reading books,
-                    writing French poetry, or playing guitar.
-                </p>
-
-                <h2>What to expect</h2>
-
-                <p>
-                    I plan to write about:
-                </p>
-
-                <ul>
-                    <li>Technical deep-dives into AI and machine learning</li>
-                    <li>Thoughts on AI safety and alignment</li>
-                    <li>Software engineering tips and tricks</li>
-                    <li>Book reviews and recommendations</li>
-                    <li>Occasional musings on life</li>
-                </ul>
-
-                <p>
-                    Stay tuned for more posts. In the meantime, feel free to reach out via
-                    <a href="https://telegram.me/josh_freeman">Telegram</a> or email.
-                </p>
+            <div id="post-content" class="post-content">
+                <p style="color: var(--text-muted);">Loading post...</p>
             </div>
 
             <!-- Comments Section -->
@@ -93,5 +68,77 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="/submenus.js"></script>
     <script src="/comments.js"></script>
+    <script>
+        const API_BASE = 'https://api.joshfreeman.me';
+
+        function getPostSlug() {
+            const path = window.location.pathname;
+            const match = path.match(/\/blog\/([^\/]+)\.html$/);
+            return match ? match[1] : null;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        async function loadPost() {
+            const slug = getPostSlug();
+            if (!slug) {
+                document.getElementById('post-title').textContent = 'Post Not Found';
+                document.getElementById('post-content').innerHTML = '<p>Could not determine post slug from URL.</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/posts/${slug}`);
+                if (response.ok) {
+                    const post = await response.json();
+
+                    // Update page metadata
+                    document.getElementById('page-title').textContent = `${post.title} - Joshua Freeman`;
+                    document.getElementById('page-description').content = post.excerpt || '';
+                    document.getElementById('og-title').content = `${post.title} - Joshua Freeman`;
+                    document.getElementById('og-description').content = post.excerpt || '';
+                    document.getElementById('og-url').content = `https://joshfreeman.me/blog/${slug}.html`;
+
+                    // Update content
+                    document.getElementById('post-title').textContent = post.title;
+                    document.getElementById('post-date').textContent = formatDate(post.created_at);
+                    document.getElementById('post-date').setAttribute('datetime', post.created_at.split('T')[0]);
+
+                    // Render markdown content
+                    document.getElementById('post-content').innerHTML = marked.parse(post.content);
+                } else if (response.status === 404) {
+                    document.getElementById('post-title').textContent = 'Post Not Found';
+                    document.getElementById('post-content').innerHTML = '<p>This post does not exist or has been removed.</p>';
+                } else {
+                    throw new Error('Failed to load');
+                }
+            } catch (error) {
+                // Fallback content for hello-world if API fails
+                if (slug === 'hello-world') {
+                    document.getElementById('page-title').textContent = 'Hello World - Joshua Freeman';
+                    document.getElementById('post-title').textContent = 'Hello World';
+                    document.getElementById('post-date').textContent = 'February 16, 2025';
+                    document.getElementById('post-content').innerHTML = `
+                        <p>Welcome to my blog. This is where I'll share thoughts on AI safety,
+                        software engineering, and whatever else is on my mind.</p>
+                        <p>I'm a CS student at ETH Zurich, interested in applications of AI to health
+                        and AI safety research.</p>
+                    `;
+                } else {
+                    document.getElementById('post-title').textContent = 'Error Loading Post';
+                    document.getElementById('post-content').innerHTML = '<p>Failed to load post content. Please try again later.</p>';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPost);
+    </script>
 </body>
 </html>

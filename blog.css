@@ -170,9 +170,35 @@
 
 .comment-header {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     align-items: center;
     margin-bottom: 0.5rem;
+}
+
+.comment-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.btn-link:hover {
+    color: var(--primary-color);
+}
+
+.btn-link.btn-danger:hover {
+    color: #e74c3c;
 }
 
 .comment-author {

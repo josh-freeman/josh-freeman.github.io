@@ -53,7 +53,7 @@ a.btn {
 /* Tooltip - shown on hover (desktop) and focus (mobile tap) */
 .email:hover::after,
 .email:focus::after {
-    content: "j{lastname}{at}student{dot}ethz{dot}ch";
+    content: "me{at}joshfreeman{dot}me";
     position: absolute;
     bottom: calc(100% + 10px);
     left: 50%;

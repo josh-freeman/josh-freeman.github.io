@@ -69,6 +69,7 @@ a:hover {
 #main {
     transition: margin-left var(--transition-speed) ease;
     padding: 3rem;
+    padding-top: 5rem;
     min-height: 100vh;
     position: relative;
 }

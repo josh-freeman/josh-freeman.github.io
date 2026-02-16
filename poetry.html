@@ -49,8 +49,7 @@
 
         .poem-header {
             margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #e0e0e0;
+            overflow: hidden;
         }
 
         .poem h2 {
@@ -85,11 +84,20 @@
         }
 
         .poem-image {
-            max-width: 300px;
+            float: right;
+            max-width: 180px;
             width: 100%;
             border-radius: 8px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin: 0 0 1rem 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        @media (max-width: 500px) {
+            .poem-image {
+                float: none;
+                max-width: 100%;
+                margin: 0 0 1.5rem 0;
+            }
         }
 
         @media (max-width: 768px) {
@@ -119,8 +127,8 @@
             <p class="poetry-intro">Some poems I had the pleasure of writing.</p>
 
             <article class="poem">
-                <img src="/resources/ma-chambre.jpg" alt="View from my room" class="poem-image">
                 <header class="poem-header">
+                    <img src="/resources/ma-chambre.jpg" alt="View from my room" class="poem-image">
                     <h2>Ma chambre</h2>
                     <span class="poem-date">March 2023</span>
                 </header>

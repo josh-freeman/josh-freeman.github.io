@@ -23,6 +23,12 @@ function loadNavbarDiv() {
             </submenu>
 
             <submenu>
+                <a href="https://josh-freeman.github.io/blog.html">
+                    Blog
+                </a>
+            </submenu>
+
+            <submenu>
                 <a>Miscellany</a>
                 <subsubmenu><a href="https://josh-freeman.github.io/notes.html">Notes</a></subsubmenu>
                 <subsubmenu><a href="https://josh-freeman.github.io/friends.html">Friends</a></subsubmenu>

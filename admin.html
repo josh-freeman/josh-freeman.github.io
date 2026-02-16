@@ -305,13 +305,21 @@
                         <h3 style="margin-top: 0;">New Invite</h3>
                         <form onsubmit="createInvite(event)">
                             <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" id="invite-name" placeholder="John Doe" required minlength="2" maxlength="100">
+                            </div>
+                            <div class="form-group">
                                 <label>Email</label>
                                 <input type="email" id="invite-email" placeholder="friend@email.com" required>
                             </div>
                             <div class="form-group">
                                 <label>Expires in (minutes)</label>
-                                <input type="number" id="invite-expires" value="15" min="5" max="10080">
-                                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">15 min default, max 7 days (10080 min)</p>
+                                <input type="number" id="invite-expires" value="10080" min="5" max="10080">
+                                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Default 7 days (10080 min)</p>
+                            </div>
+                            <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" id="invite-send-email">
+                                <label for="invite-send-email" style="margin: 0;">Send invitation email</label>
                             </div>
                             <div style="display: flex; gap: 1rem;">
                                 <button type="submit" class="btn btn-primary">Create</button>
@@ -633,8 +641,10 @@
         async function createInvite(event) {
             event.preventDefault();
             const token = localStorage.getItem('comment_token');
+            const name = document.getElementById('invite-name').value.trim();
             const email = document.getElementById('invite-email').value.trim();
-            const expiresMinutes = parseInt(document.getElementById('invite-expires').value) || 15;
+            const expiresMinutes = parseInt(document.getElementById('invite-expires').value) || 10080;
+            const sendEmail = document.getElementById('invite-send-email').checked;
 
             try {
                 const response = await fetch(`${API_BASE}/admin/invites`, {
@@ -643,7 +653,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ email, expires_minutes: expiresMinutes })
+                    body: JSON.stringify({ name, email, expires_minutes: expiresMinutes, send_email: sendEmail })
                 });
 
                 if (response.ok) {
@@ -696,7 +706,7 @@
                                     <h3 style="font-family: monospace; font-size: 0.9rem;">${invite.token.substring(0, 16)}...</h3>
                                     <div class="meta">
                                         <span class="badge ${statusClass}">${status}</span>
-                                        &middot; For: ${escapeHtml(invite.email)}
+                                        &middot; ${escapeHtml(invite.name)} (${escapeHtml(invite.email)})
                                         &middot; Expires: ${formatDateTime(invite.expires_at)}
                                     </div>
                                 </div>

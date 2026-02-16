@@ -19,8 +19,8 @@ function loadNavbarDiv() {
         <div id="mySidebar" class="sidebar">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 
-            <a href="https://josh-freeman.github.io/index.html">
-                <img src="https://josh-freeman.github.io/resources/profile.png?v=2"
+            <a href="/index.html">
+                <img src="/resources/profile.png?v=2"
                      alt="Joshua Freeman"
                      width="180"
                      height="180"
@@ -28,26 +28,26 @@ function loadNavbarDiv() {
             </a>
 
             <submenu>
-                <a href="https://josh-freeman.github.io/index.html">Home</a>
+                <a href="/index.html">Home</a>
             </submenu>
 
             <submenu>
-                <a href="https://josh-freeman.github.io/cv.html">
+                <a href="/cv.html">
                     Curriculum Vitae
                 </a>
             </submenu>
 
             <submenu>
-                <a href="https://josh-freeman.github.io/blog.html">
+                <a href="/blog.html">
                     Blog
                 </a>
             </submenu>
 
             <submenu>
                 <a>Miscellany</a>
-                <subsubmenu><a href="https://josh-freeman.github.io/notes.html">Notes</a></subsubmenu>
-                <subsubmenu><a href="https://josh-freeman.github.io/friends.html">Friends</a></subsubmenu>
-                <subsubmenu><a href="https://josh-freeman.github.io/poetry.html">Poetry</a></subsubmenu>
+                <subsubmenu><a href="/notes.html">Notes</a></subsubmenu>
+                <subsubmenu><a href="/friends.html">Friends</a></subsubmenu>
+                <subsubmenu><a href="/poetry.html">Poetry</a></subsubmenu>
                 <subsubmenu><a href="https://github.com/josh-freeman/josh-freeman.github.io" target="_blank" class="external">Source code</a></subsubmenu>
                 <subsubmenu><a href="https://www.goodreads.com/review/list/184752391?shelf=read" target="_blank" class="external">Book reviews</a></subsubmenu>
             </submenu>
@@ -57,7 +57,7 @@ function loadNavbarDiv() {
 
         <button id="menubtn" class="openbtn" onclick="openNav()">
             <span style="margin-right: 4px;">&#9776;</span>
-            <img src="https://josh-freeman.github.io/resources/icon_blue.png"
+            <img src="/resources/icon_blue.png"
                  alt=""
                  width="24"
                  height="24">

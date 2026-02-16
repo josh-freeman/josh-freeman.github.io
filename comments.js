@@ -1,9 +1,10 @@
 // Comments System
 // Connects to api.joshfreeman.me for comment data
 
-// Only define if not already defined (allows page to override)
-if (typeof API_BASE === 'undefined') {
-    var API_BASE = 'https://api.joshfreeman.me';
+// Use window.COMMENTS_API_BASE to avoid conflicts with page scripts
+// Pages can define COMMENTS_API_BASE before this script loads to override
+if (typeof window.COMMENTS_API_BASE === 'undefined') {
+    window.COMMENTS_API_BASE = 'https://api.joshfreeman.me';
 }
 
 // Get post slug from URL - can be overridden by page
@@ -80,7 +81,7 @@ async function loadComments() {
     if (!slug) return;
 
     try {
-        const response = await fetch(`${API_BASE}/comments/${slug}`);
+        const response = await fetch(`${window.COMMENTS_API_BASE}/comments/${slug}`);
         if (response.ok) {
             const comments = await response.json();
             renderComments(comments);
@@ -196,7 +197,7 @@ async function handleLogin(event) {
     const errorEl = document.getElementById('login-error');
 
     try {
-        const response = await fetch(`${API_BASE}/auth/login`, {
+        const response = await fetch(`${window.COMMENTS_API_BASE}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
@@ -236,7 +237,7 @@ async function submitComment(event) {
     if (!content || !slug || !token) return;
 
     try {
-        const response = await fetch(`${API_BASE}/comments`, {
+        const response = await fetch(`${window.COMMENTS_API_BASE}/comments`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -304,7 +305,7 @@ async function submitEdit(event, commentId) {
     const errorEl = document.getElementById('edit-error');
 
     try {
-        const response = await fetch(`${API_BASE}/comments/${commentId}`, {
+        const response = await fetch(`${window.COMMENTS_API_BASE}/comments/${commentId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -334,7 +335,7 @@ async function deleteComment(commentId) {
     const token = localStorage.getItem('comment_token');
 
     try {
-        const response = await fetch(`${API_BASE}/comments/${commentId}`, {
+        const response = await fetch(`${window.COMMENTS_API_BASE}/comments/${commentId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`

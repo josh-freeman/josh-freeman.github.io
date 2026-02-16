@@ -305,8 +305,8 @@
                         <h3 style="margin-top: 0;">New Invite</h3>
                         <form onsubmit="createInvite(event)">
                             <div class="form-group">
-                                <label>Email (optional - leave blank for any email)</label>
-                                <input type="email" id="invite-email" placeholder="specific@email.com">
+                                <label>Email</label>
+                                <input type="email" id="invite-email" placeholder="friend@email.com" required>
                             </div>
                             <div class="form-group">
                                 <label>Expires in (minutes)</label>
@@ -633,14 +633,8 @@
         async function createInvite(event) {
             event.preventDefault();
             const token = localStorage.getItem('comment_token');
-            const emailValue = document.getElementById('invite-email').value.trim();
+            const email = document.getElementById('invite-email').value.trim();
             const expiresMinutes = parseInt(document.getElementById('invite-expires').value) || 15;
-
-            // Build request body - only include email if provided
-            const requestBody = { expires_minutes: expiresMinutes };
-            if (emailValue) {
-                requestBody.email = emailValue;
-            }
 
             try {
                 const response = await fetch(`${API_BASE}/admin/invites`, {
@@ -649,7 +643,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify(requestBody)
+                    body: JSON.stringify({ email, expires_minutes: expiresMinutes })
                 });
 
                 if (response.ok) {
@@ -702,7 +696,7 @@
                                     <h3 style="font-family: monospace; font-size: 0.9rem;">${invite.token.substring(0, 16)}...</h3>
                                     <div class="meta">
                                         <span class="badge ${statusClass}">${status}</span>
-                                        ${invite.email ? `&middot; For: ${escapeHtml(invite.email)}` : '&middot; Any email'}
+                                        &middot; For: ${escapeHtml(invite.email)}
                                         &middot; Expires: ${formatDateTime(invite.expires_at)}
                                     </div>
                                 </div>

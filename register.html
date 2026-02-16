@@ -124,13 +124,19 @@
 
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" required minlength="12" maxlength="128" autofocus>
+                        <div style="position: relative;">
+                            <input type="password" id="password" required minlength="12" maxlength="128" autofocus style="padding-right: 45px;">
+                            <button type="button" onclick="togglePassword('password')" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 0; opacity: 0.6;" title="Show password">👁️</button>
+                        </div>
                         <p class="hint">At least 12 characters</p>
                     </div>
 
                     <div class="form-group">
                         <label for="password-confirm">Confirm Password</label>
-                        <input type="password" id="password-confirm" required>
+                        <div style="position: relative;">
+                            <input type="password" id="password-confirm" required style="padding-right: 45px;">
+                            <button type="button" onclick="togglePassword('password-confirm')" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 0; opacity: 0.6;" title="Show password">👁️</button>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
@@ -236,6 +242,11 @@
                 errorEl.textContent = 'Unable to connect. Please try again.';
                 errorEl.style.display = 'block';
             }
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            input.type = input.type === 'password' ? 'text' : 'password';
         }
 
         // Initialize

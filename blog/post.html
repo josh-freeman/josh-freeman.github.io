@@ -43,6 +43,12 @@
                 <h1 id="post-title">Loading...</h1>
                 <p class="post-meta">
                     <time id="post-date" datetime=""></time>
+                    <span id="reaction-container" style="margin-left: 1rem;">
+                        <button id="reaction-btn" onclick="toggleReaction()" style="background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 0.25rem 0.5rem; border-radius: 6px; transition: background 0.2s;" title="Like this post">
+                            <span id="reaction-icon">🤍</span>
+                            <span id="reaction-count" style="font-size: 0.9rem; color: var(--text-muted);">0</span>
+                        </button>
+                    </span>
                     <span id="admin-actions" style="display: none; margin-left: 1rem;">
                         <button class="btn-link" onclick="editPost()">edit</button>
                         <button class="btn-link btn-danger" onclick="deletePost()">delete</button>
@@ -291,6 +297,66 @@
 
         // Run after page loads
         document.addEventListener('DOMContentLoaded', checkAdminActions);
+
+        // Reactions
+        let userReacted = false;
+
+        async function loadReactions() {
+            const slug = getPostSlug();
+            if (!slug) return;
+
+            const token = localStorage.getItem('comment_token');
+            const endpoint = token ? `${API_BASE}/reactions/${slug}/me` : `${API_BASE}/reactions/${slug}`;
+
+            try {
+                const response = await fetch(endpoint, {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    updateReactionUI(data.count, data.user_reacted);
+                }
+            } catch (error) {
+                console.log('Could not load reactions');
+            }
+        }
+
+        function updateReactionUI(count, reacted) {
+            userReacted = reacted;
+            document.getElementById('reaction-count').textContent = count;
+            document.getElementById('reaction-icon').textContent = reacted ? '❤️' : '🤍';
+            document.getElementById('reaction-btn').style.background = reacted ? 'rgba(239, 68, 68, 0.1)' : 'none';
+        }
+
+        async function toggleReaction() {
+            const token = localStorage.getItem('comment_token');
+            if (!token) {
+                alert('Please log in to like posts');
+                return;
+            }
+
+            const slug = getPostSlug();
+            const method = userReacted ? 'DELETE' : 'POST';
+
+            try {
+                const response = await fetch(`${API_BASE}/reactions/${slug}`, {
+                    method,
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    updateReactionUI(data.count, data.user_reacted);
+                } else if (response.status === 401) {
+                    alert('Please log in to like posts');
+                }
+            } catch (error) {
+                console.log('Could not update reaction');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadReactions);
     </script>
 </body>
 </html>

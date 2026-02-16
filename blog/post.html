@@ -28,6 +28,8 @@
 
     <!-- Marked.js for markdown rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Cytoscape.js for graph visualization -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
 </head>
 <body>
     <div id="main">
@@ -63,24 +65,28 @@
             <!-- Reaction Forest Section -->
             <section id="reactions-section" class="reactions-section" style="margin-top: 2rem;">
                 <style>
-                    .forest-header { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1rem; background: #f5f5f5; border-radius: 8px; }
-                    .forest-header:hover { background: #eee; }
-                    .reaction-node { display: flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0; font-size: 0.9rem; }
-                    .reaction-node .actions { opacity: 0; transition: opacity 0.15s; }
-                    .reaction-node:hover .actions { opacity: 1; }
-                    .reaction-btn { background: none; border: none; cursor: pointer; font-size: 0.75rem; padding: 0.15rem 0.3rem; border-radius: 3px; }
-                    .reaction-btn:hover { background: rgba(0,0,0,0.05); }
-                    .reaction-btn.add { color: var(--primary-color); }
-                    .reaction-btn.remove { color: #999; }
-                    .reaction-btn.remove:hover { color: #e74c3c; }
-                    .tree-line { border-left: 1px solid #ddd; margin-left: 0.5rem; padding-left: 0.75rem; }
+                    .forest-container { background: linear-gradient(135deg, #fefefe 0%, #f8f9fa 100%); border: 1px solid #e0e0e0; border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+                    .forest-header { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+                    .forest-header h3 { margin: 0; font-size: 1.2rem; }
+                    .forest-subtitle { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.35rem; }
+                    #forest-graph { margin-top: 1rem; height: 250px; border-radius: 12px; background: white; border: 1px solid #eee; }
+                    .forest-empty { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
+                    .forest-legend { display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted); flex-wrap: wrap; justify-content: center; }
+                    .forest-legend span { display: flex; align-items: center; gap: 0.3rem; }
                 </style>
-                <div class="forest-header" onclick="toggleReactionForest()">
-                    <span id="forest-toggle-icon" style="font-size: 0.7rem;">▼</span>
-                    <span style="font-weight: 600;">Reaction Forest</span>
-                    <span id="forest-count" style="color: var(--text-muted); font-size: 0.85rem;"></span>
+                <div class="forest-container">
+                    <div class="forest-header" onclick="toggleReactionForest()">
+                        <span id="forest-toggle-icon" style="font-size: 0.8rem; transition: transform 0.2s;">▼</span>
+                        <h3>Reaction Forest <span id="forest-count" style="font-weight: normal; color: var(--text-muted);"></span></h3>
+                    </div>
+                    <p class="forest-subtitle">Click on hearts to react to reactions</p>
+                    <div id="forest-graph"></div>
+                    <div class="forest-legend" id="forest-legend">
+                        <span>❤️ = reaction</span>
+                        <span>💛 = yours</span>
+                        <span>Click to react · Hover for name</span>
+                    </div>
                 </div>
-                <div id="reactions-tree" style="margin-top: 0.75rem; padding-left: 0.5rem;"></div>
             </section>
 
             <!-- Comments Section -->
@@ -391,11 +397,13 @@
             return users;
         }
 
+        let cy = null; // Cytoscape instance
+
         function renderReactionTree(reactions) {
-            const container = document.getElementById('reactions-tree');
+            const container = document.getElementById('forest-graph');
             const token = localStorage.getItem('comment_token');
 
-            // Calculate total distinct users across all reactions
+            // Calculate total distinct users
             const allUsers = new Set();
             function collectUsers(r) {
                 allUsers.add(r.user_id);
@@ -406,40 +414,134 @@
             document.getElementById('forest-count').textContent = count > 0 ? `· ${count} ${count === 1 ? 'person' : 'people'}` : '';
 
             if (!reactions || reactions.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-muted); font-style: italic; font-size: 0.9rem; margin: 0.5rem 0;">No reactions yet. Be the first!</p>';
+                container.innerHTML = `
+                    <div class="forest-empty">
+                        <div style="font-size: 3rem; margin-bottom: 0.75rem;">🌱</div>
+                        <div style="font-size: 1.1rem;">No reactions yet</div>
+                        <div style="margin-top: 0.5rem;">Be the first to plant a heart!</div>
+                        ${token ? `<button onclick="toggleReaction()" style="margin-top: 1.25rem; padding: 0.6rem 1.25rem; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; box-shadow: 0 2px 8px rgba(239,68,68,0.3);">❤️ Add Reaction</button>` : ''}
+                    </div>
+                `;
+                document.getElementById('forest-legend').style.display = 'none';
                 return;
             }
 
-            function renderReaction(r, depth = 0) {
-                const canReact = token && depth < maxReactionDepth;
+            document.getElementById('forest-legend').style.display = 'flex';
+            container.innerHTML = '';
+
+            // Build nodes and edges for Cytoscape
+            const elements = [];
+
+            function addNodes(r, parentId = null) {
                 const isOwn = currentUser && currentUser.id === r.user_id;
-                const canRemove = isOwn || (currentUser && currentUser.is_admin);
+                elements.push({
+                    data: {
+                        id: 'r' + r.id,
+                        label: isOwn ? '💛' : '❤️',
+                        name: r.user_name,
+                        reactionId: r.id,
+                        depth: r.depth,
+                        isOwn: isOwn
+                    }
+                });
 
-                // Count distinct users in subtree (excluding self)
-                const subtreeUsers = getDistinctUsers(r);
-                subtreeUsers.delete(r.user_id);
-                const distinctCount = subtreeUsers.size;
-
-                let childrenHtml = '';
-                if (r.children && r.children.length > 0) {
-                    childrenHtml = `<div class="tree-line">${r.children.map(c => renderReaction(c, depth + 1)).join('')}</div>`;
+                if (parentId) {
+                    elements.push({
+                        data: {
+                            source: parentId,
+                            target: 'r' + r.id
+                        }
+                    });
                 }
 
-                return `
-                    <div class="reaction-node">
-                        <span>❤️</span>
-                        <span style="font-weight: 500;">${r.user_name}</span>
-                        ${distinctCount > 0 ? `<span style="color: var(--text-muted);">(${distinctCount})</span>` : ''}
-                        <span class="actions">
-                            ${canReact ? `<button class="reaction-btn add" onclick="reactToReaction(${r.id})" title="React">+❤️</button>` : ''}
-                            ${canRemove ? `<button class="reaction-btn remove" onclick="removeReaction(${r.id})" title="Remove">✕</button>` : ''}
-                        </span>
-                    </div>
-                    ${childrenHtml}
-                `;
+                if (r.children) {
+                    r.children.forEach(child => addNodes(child, 'r' + r.id));
+                }
             }
 
-            container.innerHTML = reactions.map(r => renderReaction(r, 0)).join('');
+            reactions.forEach(r => addNodes(r));
+
+            // Initialize Cytoscape
+            cy = cytoscape({
+                container: container,
+                elements: elements,
+                style: [
+                    {
+                        selector: 'node',
+                        style: {
+                            'label': 'data(label)',
+                            'text-valign': 'center',
+                            'text-halign': 'center',
+                            'font-size': '24px',
+                            'width': 40,
+                            'height': 40,
+                            'background-color': '#fff',
+                            'border-width': 0,
+                            'cursor': 'pointer'
+                        }
+                    },
+                    {
+                        selector: 'edge',
+                        style: {
+                            'width': 2,
+                            'line-color': '#e0e0e0',
+                            'curve-style': 'bezier',
+                            'target-arrow-shape': 'none'
+                        }
+                    }
+                ],
+                layout: {
+                    name: 'breadthfirst',
+                    directed: true,
+                    padding: 30,
+                    spacingFactor: 1.2,
+                    avoidOverlap: true
+                },
+                userZoomingEnabled: false,
+                userPanningEnabled: true,
+                boxSelectionEnabled: false
+            });
+
+            // Show name on hover using a simple div tooltip
+            const tooltip = document.createElement('div');
+            tooltip.id = 'cy-tooltip';
+            tooltip.style.cssText = 'position: fixed; background: #333; color: white; padding: 6px 12px; border-radius: 6px; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); pointer-events: none; display: none; z-index: 1000;';
+            document.body.appendChild(tooltip);
+
+            cy.on('mouseover', 'node', function(e) {
+                const node = e.target;
+                tooltip.textContent = node.data('name');
+                tooltip.style.display = 'block';
+            });
+
+            cy.on('mousemove', 'node', function(e) {
+                tooltip.style.left = e.originalEvent.clientX + 15 + 'px';
+                tooltip.style.top = e.originalEvent.clientY - 10 + 'px';
+            });
+
+            cy.on('mouseout', 'node', function(e) {
+                tooltip.style.display = 'none';
+            });
+
+            // Click to react
+            cy.on('tap', 'node', function(e) {
+                const node = e.target;
+                const reactionId = node.data('reactionId');
+                const depth = node.data('depth');
+                const isOwn = node.data('isOwn');
+
+                if (isOwn || (currentUser && currentUser.is_admin)) {
+                    if (confirm(`Remove ${node.data('name')}'s reaction?`)) {
+                        removeReaction(reactionId);
+                    }
+                } else if (token && depth < maxReactionDepth) {
+                    reactToReaction(reactionId);
+                } else if (!token) {
+                    alert('Please log in to react');
+                }
+            });
+
+            cy.fit(30);
         }
 
         function updateReactionUI(count, reacted) {

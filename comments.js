@@ -188,19 +188,26 @@ function updateCommentForm() {
     if (user) {
         const adminLink = user.is_admin ? ' &middot; <a href="/admin.html">admin</a>' : '';
         container.innerHTML = `
-            <form class="comment-form" onsubmit="submitComment(event)">
+            <form class="comment-form" onsubmit="submitComment(event)" style="position: relative;">
                 <p style="margin-bottom: 0.5rem; color: var(--text-muted);">
                     Commenting as <strong>${escapeHtml(user.name)}</strong>
                     (<a href="#" onclick="logout(); return false;">logout</a>${adminLink})
                 </p>
                 <textarea
                     id="comment-content"
-                    placeholder="Write a comment..."
+                    placeholder="Write a comment... (use @ to mention users)"
                     required
                 ></textarea>
+                <div id="mention-dropdown" class="mention-dropdown" style="display: none;"></div>
                 <button type="submit" class="btn btn-primary">Post Comment</button>
             </form>
         `;
+
+        // Setup @mention autocomplete
+        const textarea = document.getElementById('comment-content');
+        if (textarea) {
+            setupMentionAutocomplete(textarea, document.getElementById('mention-dropdown'));
+        }
     } else {
         container.innerHTML = `
             <p class="comment-login-notice">
@@ -475,6 +482,183 @@ function showLikersModal(likers, title = 'Liked by') {
     modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.remove();
     });
+}
+
+// @mention autocomplete
+let mentionState = {
+    active: false,
+    startPos: 0,
+    selectedIndex: 0,
+    users: [],
+    textarea: null,
+    dropdown: null
+};
+
+function setupMentionAutocomplete(textarea, dropdown) {
+    mentionState.textarea = textarea;
+    mentionState.dropdown = dropdown;
+
+    // Add CSS for dropdown if not already present
+    if (!document.getElementById('mention-styles')) {
+        const style = document.createElement('style');
+        style.id = 'mention-styles';
+        style.textContent = `
+            .mention-dropdown {
+                position: absolute;
+                background: white;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                max-height: 200px;
+                overflow-y: auto;
+                z-index: 1000;
+                min-width: 180px;
+                bottom: 100%;
+                left: 0;
+                margin-bottom: 0.5rem;
+            }
+            .mention-dropdown-item {
+                padding: 0.5rem 0.75rem;
+                cursor: pointer;
+                font-size: 0.9rem;
+            }
+            .mention-dropdown-item:hover,
+            .mention-dropdown-item.selected {
+                background: #f0f0f0;
+            }
+            .mention-dropdown-item.selected {
+                background: var(--primary-color, #3b82f6);
+                color: white;
+            }
+            .mention-dropdown-empty {
+                padding: 0.5rem 0.75rem;
+                color: var(--text-muted, #6b7280);
+                font-size: 0.85rem;
+                font-style: italic;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    textarea.addEventListener('input', async () => {
+        const cursorPos = textarea.selectionStart;
+        const text = textarea.value.substring(0, cursorPos);
+        const lastAtIndex = text.lastIndexOf('@');
+
+        if (lastAtIndex !== -1) {
+            const textAfterAt = text.substring(lastAtIndex + 1);
+            const isValidMention = /^[a-zA-Z\s'-]*$/.test(textAfterAt) && textAfterAt.length <= 50;
+
+            if (isValidMention) {
+                mentionState.active = true;
+                mentionState.startPos = lastAtIndex;
+                await searchAndShowMentions(textAfterAt);
+                return;
+            }
+        }
+        hideMentionDropdown();
+    });
+
+    textarea.addEventListener('keydown', (e) => {
+        if (!mentionState.active) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            mentionState.selectedIndex = Math.min(mentionState.selectedIndex + 1, mentionState.users.length - 1);
+            updateMentionSelection();
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            mentionState.selectedIndex = Math.max(mentionState.selectedIndex - 1, 0);
+            updateMentionSelection();
+        } else if (e.key === 'Tab' || e.key === 'Enter') {
+            if (mentionState.users.length > 0) {
+                e.preventDefault();
+                selectMention(mentionState.users[mentionState.selectedIndex]);
+            }
+        } else if (e.key === 'Escape') {
+            hideMentionDropdown();
+        }
+    });
+
+    textarea.addEventListener('blur', () => {
+        setTimeout(() => hideMentionDropdown(), 150);
+    });
+
+    dropdown.addEventListener('click', (e) => {
+        const item = e.target.closest('.mention-dropdown-item');
+        if (item) {
+            const userId = item.dataset.userId;
+            const user = mentionState.users.find(u => u.id === userId);
+            if (user) selectMention(user);
+        }
+    });
+}
+
+async function searchAndShowMentions(query) {
+    const token = localStorage.getItem('comment_token');
+    if (!token) return;
+
+    try {
+        const response = await fetch(`${window.COMMENTS_API_BASE}/users/search?q=${encodeURIComponent(query)}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            const users = await response.json();
+            mentionState.users = users;
+            mentionState.selectedIndex = 0;
+            showMentionDropdown();
+        }
+    } catch (error) {
+        console.error('Failed to search users:', error);
+    }
+}
+
+function showMentionDropdown() {
+    const dropdown = mentionState.dropdown;
+
+    if (mentionState.users.length === 0) {
+        dropdown.innerHTML = '<div class="mention-dropdown-empty">No users found</div>';
+    } else {
+        dropdown.innerHTML = mentionState.users.map((user, index) =>
+            `<div class="mention-dropdown-item ${index === mentionState.selectedIndex ? 'selected' : ''}" data-user-id="${user.id}">
+                @${escapeHtml(user.name)}
+            </div>`
+        ).join('');
+    }
+
+    dropdown.style.display = 'block';
+}
+
+function hideMentionDropdown() {
+    mentionState.active = false;
+    mentionState.users = [];
+    if (mentionState.dropdown) {
+        mentionState.dropdown.style.display = 'none';
+    }
+}
+
+function updateMentionSelection() {
+    const items = mentionState.dropdown.querySelectorAll('.mention-dropdown-item');
+    items.forEach((item, index) => {
+        item.classList.toggle('selected', index === mentionState.selectedIndex);
+    });
+}
+
+function selectMention(user) {
+    const textarea = mentionState.textarea;
+    const before = textarea.value.substring(0, mentionState.startPos);
+    const after = textarea.value.substring(textarea.selectionStart);
+
+    // Insert the mention as a link
+    const mention = `[@${user.name}](/profile.html?id=${user.id})`;
+    textarea.value = before + mention + after;
+
+    const newPos = before.length + mention.length;
+    textarea.selectionStart = textarea.selectionEnd = newPos;
+    textarea.focus();
+
+    hideMentionDropdown();
 }
 
 // Initialize

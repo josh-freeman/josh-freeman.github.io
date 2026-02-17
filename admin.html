@@ -341,6 +341,42 @@
         .image-card-actions .btn-delete:hover {
             background: #fecaca;
         }
+
+        /* @mention autocomplete */
+        .mention-dropdown {
+            position: absolute;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            min-width: 180px;
+        }
+
+        .mention-dropdown-item {
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .mention-dropdown-item:hover,
+        .mention-dropdown-item.selected {
+            background: #f0f0f0;
+        }
+
+        .mention-dropdown-item.selected {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .mention-dropdown-empty {
+            padding: 0.5rem 0.75rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -520,6 +556,9 @@
             </div>
         </div>
     </div>
+
+    <!-- @mention dropdown -->
+    <div id="mention-dropdown" class="mention-dropdown" style="display: none;"></div>
 
     <script>
         const API_BASE = 'https://api.joshfreeman.me';
@@ -809,6 +848,160 @@
                     }
                 }
             });
+
+            // Setup @mention autocomplete
+            setupMentionAutocomplete(textarea);
+        }
+
+        // @mention autocomplete
+        let mentionState = {
+            active: false,
+            startPos: 0,
+            selectedIndex: 0,
+            users: [],
+            textarea: null
+        };
+
+        function setupMentionAutocomplete(textarea) {
+            mentionState.textarea = textarea;
+            const dropdown = document.getElementById('mention-dropdown');
+
+            textarea.addEventListener('input', async (e) => {
+                const cursorPos = textarea.selectionStart;
+                const text = textarea.value.substring(0, cursorPos);
+
+                // Find @ symbol that starts a mention
+                const lastAtIndex = text.lastIndexOf('@');
+
+                if (lastAtIndex !== -1) {
+                    const textAfterAt = text.substring(lastAtIndex + 1);
+                    // Check if we're in a valid mention context (no spaces except in search)
+                    const isValidMention = /^[a-zA-Z\s'-]*$/.test(textAfterAt) && textAfterAt.length <= 50;
+
+                    if (isValidMention) {
+                        mentionState.active = true;
+                        mentionState.startPos = lastAtIndex;
+                        await searchAndShowMentions(textAfterAt, textarea);
+                        return;
+                    }
+                }
+
+                hideMentionDropdown();
+            });
+
+            textarea.addEventListener('keydown', (e) => {
+                if (!mentionState.active) return;
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    mentionState.selectedIndex = Math.min(mentionState.selectedIndex + 1, mentionState.users.length - 1);
+                    updateMentionSelection();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    mentionState.selectedIndex = Math.max(mentionState.selectedIndex - 1, 0);
+                    updateMentionSelection();
+                } else if (e.key === 'Tab' || e.key === 'Enter') {
+                    if (mentionState.users.length > 0) {
+                        e.preventDefault();
+                        selectMention(mentionState.users[mentionState.selectedIndex]);
+                    }
+                } else if (e.key === 'Escape') {
+                    hideMentionDropdown();
+                }
+            });
+
+            textarea.addEventListener('blur', () => {
+                // Delay hiding to allow click on dropdown
+                setTimeout(() => hideMentionDropdown(), 150);
+            });
+
+            // Click handler for dropdown items
+            dropdown.addEventListener('click', (e) => {
+                const item = e.target.closest('.mention-dropdown-item');
+                if (item) {
+                    const userId = item.dataset.userId;
+                    const user = mentionState.users.find(u => u.id === userId);
+                    if (user) selectMention(user);
+                }
+            });
+        }
+
+        async function searchAndShowMentions(query, textarea) {
+            const token = localStorage.getItem('comment_token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/users/search?q=${encodeURIComponent(query)}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const users = await response.json();
+                    mentionState.users = users;
+                    mentionState.selectedIndex = 0;
+                    showMentionDropdown(textarea);
+                }
+            } catch (error) {
+                console.error('Failed to search users:', error);
+            }
+        }
+
+        function showMentionDropdown(textarea) {
+            const dropdown = document.getElementById('mention-dropdown');
+
+            if (mentionState.users.length === 0) {
+                dropdown.innerHTML = '<div class="mention-dropdown-empty">No users found</div>';
+            } else {
+                dropdown.innerHTML = mentionState.users.map((user, index) =>
+                    `<div class="mention-dropdown-item ${index === mentionState.selectedIndex ? 'selected' : ''}" data-user-id="${user.id}">
+                        @${escapeHtml(user.name)}
+                    </div>`
+                ).join('');
+            }
+
+            // Position the dropdown near the cursor
+            const rect = textarea.getBoundingClientRect();
+            const lineHeight = parseInt(getComputedStyle(textarea).lineHeight) || 20;
+
+            // Calculate approximate cursor position
+            const textBeforeCursor = textarea.value.substring(0, textarea.selectionStart);
+            const lines = textBeforeCursor.split('\n');
+            const currentLineIndex = lines.length - 1;
+
+            dropdown.style.display = 'block';
+            dropdown.style.left = `${rect.left + 10}px`;
+            dropdown.style.top = `${rect.top + (currentLineIndex + 1) * lineHeight + 30}px`;
+        }
+
+        function hideMentionDropdown() {
+            mentionState.active = false;
+            mentionState.users = [];
+            document.getElementById('mention-dropdown').style.display = 'none';
+        }
+
+        function updateMentionSelection() {
+            const items = document.querySelectorAll('.mention-dropdown-item');
+            items.forEach((item, index) => {
+                item.classList.toggle('selected', index === mentionState.selectedIndex);
+            });
+        }
+
+        function selectMention(user) {
+            const textarea = mentionState.textarea;
+            const before = textarea.value.substring(0, mentionState.startPos);
+            const after = textarea.value.substring(textarea.selectionStart);
+
+            // Insert the mention with a link format
+            const mention = `[@${user.name}](/profile.html?id=${user.id})`;
+            textarea.value = before + mention + after;
+
+            // Move cursor after the mention
+            const newPos = before.length + mention.length;
+            textarea.selectionStart = textarea.selectionEnd = newPos;
+            textarea.focus();
+
+            hideMentionDropdown();
+            updatePreview();
         }
 
         async function uploadAndInsertImage(file, textarea) {

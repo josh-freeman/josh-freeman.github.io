@@ -783,11 +783,13 @@
                     body: JSON.stringify(postData)
                 });
 
-                if (response.ok) {
+                console.log('Save response status:', response.status, response.ok);
+
+                if (response.status >= 200 && response.status < 300) {
                     hideEditor();
                 } else {
-                    const error = await response.json();
-                    errorEl.textContent = error.detail || 'Failed to save post';
+                    const error = await response.json().catch(() => ({}));
+                    errorEl.textContent = error.detail || `Failed to save post (status: ${response.status})`;
                     errorEl.style.display = 'block';
                 }
             } catch (error) {

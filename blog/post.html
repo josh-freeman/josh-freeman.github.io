@@ -409,8 +409,11 @@
 
         async function loadReactionTree() {
             const slug = getPostSlug();
+            const token = localStorage.getItem('comment_token');
             try {
-                const response = await fetch(`${API_BASE}/reactions/${slug}/tree`);
+                const response = await fetch(`${API_BASE}/reactions/${slug}/tree`, {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
                 if (response.ok) {
                     const data = await response.json();
                     maxReactionDepth = data.max_depth;

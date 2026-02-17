@@ -588,9 +588,27 @@
 
                 <!-- Settings View -->
                 <div id="settings-view" style="display: none;">
-                    <h2 style="margin-bottom: 1.5rem;">Email Templates</h2>
+                    <h2 style="margin-bottom: 1.5rem;">Email Settings</h2>
+
+                    <!-- Sender Settings -->
+                    <div style="background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+                        <h3 style="margin-top: 0; margin-bottom: 1rem;">Sender</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>From Name</label>
+                                <input type="text" id="sender-name" placeholder="Josh Freeman">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>From Email</label>
+                                <input type="email" id="sender-email" placeholder="josh@joshfreeman.me">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveSenderSettings()" style="margin-top: 1rem;">Save Sender</button>
+                    </div>
+
+                    <h3 style="margin-bottom: 1rem;">Email Templates</h3>
                     <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
-                        Customize the emails sent to users. Placeholders: <code>{name}</code>, <code>{url}</code>, <code>{expires}</code> (invite), <code>{title}</code>, <code>{excerpt}</code> (post).
+                        Placeholders: <code>{name}</code>, <code>{url}</code>, <code>{expires}</code> (invite), <code>{title}</code>, <code>{excerpt}</code> (post).
                     </p>
 
                     <div style="display: flex; flex-direction: column; gap: 2rem;">
@@ -1665,6 +1683,23 @@
 
         async function loadEmailTemplates() {
             const token = localStorage.getItem('comment_token');
+
+            // Load sender settings
+            try {
+                const senderRes = await fetch(`${API_BASE}/admin/settings/email-sender`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (senderRes.ok) {
+                    const sender = await senderRes.json();
+                    document.getElementById('sender-name').value = sender.name || 'Josh Freeman';
+                    document.getElementById('sender-email').value = sender.email || 'josh@joshfreeman.me';
+                }
+            } catch (error) {
+                document.getElementById('sender-name').value = 'Josh Freeman';
+                document.getElementById('sender-email').value = 'josh@joshfreeman.me';
+            }
+
+            // Load templates
             try {
                 const response = await fetch(`${API_BASE}/admin/settings/email-templates`, {
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -1683,6 +1718,31 @@
             } catch (error) {
                 resetEmailTemplate('invite');
                 resetEmailTemplate('post');
+            }
+        }
+
+        async function saveSenderSettings() {
+            const token = localStorage.getItem('comment_token');
+            const name = document.getElementById('sender-name').value;
+            const email = document.getElementById('sender-email').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/settings/email-sender`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name, email })
+                });
+
+                if (response.ok) {
+                    showToast('Sender settings saved', 'success');
+                } else {
+                    showToast('Failed to save sender settings', 'error');
+                }
+            } catch (error) {
+                showToast('Failed to save sender settings', 'error');
             }
         }
 

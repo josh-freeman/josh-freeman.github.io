@@ -136,7 +136,7 @@
                     document.getElementById('og-url').content = `https://joshfreeman.me/blog/post.html?slug=${slug}`;
 
                     // Update content
-                    document.getElementById('post-title').innerHTML = post.title + (post.is_exclusive ? ' <span class="exclusive-badge" onclick="showExclusiveModal()" title="Click for info">Members Only</span>' : '');
+                    document.getElementById('post-title').innerHTML = post.title + (post.is_exclusive ? ' <span class="exclusive-badge" onclick="showExclusiveModal()" title="Click for info">Friends Only</span>' : '');
                     document.getElementById('post-date').textContent = formatPostDate(post.created_at);
                     document.getElementById('post-date').setAttribute('datetime', post.created_at.split('T')[0]);
 

@@ -96,6 +96,28 @@
             font-size: 0.95rem;
             padding: 0.6rem 0;
         }
+
+        /* Heart icon styles */
+        .heart-icon {
+            color: #9ca3af;
+            transition: all 0.2s ease;
+        }
+        .heart-icon.active {
+            color: #ef4444;
+            fill: #ef4444;
+        }
+        .heart-icon.own {
+            color: #eab308;
+            fill: #eab308;
+        }
+        .heart-icon-small {
+            width: 18px;
+            height: 18px;
+            vertical-align: middle;
+        }
+        #reaction-btn:hover .heart-icon:not(.active) {
+            color: #fca5a5;
+        }
     </style>
 
     <!-- Set initial OG title from URL slug for better previews -->
@@ -131,8 +153,8 @@
                 <p class="post-meta">
                     <time id="post-date" datetime=""></time>
                     <span id="reaction-container" style="margin-left: 1rem;">
-                        <button id="reaction-btn" onclick="toggleReaction()" style="background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 0.25rem 0.5rem; border-radius: 6px; transition: background 0.2s;" title="Like this post">
-                            <span id="reaction-icon">🤍</span>
+                        <button id="reaction-btn" onclick="toggleReaction()" style="background: none; border: none; cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 6px; transition: background 0.2s; display: inline-flex; align-items: center; gap: 0.3rem;" title="Like this post">
+                            <svg id="reaction-icon" class="heart-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z"/></svg>
                             <span id="reaction-count" style="font-size: 0.9rem; color: var(--text-muted);">0</span>
                         </button>
                     </span>
@@ -729,9 +751,11 @@
             `;
 
             const token = localStorage.getItem('comment_token');
-            let legendHtml = '<span>❤️ = reaction</span>';
+            const heartSvg = '<svg class="heart-icon-small active" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z"/></svg>';
+            const heartOwnSvg = '<svg class="heart-icon-small own" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z"/></svg>';
+            let legendHtml = `<span>${heartSvg} = reaction</span>`;
             if (token) {
-                legendHtml += '<span>💛 = yours</span>';
+                legendHtml += `<span>${heartOwnSvg} = yours</span>`;
             }
             legendHtml += '<span>Click to react</span>';
             if (token) {
@@ -840,7 +864,12 @@
 
             // Check if current user has any reaction in the forest
             const userHasReaction = currentUser && allUsers.has(currentUser.id);
-            document.getElementById('reaction-icon').textContent = userHasReaction ? '❤️' : '🤍';
+            const iconEl = document.getElementById('reaction-icon');
+            if (userHasReaction) {
+                iconEl.classList.add('active');
+            } else {
+                iconEl.classList.remove('active');
+            }
             document.getElementById('reaction-btn').style.background = userHasReaction ? 'rgba(239, 68, 68, 0.1)' : 'none';
 
             // If modal is open, render into it
@@ -853,7 +882,7 @@
                         <div style="font-size: 3rem; margin-bottom: 0.75rem;">🌱</div>
                         <div style="font-size: 1.1rem;">No reactions yet</div>
                         <div style="margin-top: 0.5rem;">Be the first to plant a heart!</div>
-                        ${token ? `<button onclick="toggleReaction(); closeForestModal();" style="margin-top: 1.25rem; padding: 0.6rem 1.25rem; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; box-shadow: 0 2px 8px rgba(239,68,68,0.3);">❤️ Add Reaction</button>` : ''}
+                        ${token ? `<button onclick="toggleReaction(); closeForestModal();" style="margin-top: 1.25rem; padding: 0.6rem 1.25rem; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; box-shadow: 0 2px 8px rgba(239,68,68,0.3); display: inline-flex; align-items: center; gap: 0.5rem;"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z"/></svg> Add Reaction</button>` : ''}
                     </div>
                 `;
                 if (modalTree) modalTree.innerHTML = emptyHtml;
@@ -886,10 +915,13 @@
                     childrenHtml = r.children.map(c => renderNode(c, depth + 1)).join('');
                 }
 
+                const heartColor = isOwn ? '#eab308' : '#ef4444';
+                const heartSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="${heartColor}" stroke="none" style="cursor: ${canReact ? 'pointer' : 'default'}; vertical-align: middle;" onclick="${canReact ? `reactToReaction(${r.id})` : ''}" title="${canReact ? 'Click to react' : ''}"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z"/></svg>`;
+
                 return `
                     <div class="tree-node" style="padding: 0.35rem 0; font-size: 0.95rem; display: flex; align-items: center; gap: 0.4rem;">
                         ${indent}
-                        <span style="cursor: ${canReact ? 'pointer' : 'default'};" onclick="${canReact ? `reactToReaction(${r.id})` : ''}" title="${canReact ? 'Click to react' : ''}">${isOwn ? '💛' : '❤️'}</span>
+                        ${heartSvg}
                         <a href="/profile.html?id=${r.user_id}" style="font-weight: 500; color: inherit; text-decoration: none;" onmouseover="this.style.color='var(--primary-color)'" onmouseout="this.style.color='inherit'">${r.user_name}</a>
                         ${canDelete ? `<button onclick="removeReaction(${r.id})" style="background: none; border: none; cursor: pointer; color: #ccc; font-size: 0.8rem; padding: 0 0.25rem;" title="Remove">✕</button>` : ''}
                     </div>
@@ -907,6 +939,12 @@
             container.innerHTML = '';
             container.style.height = '250px';
 
+            // SVG heart as data URL for Cytoscape nodes
+            const heartPath = 'M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z';
+            const makeHeartSvg = (color) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}"><path d="${heartPath}"/></svg>`)}`;
+            const heartRed = makeHeartSvg('%23ef4444');
+            const heartYellow = makeHeartSvg('%23eab308');
+
             // Build nodes and edges for Cytoscape
             const elements = [];
 
@@ -915,7 +953,7 @@
                 elements.push({
                     data: {
                         id: 'r' + r.id,
-                        label: isOwn ? '💛' : '❤️',
+                        heartImg: isOwn ? heartYellow : heartRed,
                         name: r.user_name,
                         reactionId: r.id,
                         depth: r.depth,
@@ -947,13 +985,11 @@
                     {
                         selector: 'node',
                         style: {
-                            'label': 'data(label)',
-                            'text-valign': 'center',
-                            'text-halign': 'center',
-                            'font-size': '24px',
-                            'width': 40,
-                            'height': 40,
-                            'background-color': '#fff',
+                            'width': 36,
+                            'height': 36,
+                            'background-color': 'transparent',
+                            'background-image': 'data(heartImg)',
+                            'background-fit': 'contain',
                             'border-width': 0,
                             'cursor': 'pointer'
                         }
@@ -1041,7 +1077,12 @@
             const countEl = document.getElementById('reaction-count');
             // Show total distinct users if available, otherwise top-level count
             countEl.textContent = totalDistinct !== null ? totalDistinct : count;
-            document.getElementById('reaction-icon').textContent = reacted ? '❤️' : '🤍';
+            const iconEl = document.getElementById('reaction-icon');
+            if (reacted) {
+                iconEl.classList.add('active');
+            } else {
+                iconEl.classList.remove('active');
+            }
             document.getElementById('reaction-btn').style.background = reacted ? 'rgba(239, 68, 68, 0.1)' : 'none';
         }
 

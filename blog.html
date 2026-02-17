@@ -154,7 +154,7 @@
                         <article class="post-preview">
                             ${isAdmin ? `<a href="/admin.html#edit/${post.slug}" class="post-edit-btn">Edit</a>` : ''}
                             <a href="/blog/post.html?slug=${post.slug}">
-                                <h2>${escapeHtml(post.title)}${post.is_exclusive ? ' <span class="exclusive-badge">Members</span>' : ''}</h2>
+                                <h2>${escapeHtml(post.title)}${post.is_exclusive ? ' <span class="exclusive-badge">Friends</span>' : ''}</h2>
                                 <time datetime="${post.created_at.split('T')[0]}">${formatDate(post.created_at)}</time>
                                 <p>${escapeHtml(post.excerpt || '')}</p>
                                 <span class="read-more">Read more &rarr;</span>

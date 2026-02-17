@@ -218,7 +218,7 @@ function updateCommentForm() {
                 <a href="#" onclick="showLogin(); return false;">Log in</a> to leave a comment.
             </p>
             <p style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.9rem; margin-top: 0.5rem; border-left: 4px solid #f59e0b;">
-                <strong>Looking for a signup link?</strong> There isn't one! Comments are invite-only. Ask Josh for an invite if you'd like to join.
+                <strong>Looking for a signup link?</strong> There isn't one! Comments are invite-only. Ask me (Josh :) for an invite if you think I forgot to send you one!
             </p>
         `;
     }
@@ -244,7 +244,7 @@ function showLogin() {
         <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 400px; width: 90%;">
             <h3 style="margin-bottom: 1rem;">Log in to comment</h3>
             <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem; border-left: 4px solid #f59e0b;">
-                <strong>No signup?</strong> Correct! This is invite-only. Ask Josh if you need an invite.
+                <strong>No signup?</strong> Correct! This is invite-only. Ask me (Josh :) if you think I forgot to send you one!
             </div>
             <form onsubmit="handleLogin(event)">
                 <input

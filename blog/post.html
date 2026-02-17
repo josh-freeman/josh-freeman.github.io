@@ -555,7 +555,7 @@
                     <div class="tree-node" style="padding: 0.35rem 0; font-size: 0.95rem; display: flex; align-items: center; gap: 0.4rem;">
                         ${indent}
                         <span style="cursor: ${canReact ? 'pointer' : 'default'};" onclick="${canReact ? `reactToReaction(${r.id})` : ''}" title="${canReact ? 'Click to react' : ''}">${isOwn ? '💛' : '❤️'}</span>
-                        <span style="font-weight: 500;">${r.user_name}</span>
+                        <a href="/profile.html?id=${r.user_id}" style="font-weight: 500; color: inherit; text-decoration: none;" onmouseover="this.style.color='var(--primary-color)'" onmouseout="this.style.color='inherit'">${r.user_name}</a>
                         ${canDelete ? `<button onclick="removeReaction(${r.id})" style="background: none; border: none; cursor: pointer; color: #ccc; font-size: 0.8rem; padding: 0 0.25rem;" title="Remove">✕</button>` : ''}
                     </div>
                     ${childrenHtml}

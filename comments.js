@@ -459,7 +459,7 @@ function showLikersModal(likers, title = 'Liked by') {
     `;
 
     const likersList = likers.length > 0
-        ? likers.map(l => `<li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">${l.name} <span style="color: #999; font-size: 0.85rem;">(${new Date(l.liked_at).toLocaleDateString()})</span></li>`).join('')
+        ? likers.map(l => `<li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;"><a href="/profile.html?id=${l.id}" style="color: var(--text-color); text-decoration: none; font-weight: 500;">${escapeHtml(l.name)}</a> <span style="color: #999; font-size: 0.85rem;">(${new Date(l.liked_at).toLocaleDateString()})</span></li>`).join('')
         : '<li style="color: #999;">No likes yet</li>';
 
     modal.innerHTML = `

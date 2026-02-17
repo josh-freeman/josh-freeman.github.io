@@ -153,7 +153,7 @@
                 <p class="post-meta">
                     <time id="post-date" datetime=""></time>
                     <span id="reaction-container" style="margin-left: 1rem;">
-                        <button id="reaction-btn" onclick="toggleReaction()" style="background: none; border: none; cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 6px; transition: background 0.2s; display: inline-flex; align-items: center; gap: 0.3rem;" title="Like this post">
+                        <button id="reaction-btn" onclick="toggleReaction()" style="background: none; border: none; cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 6px; transition: background 0.2s; display: inline-flex; align-items: center; gap: 0.3rem;" title="Add your reaction">
                             <svg id="reaction-icon" class="heart-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z"/></svg>
                             <span id="reaction-count" style="font-size: 0.9rem; color: var(--text-muted);">0</span>
                         </button>
@@ -1074,16 +1074,10 @@
 
         function updateReactionUI(count, reacted, totalDistinct = null) {
             userReacted = reacted;
-            const countEl = document.getElementById('reaction-count');
-            // Show total distinct users if available, otherwise top-level count
-            countEl.textContent = totalDistinct !== null ? totalDistinct : count;
-            const iconEl = document.getElementById('reaction-icon');
-            if (reacted) {
-                iconEl.classList.add('active');
-            } else {
-                iconEl.classList.remove('active');
-            }
-            document.getElementById('reaction-btn').style.background = reacted ? 'rgba(239, 68, 68, 0.1)' : 'none';
+            // Note: Icon state is set by renderReactionTree() based on whether
+            // user has ANY reaction in the forest, not just top-level.
+            // This function only updates the count display.
+            // totalDistinct is no longer used here - count comes from renderReactionTree.
         }
 
         async function toggleReaction() {

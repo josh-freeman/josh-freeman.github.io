@@ -1132,6 +1132,7 @@
         let allImages = [];
 
         async function loadImages() {
+            const token = localStorage.getItem('comment_token');
             const grid = document.getElementById('images-grid');
             const stats = document.getElementById('images-stats');
 
@@ -1221,6 +1222,8 @@
             if (!confirm(`Delete image ${filename}? This cannot be undone.`)) {
                 return;
             }
+
+            const token = localStorage.getItem('comment_token');
 
             try {
                 const response = await fetch(`${API_BASE}/admin/images/${filename}`, {

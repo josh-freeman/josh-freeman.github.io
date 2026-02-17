@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Profile - Joshua Freeman</title>
+    <meta name="description" content="User profile">
+
+    <!-- Favicon -->
+    <link rel="icon" href="/resources/icon_blue.png" type="image/png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/buttons.css">
+    <style>
+        .profile-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+            color: white;
+        }
+        .profile-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+        }
+        .profile-meta {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .recent-comments h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        .comment-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .comment-item:last-child {
+            border-bottom: none;
+        }
+        .comment-post {
+            font-size: 0.85rem;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .comment-post:hover {
+            text-decoration: underline;
+        }
+        .comment-text {
+            margin-top: 0.25rem;
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+        .comment-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <!-- Sidebar -->
+        <sidebar>
+            <script src="/sidebar.js"></script>
+        </sidebar>
+
+        <div class="profile-container">
+            <a href="/blog.html" class="back-link">&larr; Back to blog</a>
+
+            <div id="profile-content">
+                <p style="color: var(--text-muted); text-align: center;">Loading profile...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="/submenus.js"></script>
+
+    <script>
+        const API_BASE = 'https://api.joshfreeman.me';
+
+        function getUserId() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function getInitial(name) {
+            return name ? name.charAt(0).toUpperCase() : '?';
+        }
+
+        async function loadProfile() {
+            const userId = getUserId();
+            const container = document.getElementById('profile-content');
+
+            if (!userId) {
+                container.innerHTML = '<p style="text-align: center;">No user specified.</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/users/${userId}/profile`);
+                if (response.ok) {
+                    const profile = await response.json();
+
+                    document.getElementById('page-title').textContent = `${profile.name} - Joshua Freeman`;
+
+                    let commentsHtml = '';
+                    if (profile.recent_comments.length > 0) {
+                        commentsHtml = `
+                            <div class="recent-comments">
+                                <h3>Recent Comments</h3>
+                                ${profile.recent_comments.map(c => `
+                                    <div class="comment-item">
+                                        <a href="/blog/post.html?slug=${c.post_slug}" class="comment-post">on ${c.post_slug}</a>
+                                        <div class="comment-text">${escapeHtml(c.content)}</div>
+                                        <div class="comment-date">${formatDate(c.created_at)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+
+                    container.innerHTML = `
+                        <div class="profile-header">
+                            <div class="profile-avatar">${getInitial(profile.name)}</div>
+                            <h1 class="profile-name">${escapeHtml(profile.name)}</h1>
+                            <p class="profile-meta">Member since ${formatDate(profile.member_since)}</p>
+                        </div>
+                        <div class="profile-stats">
+                            <div class="stat">
+                                <div class="stat-value">${profile.comment_count}</div>
+                                <div class="stat-label">comments</div>
+                            </div>
+                        </div>
+                        ${commentsHtml}
+                    `;
+                } else if (response.status === 404) {
+                    container.innerHTML = '<p style="text-align: center;">User not found.</p>';
+                } else {
+                    throw new Error('Failed to load');
+                }
+            } catch (error) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">Failed to load profile.</p>';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+</body>
+</html>

@@ -218,9 +218,14 @@
     color: #e74c3c;
 }
 
-.comment-author {
+a.comment-author {
     font-weight: 600;
     color: var(--text-color);
+    text-decoration: none;
+}
+
+a.comment-author:hover {
+    color: var(--primary-color);
 }
 
 .comment-date {

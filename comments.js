@@ -53,7 +53,7 @@ function renderComments(comments) {
         return `
             <div class="comment" data-id="${comment.id}">
                 <div class="comment-header">
-                    <span class="comment-author">${escapeHtml(comment.author_name)}</span>
+                    <a href="/profile.html?id=${comment.author_id}" class="comment-author">${escapeHtml(comment.author_name)}</a>
                     <span class="comment-date">${formatDate(comment.created_at)}</span>
                     ${canEdit || canDelete ? `
                         <span class="comment-actions">

@@ -590,7 +590,7 @@
                 <div id="settings-view" style="display: none;">
                     <h2 style="margin-bottom: 1.5rem;">Email Templates</h2>
                     <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
-                        Customize the emails sent to users. Use <code>{name}</code>, <code>{url}</code>, <code>{title}</code>, <code>{excerpt}</code> as placeholders.
+                        Customize the emails sent to users. Placeholders: <code>{name}</code>, <code>{url}</code>, <code>{expires}</code> (invite), <code>{title}</code>, <code>{excerpt}</code> (post).
                     </p>
 
                     <div style="display: flex; flex-direction: column; gap: 2rem;">
@@ -1639,7 +1639,7 @@
         </a>
     </p>
     <p style="color: #6b7280; font-size: 14px;">
-        This invite expires in 7 days. If the button doesn't work, copy this link:<br>
+        This invite expires in {expires}. If the button doesn't work, copy this link:<br>
         <a href="{url}" style="color: #6366f1;">{url}</a>
     </p>
     <p style="color: #4b5563; margin-top: 24px;">— Josh</p>

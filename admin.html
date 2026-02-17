@@ -886,12 +886,18 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.sent > 0) {
-                        showToast(`Notified ${data.sent} of ${data.total} users`, 'success');
+                    if (data.sent > 0 && data.failed === 0) {
+                        showToast(`Notified ${data.sent} users`, 'success');
+                    } else if (data.sent > 0 && data.failed > 0) {
+                        showToast(`Sent ${data.sent}/${data.total}, ${data.failed} failed`, 'error');
+                        if (data.errors && data.errors.length > 0) {
+                            console.error('Email errors:', data.errors);
+                        }
                     } else if (data.status === 'no_users') {
                         showToast('No users to notify', 'error');
                     } else {
-                        showToast('No emails sent - check API key', 'error');
+                        const errorMsg = data.errors && data.errors[0] ? data.errors[0] : 'Check API key';
+                        showToast(`Email failed: ${errorMsg}`, 'error');
                     }
                 } else {
                     const error = await response.json();
@@ -1270,8 +1276,18 @@
                     document.getElementById('invite-form').style.display = 'none';
                     document.getElementById('invite-link-display').style.display = 'block';
                     loadInvites();
+
+                    // Show email status if email was requested
+                    if (sendEmail) {
+                        if (invite.email_sent) {
+                            showToast(`Invite created and email sent to ${email}`, 'success');
+                        } else {
+                            showToast(`Invite created but email failed: ${invite.email_error || 'Unknown error'}`, 'error');
+                        }
+                    }
                 } else {
-                    showToast('Failed to create invite', 'error');
+                    const error = await response.json();
+                    showToast(error.detail || 'Failed to create invite', 'error');
                 }
             } catch (error) {
                 showToast('Failed to create invite', 'error');

@@ -231,7 +231,10 @@
             }
 
             try {
-                const response = await fetch(`${API_BASE}/users/${userId}/profile`);
+                // Include auth token so API knows what posts viewer can see
+                const token = localStorage.getItem('comment_token');
+                const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+                const response = await fetch(`${API_BASE}/users/${userId}/profile`, { headers });
                 if (response.ok) {
                     const profile = await response.json();
 
@@ -247,21 +250,15 @@
                             <h1 class="profile-name">${escapeHtml(profile.name)}</h1>
                             <p class="profile-meta">Friend since ${formatDate(profile.member_since)}</p>
                         </div>
-                        <div class="profile-stats">
-                            <div class="stat">
-                                <div class="stat-value">${profile.comment_count}</div>
-                                <div class="stat-label">comments</div>
-                            </div>
-                        </div>
                         <div id="activity-container"></div>
                     `;
 
-                    // Load activity feed if viewing own profile
+                    // Load full activity feed if viewing own profile (includes share links)
                     if (isOwnProfile) {
                         loadActivity(userId);
                     } else {
-                        // Show public comments only
-                        showPublicComments(profile.recent_comments);
+                        // Show the user's recent activity feed
+                        renderPublicFeed(profile.recent_activity);
                     }
                 } else if (response.status === 404) {
                     container.innerHTML = '<p style="text-align: center;">User not found.</p>';
@@ -278,21 +275,22 @@
             return userStr ? JSON.parse(userStr) : null;
         }
 
-        function showPublicComments(comments) {
+        function renderPublicFeed(activity) {
             const container = document.getElementById('activity-container');
-            if (!comments || comments.length === 0) {
+            if (!activity || activity.length === 0) {
                 container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">No recent activity.</p>';
                 return;
             }
 
             container.innerHTML = `
-                <div class="recent-comments">
-                    <h3>Recent Comments</h3>
-                    ${comments.map(c => `
-                        <div class="comment-item">
-                            <a href="/blog/post.html?slug=${c.post_slug}" class="comment-post">on ${c.post_slug}</a>
-                            <div class="comment-text">${escapeHtml(c.content)}</div>
-                            <div class="comment-date">${formatDate(c.created_at)}</div>
+                <div class="activity-feed">
+                    <h3>Recent Activity</h3>
+                    ${activity.map(item => `
+                        <div class="activity-item comment">
+                            <div class="activity-type comment">Comment</div>
+                            <a href="/blog/post.html?slug=${item.post_slug}" class="activity-post-link">${escapeHtml(item.post_title)}</a>
+                            <div class="activity-content">${escapeHtml(item.content)}</div>
+                            <div class="activity-meta">${formatRelativeTime(item.created_at)}</div>
                         </div>
                     `).join('')}
                 </div>

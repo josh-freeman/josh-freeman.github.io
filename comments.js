@@ -32,10 +32,10 @@ const HEART_FILLED = `<svg class="comment-heart-icon active" width="16" height="
 
             /* Nested comments */
             .comment-replies {
-                margin-left: 1.5rem;
-                padding-left: 1rem;
+                margin-left: 0.75rem;
+                padding-left: 0.75rem;
                 border-left: 2px solid #e5e7eb;
-                margin-top: 0.75rem;
+                margin-top: 0.5rem;
             }
             .comment-replies .comment {
                 margin-bottom: 0.75rem;

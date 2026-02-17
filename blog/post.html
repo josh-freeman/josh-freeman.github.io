@@ -138,6 +138,9 @@
 
                     // Render markdown content
                     document.getElementById('post-content').innerHTML = marked.parse(post.content);
+
+                    // Style blockquotes based on content
+                    styleBlockquotes();
                 } else if (response.status === 404) {
                     document.getElementById('post-title').textContent = 'Post Not Found';
                     document.getElementById('post-content').innerHTML = '<p>This post does not exist or has been removed. <a href="/blog.html">Back to blog</a></p>';
@@ -151,6 +154,21 @@
         }
 
         document.addEventListener('DOMContentLoaded', loadPost);
+
+        // Style blockquotes based on content (note, warning, tip)
+        function styleBlockquotes() {
+            const blockquotes = document.querySelectorAll('.post-content blockquote');
+            blockquotes.forEach(bq => {
+                const text = bq.textContent.toLowerCase();
+                if (text.includes('⚠️') || text.includes('warning') || text.includes('/!\\')) {
+                    bq.classList.add('warning');
+                } else if (text.includes('💡') || text.includes('tip:')) {
+                    bq.classList.add('tip');
+                } else if (text.includes('ℹ️') || text.includes('note:')) {
+                    bq.classList.add('note');
+                }
+            });
+        }
 
         // Check if user is admin and show edit/delete buttons
         function checkAdminActions() {

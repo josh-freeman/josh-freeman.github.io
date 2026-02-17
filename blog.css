@@ -270,6 +270,43 @@
     text-decoration: underline;
 }
 
+/* Info banners for blog posts */
+.post-content blockquote {
+    margin: 1.5rem 0;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    border-left: 4px solid #6b7280;
+    background: #f9fafb;
+    color: #374151;
+    font-size: 0.95rem;
+}
+
+.post-content blockquote p {
+    margin: 0 0 0.5rem 0;
+}
+
+.post-content blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+.post-content blockquote.note {
+    border-left-color: #3b82f6;
+    background: #eff6ff;
+    color: #1e40af;
+}
+
+.post-content blockquote.warning {
+    border-left-color: #f59e0b;
+    background: #fffbeb;
+    color: #92400e;
+}
+
+.post-content blockquote.tip {
+    border-left-color: #10b981;
+    background: #ecfdf5;
+    color: #065f46;
+}
+
 /* Comment Form */
 .comment-form {
     margin-top: 1.5rem;

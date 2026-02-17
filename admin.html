@@ -621,7 +621,18 @@
                         </div>
                     </details>
 
-                    <h3 style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">Invite History</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <h3 style="margin: 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">Invite History</h3>
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem;">
+                                <input type="checkbox" id="filter-inactive-invites" onchange="filterInvites()">
+                                <span>Show used/expired</span>
+                            </label>
+                            <button id="cleanup-invites-btn" class="btn" onclick="cleanupInvites()" style="display: none; background: #fee2e2; color: #dc2626; font-size: 0.85rem; padding: 0.4rem 0.8rem;">
+                                Delete inactive
+                            </button>
+                        </div>
+                    </div>
                     <div id="invites-list" class="post-list">
                         <p>Loading invites...</p>
                     </div>
@@ -1480,15 +1491,45 @@
 
         function renderInvites() {
             const container = document.getElementById('invites-list');
+            const showInactive = document.getElementById('filter-inactive-invites').checked;
+            const cleanupBtn = document.getElementById('cleanup-invites-btn');
 
             if (allInvites.length === 0) {
                 container.innerHTML = '<p style="color: var(--text-muted);">No invites yet.</p>';
+                cleanupBtn.style.display = 'none';
                 return;
             }
 
             const now = new Date();
-            const visibleInvites = allInvites.slice(0, invitesVisible);
-            const hasMore = allInvites.length > invitesVisible;
+
+            // Filter invites based on checkbox
+            const filteredInvites = allInvites.filter(invite => {
+                const expired = new Date(invite.expires_at) < now;
+                const isInactive = invite.used || expired;
+                return showInactive ? isInactive : !isInactive;
+            });
+
+            // Count inactive for cleanup button
+            const inactiveCount = allInvites.filter(invite => {
+                const expired = new Date(invite.expires_at) < now;
+                return invite.used || expired;
+            }).length;
+
+            // Show/hide cleanup button
+            cleanupBtn.style.display = (showInactive && inactiveCount > 0) ? 'inline-block' : 'none';
+            if (inactiveCount > 0) {
+                cleanupBtn.textContent = `Delete all inactive (${inactiveCount})`;
+            }
+
+            if (filteredInvites.length === 0) {
+                container.innerHTML = showInactive
+                    ? '<p style="color: var(--text-muted);">No used or expired invites.</p>'
+                    : '<p style="color: var(--text-muted);">No active invites.</p>';
+                return;
+            }
+
+            const visibleInvites = filteredInvites.slice(0, invitesVisible);
+            const hasMore = filteredInvites.length > invitesVisible;
 
             container.innerHTML = visibleInvites.map(invite => {
                 const expired = new Date(invite.expires_at) < now;
@@ -1496,7 +1537,7 @@
                 const statusClass = invite.used ? 'badge-published' : (expired ? 'badge-draft' : 'badge-published');
 
                 return `
-                    <div class="post-item">
+                    <div class="post-item ${(invite.used || expired) ? 'inactive' : ''}" style="${(invite.used || expired) ? 'opacity: 0.7; background: #fef3c7;' : ''}">
                         <div class="post-item-info">
                             <h3 style="font-family: monospace; font-size: 0.9rem;">${invite.token.substring(0, 16)}...</h3>
                             <div class="meta">
@@ -1513,14 +1554,49 @@
                 `;
             }).join('') + (hasMore ? `
                 <button class="btn" onclick="showMoreInvites()" style="width: 100%; margin-top: 0.5rem; background: #f3f4f6; color: #374151;">
-                    Show more (${allInvites.length - invitesVisible} remaining)
+                    Show more (${filteredInvites.length - invitesVisible} remaining)
                 </button>
             ` : '');
+        }
+
+        function filterInvites() {
+            invitesVisible = PAGE_SIZE;
+            renderInvites();
         }
 
         function showMoreInvites() {
             invitesVisible += PAGE_SIZE;
             renderInvites();
+        }
+
+        async function cleanupInvites() {
+            const now = new Date();
+            const inactiveInvites = allInvites.filter(invite => {
+                const expired = new Date(invite.expires_at) < now;
+                return invite.used || expired;
+            });
+
+            if (inactiveInvites.length === 0) return;
+
+            if (!confirm(`Delete ${inactiveInvites.length} used/expired invite(s)?`)) return;
+
+            const token = localStorage.getItem('comment_token');
+            let deleted = 0;
+
+            for (const invite of inactiveInvites) {
+                try {
+                    const response = await fetch(`${API_BASE}/admin/invites/${invite.id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (response.ok) deleted++;
+                } catch (error) {
+                    console.error('Failed to delete invite', invite.id);
+                }
+            }
+
+            showToast(`Deleted ${deleted} invite(s)`, 'success');
+            loadInvites();
         }
 
         function copyInviteLinkById(token) {

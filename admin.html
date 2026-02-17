@@ -442,6 +442,7 @@
                     <button class="btn" id="tab-invites" onclick="showTab('invites')">Invites</button>
                     <button class="btn" id="tab-users" onclick="showTab('users')">Users</button>
                     <button class="btn" id="tab-images" onclick="showTab('images')">Images</button>
+                    <button class="btn" id="tab-settings" onclick="showTab('settings')">Settings</button>
                 </div>
 
                 <!-- Post List View -->
@@ -517,29 +518,32 @@
                         <button class="btn btn-primary" onclick="showInviteForm()">Create Invite</button>
                     </div>
 
-                    <div id="invite-form" style="display: none; margin-bottom: 1.5rem; padding: 1rem; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0;">
+                    <div id="invite-form" style="display: none; margin-bottom: 1.5rem; padding: 1.5rem; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0;">
                         <h3 style="margin-top: 0;">New Invite</h3>
                         <form onsubmit="createInvite(event)">
-                            <div class="form-group">
-                                <label>Name</label>
-                                <input type="text" id="invite-name" placeholder="John Doe" required minlength="2" maxlength="100">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>Name</label>
+                                    <input type="text" id="invite-name" placeholder="John Doe" required minlength="2" maxlength="100">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>Email</label>
+                                    <input type="email" id="invite-email" placeholder="friend@email.com" required>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input type="email" id="invite-email" placeholder="friend@email.com" required>
+                            <div class="form-group" style="margin-top: 1rem;">
+                                <label>Expires in</label>
+                                <select id="invite-expires" style="width: auto; padding: 0.5rem 1rem;">
+                                    <option value="60">1 hour</option>
+                                    <option value="1440">1 day</option>
+                                    <option value="4320">3 days</option>
+                                    <option value="10080" selected>7 days</option>
+                                </select>
                             </div>
-                            <div class="form-group">
-                                <label>Expires in (minutes)</label>
-                                <input type="number" id="invite-expires" value="10080" min="5" max="10080">
-                                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Default 7 days (10080 min)</p>
-                            </div>
-                            <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">
-                                <input type="checkbox" id="invite-send-email">
-                                <label for="invite-send-email" style="margin: 0;">Send invitation email</label>
-                            </div>
-                            <div style="display: flex; gap: 1rem;">
-                                <button type="submit" class="btn btn-primary">Create</button>
-                                <button type="button" class="btn" onclick="hideInviteForm()">Cancel</button>
+                            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; align-items: center;">
+                                <button type="submit" class="btn btn-primary" id="invite-submit-btn" onclick="this.form.dataset.sendEmail='false'">Create Link Only</button>
+                                <button type="submit" class="btn" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white;" onclick="this.form.dataset.sendEmail='true'">Create & Send Email</button>
+                                <button type="button" class="btn" onclick="hideInviteForm()" style="margin-left: auto;">Cancel</button>
                             </div>
                         </form>
                     </div>
@@ -579,6 +583,46 @@
 
                     <div id="images-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem;">
                         <p>Loading images...</p>
+                    </div>
+                </div>
+
+                <!-- Settings View -->
+                <div id="settings-view" style="display: none;">
+                    <h2 style="margin-bottom: 1.5rem;">Email Templates</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                        Customize the emails sent to users. Use <code>{name}</code>, <code>{url}</code>, <code>{title}</code>, <code>{excerpt}</code> as placeholders.
+                    </p>
+
+                    <div style="display: flex; flex-direction: column; gap: 2rem;">
+                        <!-- Invite Email Template -->
+                        <div style="background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem;">
+                            <h3 style="margin-top: 0; margin-bottom: 1rem;">Invite Email</h3>
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <input type="text" id="template-invite-subject" value="You're invited to joshfreeman.me">
+                            </div>
+                            <div class="form-group">
+                                <label>Body (HTML)</label>
+                                <textarea id="template-invite-body" style="min-height: 200px; font-family: monospace; font-size: 0.85rem;"></textarea>
+                            </div>
+                            <button class="btn btn-primary" onclick="saveEmailTemplate('invite')">Save Invite Template</button>
+                            <button class="btn" onclick="resetEmailTemplate('invite')" style="margin-left: 0.5rem;">Reset to Default</button>
+                        </div>
+
+                        <!-- New Post Email Template -->
+                        <div style="background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem;">
+                            <h3 style="margin-top: 0; margin-bottom: 1rem;">New Post Notification</h3>
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <input type="text" id="template-post-subject" value="New post: {title}">
+                            </div>
+                            <div class="form-group">
+                                <label>Body (HTML)</label>
+                                <textarea id="template-post-body" style="min-height: 200px; font-family: monospace; font-size: 0.85rem;"></textarea>
+                            </div>
+                            <button class="btn btn-primary" onclick="saveEmailTemplate('post')">Save Post Template</button>
+                            <button class="btn" onclick="resetEmailTemplate('post')" style="margin-left: 0.5rem;">Reset to Default</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1214,12 +1258,14 @@
             document.getElementById('invites-view').style.display = 'none';
             document.getElementById('users-view').style.display = 'none';
             document.getElementById('images-view').style.display = 'none';
+            document.getElementById('settings-view').style.display = 'none';
 
             // Reset tab styles
             document.getElementById('tab-posts').style.fontWeight = 'normal';
             document.getElementById('tab-invites').style.fontWeight = 'normal';
             document.getElementById('tab-users').style.fontWeight = 'normal';
             document.getElementById('tab-images').style.fontWeight = 'normal';
+            document.getElementById('tab-settings').style.fontWeight = 'normal';
 
             // Show selected tab
             if (tab === 'posts') {
@@ -1238,6 +1284,10 @@
                 document.getElementById('images-view').style.display = 'block';
                 document.getElementById('tab-images').style.fontWeight = '600';
                 loadImages();
+            } else if (tab === 'settings') {
+                document.getElementById('settings-view').style.display = 'block';
+                document.getElementById('tab-settings').style.fontWeight = '600';
+                loadEmailTemplates();
             }
         }
 
@@ -1257,7 +1307,7 @@
             const name = document.getElementById('invite-name').value.trim();
             const email = document.getElementById('invite-email').value.trim();
             const expiresMinutes = parseInt(document.getElementById('invite-expires').value) || 10080;
-            const sendEmail = document.getElementById('invite-send-email').checked;
+            const sendEmail = event.target.dataset.sendEmail === 'true';
 
             try {
                 const response = await fetch(`${API_BASE}/admin/invites`, {
@@ -1572,6 +1622,98 @@
             } catch (error) {
                 showToast('Failed to delete image', 'error');
             }
+        }
+
+        // Email template management
+        const defaultTemplates = {
+            invite: {
+                subject: "You're invited to joshfreeman.me",
+                body: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #1f2937;">Hey {name}!</h2>
+    <p style="color: #4b5563; line-height: 1.6;">
+        You've been invited to join my blog as a friend. This gives you access to exclusive posts and the ability to leave comments.
+    </p>
+    <p style="margin: 24px 0;">
+        <a href="{url}" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500;">
+            Accept Invitation
+        </a>
+    </p>
+    <p style="color: #6b7280; font-size: 14px;">
+        This invite expires in 7 days. If the button doesn't work, copy this link:<br>
+        <a href="{url}" style="color: #6366f1;">{url}</a>
+    </p>
+    <p style="color: #4b5563; margin-top: 24px;">— Josh</p>
+</div>`
+            },
+            post: {
+                subject: "New post: {title}",
+                body: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #1f2937;">New Post: {title}</h2>
+    <p style="color: #4b5563; line-height: 1.6; font-style: italic;">"{excerpt}"</p>
+    <p style="margin: 24px 0;">
+        <a href="{url}" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500;">
+            Read Post
+        </a>
+    </p>
+    <p style="color: #4b5563;">— Josh</p>
+    <p style="color: #9ca3af; font-size: 12px; margin-top: 24px;">
+        You're receiving this because you're a friend on joshfreeman.me
+    </p>
+</div>`
+            }
+        };
+
+        async function loadEmailTemplates() {
+            const token = localStorage.getItem('comment_token');
+            try {
+                const response = await fetch(`${API_BASE}/admin/settings/email-templates`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const templates = await response.json();
+                    document.getElementById('template-invite-subject').value = templates.invite?.subject || defaultTemplates.invite.subject;
+                    document.getElementById('template-invite-body').value = templates.invite?.body || defaultTemplates.invite.body;
+                    document.getElementById('template-post-subject').value = templates.post?.subject || defaultTemplates.post.subject;
+                    document.getElementById('template-post-body').value = templates.post?.body || defaultTemplates.post.body;
+                } else {
+                    // Use defaults
+                    resetEmailTemplate('invite');
+                    resetEmailTemplate('post');
+                }
+            } catch (error) {
+                resetEmailTemplate('invite');
+                resetEmailTemplate('post');
+            }
+        }
+
+        async function saveEmailTemplate(type) {
+            const token = localStorage.getItem('comment_token');
+            const subject = document.getElementById(`template-${type}-subject`).value;
+            const body = document.getElementById(`template-${type}-body`).value;
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/settings/email-templates/${type}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ subject, body })
+                });
+
+                if (response.ok) {
+                    showToast(`${type === 'invite' ? 'Invite' : 'Post'} template saved`, 'success');
+                } else {
+                    showToast('Failed to save template', 'error');
+                }
+            } catch (error) {
+                showToast('Failed to save template', 'error');
+            }
+        }
+
+        function resetEmailTemplate(type) {
+            document.getElementById(`template-${type}-subject`).value = defaultTemplates[type].subject;
+            document.getElementById(`template-${type}-body`).value = defaultTemplates[type].body;
         }
 
         // Handle hash-based navigation for editing posts

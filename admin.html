@@ -195,6 +195,33 @@
                 gap: 1rem;
             }
         }
+
+        /* Blockquote styles for preview */
+        #preview-content blockquote {
+            margin: 1rem 0;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #6b7280;
+            background: #f9fafb;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+        #preview-content blockquote p { margin: 0; }
+        #preview-content blockquote.note {
+            border-left-color: #3b82f6;
+            background: #eff6ff;
+            color: #1e40af;
+        }
+        #preview-content blockquote.warning {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+            color: #92400e;
+        }
+        #preview-content blockquote.tip {
+            border-left-color: #10b981;
+            background: #ecfdf5;
+            color: #065f46;
+        }
     </style>
 </head>
 <body>
@@ -573,6 +600,23 @@
             const content = document.getElementById('post-content').value;
             const preview = document.getElementById('preview-content');
             preview.innerHTML = marked.parse(content);
+            // Style blockquotes
+            stylePreviewBlockquotes();
+        }
+
+        function stylePreviewBlockquotes() {
+            const blockquotes = document.querySelectorAll('#preview-content blockquote');
+            blockquotes.forEach(bq => {
+                const text = bq.textContent.toLowerCase().trim();
+                bq.classList.remove('warning', 'tip', 'note');
+                if (text.includes('⚠️') || /^warning\b/i.test(text) || text.includes('/!\\')) {
+                    bq.classList.add('warning');
+                } else if (text.includes('💡') || /^tip\b/i.test(text)) {
+                    bq.classList.add('tip');
+                } else if (text.includes('ℹ️') || /^note\b/i.test(text)) {
+                    bq.classList.add('note');
+                }
+            });
         }
 
         function escapeHtml(text) {

@@ -159,12 +159,13 @@
         function styleBlockquotes() {
             const blockquotes = document.querySelectorAll('.post-content blockquote');
             blockquotes.forEach(bq => {
-                const text = bq.textContent.toLowerCase();
-                if (text.includes('⚠️') || text.includes('warning') || text.includes('/!\\')) {
+                const text = bq.textContent.toLowerCase().trim();
+                // Check start of text for keywords (with flexible spacing/punctuation)
+                if (text.includes('⚠️') || /^warning\b/i.test(text) || text.includes('/!\\')) {
                     bq.classList.add('warning');
-                } else if (text.includes('💡') || text.includes('tip:')) {
+                } else if (text.includes('💡') || /^tip\b/i.test(text)) {
                     bq.classList.add('tip');
-                } else if (text.includes('ℹ️') || text.includes('note:')) {
+                } else if (text.includes('ℹ️') || /^note\b/i.test(text)) {
                     bq.classList.add('note');
                 }
             });

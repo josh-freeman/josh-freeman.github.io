@@ -46,6 +46,56 @@
             display: flex;
             align-items: center;
         }
+
+        /* Share buttons */
+        .share-btn-inline {
+            background: none;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--text-color);
+            margin-left: 1rem;
+            transition: all 0.2s;
+        }
+        .share-btn-inline:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .share-btn-prominent {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+        }
+        .share-btn-prominent:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+        }
+
+        .forest-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--primary-color);
+            font-size: 0.95rem;
+            padding: 0.6rem 0;
+        }
     </style>
 
     <!-- Set initial OG title from URL slug for better previews -->
@@ -90,9 +140,10 @@
                         <button class="btn-link" onclick="editPost()">edit</button>
                         <button class="btn-link btn-danger" onclick="deletePost()">delete</button>
                     </span>
-                    <span id="share-action" style="display: none; margin-left: 1rem;">
-                        <button class="btn-link" onclick="sharePost()" title="Generate 24h access link">🔗 share</button>
-                    </span>
+                    <button id="share-btn-header" onclick="openShareModal()" class="share-btn-inline" title="Share this post">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                        Share
+                    </button>
                 </p>
             </header>
 
@@ -100,9 +151,13 @@
                 <p class="loading-text"><span class="loading-spinner"></span>Loading post content...</p>
             </div>
 
-            <!-- Reaction Forest Link -->
-            <div id="forest-link" style="margin-top: 1.5rem;">
-                <button onclick="openReactionForest()" style="background: none; border: none; cursor: pointer; color: var(--primary-color); font-size: 0.95rem; padding: 0;">
+            <!-- Share & Reaction Actions -->
+            <div id="post-actions" style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                <button id="share-btn-footer" onclick="openShareModal()" class="share-btn-prominent">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                    Share this post
+                </button>
+                <button onclick="openReactionForest()" class="forest-btn">
                     🌳 View Reaction Forest <span id="forest-count" style="color: var(--text-muted);"></span>
                 </button>
             </div>
@@ -189,9 +244,6 @@
 
                     // Style blockquotes based on content
                     styleBlockquotes();
-
-                    // Check if user can share this post
-                    checkShareAction(post);
                 } else if (response.status === 401 || response.status === 404) {
                     // Show same message for 401 (exclusive) and 404 (not found) to avoid leaking info
                     document.getElementById('post-title').textContent = 'Post Not Found';
@@ -241,57 +293,27 @@
             }
         }
 
-        // Check if user can share this post and show share button
-        function checkShareAction(post) {
+        // Check if user can generate 24h access links for this post
+        function canGenerateTempLink() {
+            if (!currentPost || !currentPost.is_exclusive) return false;
+
             const userStr = localStorage.getItem('comment_user');
             const token = localStorage.getItem('comment_token');
-            if (!userStr || !token) return;
+            if (!userStr || !token) return false;
 
             const user = JSON.parse(userStr);
-
-            // For non-exclusive posts, any logged-in user can share
-            if (!post.is_exclusive) {
-                document.getElementById('share-action').style.display = 'inline';
-                return;
-            }
-
-            // For exclusive posts: only admin or users mentioned in the post
-            const isMentioned = post.content.toLowerCase().includes(user.name.toLowerCase());
-            if (user.is_admin || isMentioned) {
-                document.getElementById('share-action').style.display = 'inline';
-            }
+            const isMentioned = currentPost.content.toLowerCase().includes(user.name.toLowerCase());
+            return user.is_admin || isMentioned;
         }
 
-        // Generate a temporary share link
-        async function sharePost() {
-            const slug = getPostSlug();
-            const token = localStorage.getItem('comment_token');
+        // Open the share modal - works for all posts
+        function openShareModal() {
+            if (!currentPost) return;
 
-            if (!slug || !token) {
-                alert('Please log in to share');
-                return;
-            }
+            const postUrl = window.location.href;
+            const isExclusive = currentPost.is_exclusive;
+            const canGenerate = canGenerateTempLink();
 
-            try {
-                const response = await fetch(`${API_BASE}/posts/${slug}/share`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    showShareModal(data);
-                } else {
-                    const error = await response.json();
-                    alert(error.detail || 'Failed to generate share link');
-                }
-            } catch (error) {
-                alert('Failed to generate share link');
-            }
-        }
-
-        // Show modal with share link
-        function showShareModal(data) {
             const modal = document.createElement('div');
             modal.id = 'share-modal';
             modal.style.cssText = `
@@ -307,43 +329,134 @@
                 z-index: 1000;
                 padding: 1rem;
             `;
-            modal.innerHTML = `
-                <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 100%;">
-                    <h3 style="margin-bottom: 1rem;">🔗 Share Link Generated</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 1rem;">
-                        This link grants <strong>24-hour access</strong> to view this post without logging in.
-                    </p>
-                    <input
-                        type="text"
-                        id="share-url"
-                        value="${data.share_url}"
-                        readonly
-                        style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem; margin-bottom: 1rem;"
-                        onclick="this.select()"
-                    >
-                    <div style="display: flex; gap: 1rem;">
-                        <button onclick="copyShareLink()" class="btn btn-primary" style="flex: 1;">Copy Link</button>
-                        <button onclick="closeShareModal()" class="btn" style="flex: 1; background: #e0e0e0;">Close</button>
+
+            let content = '';
+
+            if (!isExclusive) {
+                // PUBLIC POST - simple share
+                content = `
+                    <div style="background: white; padding: 1.75rem; border-radius: 12px; max-width: 440px; width: 100%;">
+                        <h3 style="margin: 0 0 1rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                            Share this post
+                        </h3>
+                        <div style="position: relative;">
+                            <input type="text" id="share-url-main" value="${postUrl}" readonly
+                                style="width: 100%; padding: 0.7rem 0.9rem; padding-right: 70px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.85rem; background: #f9fafb;"
+                                onclick="this.select()">
+                            <button onclick="copyUrl('share-url-main', this)" style="position: absolute; right: 4px; top: 50%; transform: translateY(-50%); padding: 0.4rem 0.7rem; background: var(--primary-color, #6366f1); color: white; border: none; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">Copy</button>
+                        </div>
+                        <button onclick="closeShareModal()" style="width: 100%; margin-top: 1rem; padding: 0.6rem; background: #f3f4f6; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">Done</button>
                     </div>
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 1rem;">
-                        Expires: ${new Date(data.expires_at).toLocaleString()}
-                    </p>
-                </div>
-            `;
+                `;
+            } else {
+                // FRIENDS-ONLY POST
+                content = `
+                    <div style="background: white; padding: 1.75rem; border-radius: 12px; max-width: 440px; width: 100%;">
+                        <h3 style="margin: 0 0 0.75rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                            Share this post
+                        </h3>
+
+                        <div style="background: #fef3c7; border-left: 3px solid #f59e0b; padding: 0.6rem 0.8rem; border-radius: 0 6px 6px 0; margin-bottom: 1rem;">
+                            <p style="margin: 0; font-size: 0.85rem; color: #92400e;">
+                                <strong>Friends-only post</strong> — this link only works for people with blog access.
+                            </p>
+                        </div>
+
+                        <div style="margin-bottom: 1rem;">
+                            <label style="font-size: 0.8rem; color: #6b7280; display: block; margin-bottom: 0.3rem;">Link for members</label>
+                            <div style="position: relative;">
+                                <input type="text" id="share-url-main" value="${postUrl}" readonly
+                                    style="width: 100%; padding: 0.6rem 0.8rem; padding-right: 65px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.8rem; background: #f9fafb;"
+                                    onclick="this.select()">
+                                <button onclick="copyUrl('share-url-main', this)" style="position: absolute; right: 4px; top: 50%; transform: translateY(-50%); padding: 0.35rem 0.6rem; background: #6b7280; color: white; border: none; border-radius: 5px; font-size: 0.75rem; cursor: pointer;">Copy</button>
+                            </div>
+                        </div>
+
+                        ${canGenerate ? `
+                        <div style="border-top: 1px solid #e5e7eb; padding-top: 1rem; margin-top: 0.5rem;">
+                            <div style="background: linear-gradient(135deg, #ede9fe, #e0e7ff); padding: 0.7rem 0.9rem; border-radius: 8px; margin-bottom: 0.75rem;">
+                                <p style="margin: 0; font-size: 0.85rem; color: #5b21b6;">
+                                    <strong>You can share with anyone!</strong><br>
+                                    <span style="font-size: 0.8rem; opacity: 0.9;">Generate a 24-hour access link that works without login.</span>
+                                </p>
+                            </div>
+                            <div id="temp-link-section">
+                                <button onclick="generateTempLink()" id="generate-temp-btn" style="width: 100%; padding: 0.65rem; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500;">
+                                    Generate 24-hour link
+                                </button>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <button onclick="closeShareModal()" style="width: 100%; margin-top: 1rem; padding: 0.6rem; background: #f3f4f6; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">Done</button>
+                    </div>
+                `;
+            }
+
+            modal.innerHTML = content;
             document.body.appendChild(modal);
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) closeShareModal();
             });
         }
 
-        function copyShareLink() {
-            const input = document.getElementById('share-url');
+        // Generate temporary 24h access link
+        async function generateTempLink() {
+            const btn = document.getElementById('generate-temp-btn');
+            const section = document.getElementById('temp-link-section');
+            const token = localStorage.getItem('comment_token');
+            const slug = getPostSlug();
+
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+
+            try {
+                const response = await fetch(`${API_BASE}/posts/${slug}/share`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    section.innerHTML = `
+                        <label style="font-size: 0.8rem; color: #6b7280; display: block; margin-bottom: 0.3rem;">24-hour access link</label>
+                        <div style="position: relative; margin-bottom: 0.5rem;">
+                            <input type="text" id="share-url-temp" value="${data.share_url}" readonly
+                                style="width: 100%; padding: 0.6rem 0.8rem; padding-right: 65px; border: 1px solid #8b5cf6; border-radius: 8px; font-size: 0.8rem; background: #faf5ff;"
+                                onclick="this.select()">
+                            <button onclick="copyUrl('share-url-temp', this)" style="position: absolute; right: 4px; top: 50%; transform: translateY(-50%); padding: 0.35rem 0.6rem; background: #8b5cf6; color: white; border: none; border-radius: 5px; font-size: 0.75rem; cursor: pointer;">Copy</button>
+                        </div>
+                        <p style="margin: 0; font-size: 0.75rem; color: #6b7280;">
+                            Expires ${new Date(data.expires_at).toLocaleString()}
+                        </p>
+                    `;
+                } else {
+                    const error = await response.json();
+                    btn.disabled = false;
+                    btn.textContent = 'Generate 24-hour link';
+                    alert(error.detail || 'Failed to generate link');
+                }
+            } catch (error) {
+                btn.disabled = false;
+                btn.textContent = 'Generate 24-hour link';
+                alert('Failed to generate link');
+            }
+        }
+
+        // Copy URL helper
+        function copyUrl(inputId, btn) {
+            const input = document.getElementById(inputId);
             input.select();
             document.execCommand('copy');
-            // Show feedback
-            const btn = event.target;
-            btn.textContent = 'Copied!';
-            setTimeout(() => { btn.textContent = 'Copy Link'; }, 2000);
+            const originalText = btn.textContent;
+            btn.textContent = '✓';
+            btn.style.background = '#10b981';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 1500);
         }
 
         function closeShareModal() {

@@ -12,11 +12,11 @@ const HEART_SVG_PATH = 'M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.9
 const HEART_OUTLINE = `<svg class="comment-heart-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="${HEART_SVG_PATH}"/></svg>`;
 const HEART_FILLED = `<svg class="comment-heart-icon active" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="${HEART_SVG_PATH}"/></svg>`;
 
-// Inject heart icon CSS early
+// Inject comment styles early
 (function() {
-    if (!document.getElementById('comment-heart-styles')) {
+    if (!document.getElementById('comment-styles')) {
         const style = document.createElement('style');
-        style.id = 'comment-heart-styles';
+        style.id = 'comment-styles';
         style.textContent = `
             .comment-heart-icon {
                 color: #9ca3af;
@@ -28,6 +28,72 @@ const HEART_FILLED = `<svg class="comment-heart-icon active" width="16" height="
             }
             .like-btn:hover .comment-heart-icon:not(.active) {
                 color: #fca5a5;
+            }
+
+            /* Nested comments */
+            .comment-replies {
+                margin-left: 1.5rem;
+                padding-left: 1rem;
+                border-left: 2px solid #e5e7eb;
+                margin-top: 0.75rem;
+            }
+            .comment-replies .comment {
+                margin-bottom: 0.75rem;
+                padding-bottom: 0.75rem;
+            }
+            .comment-replies .comment:last-child {
+                margin-bottom: 0;
+                padding-bottom: 0;
+                border-bottom: none;
+            }
+            .reply-btn {
+                background: none;
+                border: none;
+                color: var(--text-muted, #6b7280);
+                font-size: 0.8rem;
+                cursor: pointer;
+                padding: 0;
+                margin-left: 0.75rem;
+            }
+            .reply-btn:hover {
+                color: var(--primary-color, #6366f1);
+            }
+            .reply-form {
+                margin-top: 0.75rem;
+                margin-left: 1.5rem;
+                padding-left: 1rem;
+                border-left: 2px solid #e5e7eb;
+            }
+            .reply-form textarea {
+                width: 100%;
+                min-height: 60px;
+                padding: 0.5rem;
+                border: 1px solid #e0e0e0;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                resize: vertical;
+                font-family: inherit;
+            }
+            .reply-form-actions {
+                display: flex;
+                gap: 0.5rem;
+                margin-top: 0.5rem;
+            }
+            .reply-form-actions button {
+                padding: 0.35rem 0.75rem;
+                border-radius: 6px;
+                font-size: 0.85rem;
+                cursor: pointer;
+            }
+            .reply-form-actions .submit-reply {
+                background: var(--primary-color, #6366f1);
+                color: white;
+                border: none;
+            }
+            .reply-form-actions .cancel-reply {
+                background: #e5e7eb;
+                border: none;
+                color: #374151;
             }
         `;
         document.head.appendChild(style);
@@ -62,6 +128,46 @@ function formatDate(dateString) {
 // Track which comments the user has liked
 let userLikedComments = new Set();
 
+// Render a single comment (used for both top-level and replies)
+function renderSingleComment(comment, user, isReply = false) {
+    const canEdit = user && (user.id === comment.author_id || user.is_admin);
+    const canDelete = user && (user.id === comment.author_id || user.is_admin);
+    const isLiked = userLikedComments.has(comment.id);
+    const canReply = user && !isReply; // Only top-level comments can have replies
+
+    return `
+        <div class="comment" data-id="${comment.id}">
+            <div class="comment-header">
+                <a href="/profile.html?id=${comment.author_id}" class="comment-author">${escapeHtml(comment.author_name)}</a>
+                <span class="comment-date">${formatDate(comment.created_at)}</span>
+                ${canEdit || canDelete ? `
+                    <span class="comment-actions">
+                        ${canEdit ? `<button class="btn-link" onclick="editComment(${comment.id}, '${escapeHtml(comment.content).replace(/'/g, "\\'").replace(/\n/g, "\\n")}')">edit</button>` : ''}
+                        ${canDelete ? `<button class="btn-link btn-danger" onclick="deleteComment(${comment.id})">delete</button>` : ''}
+                    </span>
+                ` : ''}
+            </div>
+            <div class="comment-body">
+                <p>${escapeHtml(comment.content)}</p>
+            </div>
+            <div class="comment-footer">
+                <button onclick="toggleCommentLike(${comment.id})" class="like-btn" id="like-btn-${comment.id}">
+                    <span id="like-icon-${comment.id}">${isLiked ? HEART_FILLED : HEART_OUTLINE}</span>
+                    <span id="like-count-${comment.id}">${comment.like_count || 0}</span>
+                </button>
+                ${comment.like_count > 0 ? `<button onclick="showCommentLikers(${comment.id}, event)" class="see-who-btn">see who</button>` : ''}
+                ${canReply ? `<button class="reply-btn" onclick="showReplyForm(${comment.id})">reply</button>` : ''}
+            </div>
+            <div id="reply-form-${comment.id}"></div>
+            ${!isReply && comment.replies && comment.replies.length > 0 ? `
+                <div class="comment-replies">
+                    ${comment.replies.map(reply => renderSingleComment(reply, user, true)).join('')}
+                </div>
+            ` : ''}
+        </div>
+    `;
+}
+
 // Render comments
 function renderComments(comments) {
     const container = document.getElementById('comments-container');
@@ -72,42 +178,88 @@ function renderComments(comments) {
         return;
     }
 
-    const html = comments.map(comment => {
-        const canEdit = user && (user.id === comment.author_id || user.is_admin);
-        const canDelete = user && (user.id === comment.author_id || user.is_admin);
-        const isLiked = userLikedComments.has(comment.id);
-
-        return `
-            <div class="comment" data-id="${comment.id}">
-                <div class="comment-header">
-                    <a href="/profile.html?id=${comment.author_id}" class="comment-author">${escapeHtml(comment.author_name)}</a>
-                    <span class="comment-date">${formatDate(comment.created_at)}</span>
-                    ${canEdit || canDelete ? `
-                        <span class="comment-actions">
-                            ${canEdit ? `<button class="btn-link" onclick="editComment(${comment.id}, '${escapeHtml(comment.content).replace(/'/g, "\\'")}')">edit</button>` : ''}
-                            ${canDelete ? `<button class="btn-link btn-danger" onclick="deleteComment(${comment.id})">delete</button>` : ''}
-                        </span>
-                    ` : ''}
-                </div>
-                <div class="comment-body">
-                    <p>${escapeHtml(comment.content)}</p>
-                </div>
-                <div class="comment-footer">
-                    <button onclick="toggleCommentLike(${comment.id})" class="like-btn" id="like-btn-${comment.id}">
-                        <span id="like-icon-${comment.id}">${isLiked ? HEART_FILLED : HEART_OUTLINE}</span>
-                        <span id="like-count-${comment.id}">${comment.like_count || 0}</span>
-                    </button>
-                    ${comment.like_count > 0 ? `<button onclick="showCommentLikers(${comment.id}, event)" class="see-who-btn">see who</button>` : ''}
-                </div>
-            </div>
-        `;
-    }).join('');
-
+    const html = comments.map(comment => renderSingleComment(comment, user, false)).join('');
     container.innerHTML = html;
+
+    // Collect all comment IDs (including replies) for like status
+    const allIds = [];
+    function collectIds(c) {
+        allIds.push(c.id);
+        if (c.replies) c.replies.forEach(collectIds);
+    }
+    comments.forEach(collectIds);
 
     // Load user's likes if logged in
     if (user) {
-        loadUserLikes(comments.map(c => c.id));
+        loadUserLikes(allIds);
+    }
+}
+
+// Show reply form
+function showReplyForm(parentId) {
+    const container = document.getElementById(`reply-form-${parentId}`);
+    if (!container) return;
+
+    // Close any other open reply forms
+    document.querySelectorAll('[id^="reply-form-"]').forEach(el => {
+        if (el.id !== `reply-form-${parentId}`) el.innerHTML = '';
+    });
+
+    container.innerHTML = `
+        <div class="reply-form">
+            <textarea id="reply-content-${parentId}" placeholder="Write a reply..."></textarea>
+            <div class="reply-form-actions">
+                <button class="submit-reply" onclick="submitReply(${parentId})">Reply</button>
+                <button class="cancel-reply" onclick="hideReplyForm(${parentId})">Cancel</button>
+            </div>
+        </div>
+    `;
+
+    document.getElementById(`reply-content-${parentId}`).focus();
+}
+
+// Hide reply form
+function hideReplyForm(parentId) {
+    const container = document.getElementById(`reply-form-${parentId}`);
+    if (container) container.innerHTML = '';
+}
+
+// Submit reply
+async function submitReply(parentId) {
+    const textarea = document.getElementById(`reply-content-${parentId}`);
+    const content = textarea.value.trim();
+    if (!content) return;
+
+    const slug = getPostSlug();
+    const token = localStorage.getItem('comment_token');
+    if (!token) {
+        alert('Please log in to reply');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${window.COMMENTS_API_BASE}/comments`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                post_slug: slug,
+                content: content,
+                parent_id: parentId
+            })
+        });
+
+        if (response.ok) {
+            hideReplyForm(parentId);
+            loadComments(); // Reload all comments
+        } else {
+            const error = await response.json();
+            alert(error.detail || 'Failed to post reply');
+        }
+    } catch (error) {
+        alert('Failed to post reply');
     }
 }
 

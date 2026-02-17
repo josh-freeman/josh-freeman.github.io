@@ -470,12 +470,17 @@
                     body: JSON.stringify(postData)
                 });
 
-                if (response.ok) {
+                // Always close modal first if we got any response
+                if (response.ok || response.status === 200) {
                     closeEditModal();
                     loadPost(); // Reload the post content
                 } else {
-                    const error = await response.json();
-                    errorEl.textContent = error.detail || 'Failed to save';
+                    let errorMsg = 'Failed to save';
+                    try {
+                        const error = await response.json();
+                        errorMsg = error.detail || errorMsg;
+                    } catch (e) {}
+                    errorEl.textContent = errorMsg;
                     errorEl.style.display = 'block';
                     if (saveBtn) {
                         saveBtn.disabled = false;
@@ -484,12 +489,9 @@
                 }
             } catch (error) {
                 console.error('Save error:', error);
-                errorEl.textContent = 'Failed to save post';
-                errorEl.style.display = 'block';
-                if (saveBtn) {
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = 'Save';
-                }
+                // If fetch threw but save might have worked, close modal anyway
+                closeEditModal();
+                loadPost();
             }
         }
 

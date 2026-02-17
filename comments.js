@@ -153,7 +153,10 @@ async function loadComments() {
     if (!slug) return;
 
     try {
-        const response = await fetch(`${window.COMMENTS_API_BASE}/comments/${slug}`);
+        // Include auth token if logged in (needed for exclusive posts)
+        const token = localStorage.getItem('comment_token');
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        const response = await fetch(`${window.COMMENTS_API_BASE}/comments/${slug}`, { headers });
         if (response.ok) {
             const comments = await response.json();
             renderComments(comments);

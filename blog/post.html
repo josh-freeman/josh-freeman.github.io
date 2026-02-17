@@ -26,6 +26,41 @@
     <link rel="stylesheet" href="/buttons.css">
     <link rel="stylesheet" href="/blog.css">
 
+    <style>
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e0e0e0;
+            border-top-color: var(--primary-color, #6366f1);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-text {
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+        }
+    </style>
+
+    <!-- Set initial OG title from URL slug for better previews -->
+    <script>
+        (function() {
+            var slug = new URLSearchParams(window.location.search).get('slug');
+            if (slug) {
+                var title = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                document.title = title + ' - Joshua Freeman';
+                var ogTitle = document.querySelector('meta[property="og:title"]');
+                if (ogTitle) ogTitle.content = title + ' - Joshua Freeman';
+            }
+        })();
+    </script>
+
     <!-- Marked.js for markdown rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <!-- Cytoscape.js for graph visualization -->
@@ -42,7 +77,7 @@
             <a href="/blog.html" class="back-link">Back to blog</a>
 
             <header class="post-header">
-                <h1 id="post-title">Loading...</h1>
+                <h1 id="post-title"><span class="loading-spinner"></span>Loading...</h1>
                 <p class="post-meta">
                     <time id="post-date" datetime=""></time>
                     <span id="reaction-container" style="margin-left: 1rem;">
@@ -59,7 +94,7 @@
             </header>
 
             <div id="post-content" class="post-content">
-                <p style="color: var(--text-muted);">Loading post...</p>
+                <p class="loading-text"><span class="loading-spinner"></span>Loading post content...</p>
             </div>
 
             <!-- Reaction Forest Link -->

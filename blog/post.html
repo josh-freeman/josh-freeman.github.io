@@ -767,7 +767,7 @@
                     </div>
                     <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Click on hearts to react to reactions</p>
                     <div id="forest-tree" style="min-height: 100px;"></div>
-                    <div id="forest-graph" style="display: none; height: 300px; border-radius: 12px; background: #f8f9fa; border: 1px solid #eee;"></div>
+                    <div id="forest-graph" style="display: none; height: 350px; border-radius: 12px; background: #f8f9fa; border: 1px solid #eee;"></div>
                     <div id="forest-legend" style="display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted); flex-wrap: wrap; justify-content: center;">
                         ${legendHtml}
                     </div>
@@ -928,7 +928,7 @@
             const token = localStorage.getItem('comment_token');
 
             container.innerHTML = '';
-            container.style.height = '250px';
+            container.style.height = '350px';
 
             // SVG heart with initial badge as data URL for Cytoscape nodes
             function makeHeartWithInitial(name) {
@@ -978,8 +978,8 @@
                     {
                         selector: 'node',
                         style: {
-                            'width': 68,
-                            'height': 68,
+                            'width': 85,
+                            'height': 85,
                             'background-opacity': 0,
                             'background-image': 'data(heartImg)',
                             'background-fit': 'contain',

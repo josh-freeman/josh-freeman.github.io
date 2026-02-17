@@ -317,7 +317,10 @@ a.comment-author:hover {
     display: inline-block;
     font-size: 0.65rem !important;
     font-weight: 600;
-    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    background: linear-gradient(135deg, #8b5cf6, #6366f1) !important;
+    -webkit-background-clip: border-box !important;
+    background-clip: border-box !important;
+    -webkit-text-fill-color: white !important;
     color: white !important;
     padding: 0.2rem 0.5rem;
     border-radius: 4px;

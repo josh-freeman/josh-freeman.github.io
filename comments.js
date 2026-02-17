@@ -65,12 +65,12 @@ function renderComments(comments) {
                 <div class="comment-body">
                     <p>${escapeHtml(comment.content)}</p>
                 </div>
-                <div class="comment-footer" style="margin-top: 0.25rem; display: flex; align-items: center; gap: 0.25rem; font-size: 0.85rem;">
-                    <button onclick="toggleCommentLike(${comment.id})" style="background: none; border: none; cursor: pointer; padding: 0; color: var(--text-muted);" id="like-btn-${comment.id}">
+                <div class="comment-footer">
+                    <button onclick="toggleCommentLike(${comment.id})" class="like-btn" id="like-btn-${comment.id}">
                         <span id="like-icon-${comment.id}">${isLiked ? '❤️' : '🤍'}</span>
                         <span id="like-count-${comment.id}">${comment.like_count || 0}</span>
                     </button>
-                    ${comment.like_count > 0 ? `<button onclick="showCommentLikers(${comment.id}, event)" style="background: none; border: none; cursor: pointer; font-size: 0.8rem; color: var(--primary-color);">see who</button>` : ''}
+                    ${comment.like_count > 0 ? `<button onclick="showCommentLikers(${comment.id}, event)" class="see-who-btn">see who</button>` : ''}
                 </div>
             </div>
         `;

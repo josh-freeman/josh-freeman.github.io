@@ -157,6 +157,9 @@
             border-radius: 8px;
             max-height: 500px;
             overflow-y: auto;
+            overflow-x: hidden;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .preview-container h2 {
@@ -437,7 +440,7 @@
                 </div>
 
                 <!-- Tab Navigation -->
-                <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid #e0e0e0; padding-bottom: 1rem;">
+                <div id="tab-navigation" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid #e0e0e0; padding-bottom: 1rem;">
                     <button class="btn" id="tab-posts" onclick="showTab('posts')" style="font-weight: 600;">Posts</button>
                     <button class="btn" id="tab-invites" onclick="showTab('invites')">Invites</button>
                     <button class="btn" id="tab-users" onclick="showTab('users')">Users</button>
@@ -831,6 +834,7 @@
             slugManuallyEdited = false;
             document.getElementById('post-list-view').style.display = 'none';
             document.getElementById('post-editor-view').style.display = 'block';
+            document.getElementById('tab-navigation').style.display = 'none';  // Hide tabs in editor
             document.getElementById('editor-title').textContent = slug ? 'Edit Post' : 'New Post';
             document.getElementById('delete-btn').style.display = slug ? 'inline-block' : 'none';
             document.getElementById('notify-btn').style.display = slug ? 'inline-block' : 'none';
@@ -849,6 +853,7 @@
         function hideEditor() {
             document.getElementById('post-list-view').style.display = 'block';
             document.getElementById('post-editor-view').style.display = 'none';
+            document.getElementById('tab-navigation').style.display = 'flex';  // Show tabs again
             currentSlug = null;
             loadPosts();
         }

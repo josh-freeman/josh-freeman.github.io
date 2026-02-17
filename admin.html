@@ -377,6 +377,33 @@
             font-size: 0.85rem;
             font-style: italic;
         }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1f2937;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        .toast.success {
+            background: #059669;
+        }
+        .toast.error {
+            background: #dc2626;
+        }
     </style>
 </head>
 <body>
@@ -564,6 +591,29 @@
         const API_BASE = 'https://api.joshfreeman.me';
         let currentSlug = null;
 
+        // Toast notification
+        function showToast(message, type = 'default') {
+            // Remove existing toast
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            // Trigger animation
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+
+            // Auto-hide after 2.5 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
         // Check if already logged in
         function checkAuth() {
             const token = localStorage.getItem('comment_token');
@@ -750,7 +800,7 @@
                     updatePreview();
                 }
             } catch (error) {
-                alert('Failed to load post');
+                showToast('Failed to load post', 'error');
             }
         }
 
@@ -813,10 +863,10 @@
                 if (response.ok) {
                     hideEditor();
                 } else {
-                    alert('Failed to delete post');
+                    showToast('Failed to delete post', 'error');
                 }
             } catch (error) {
-                alert('Failed to delete post');
+                showToast('Failed to delete post', 'error');
             }
         }
 
@@ -1048,7 +1098,7 @@
         async function uploadAndInsertImage(file, textarea) {
             const token = localStorage.getItem('comment_token');
             if (!token) {
-                alert('Please log in to upload images');
+                showToast('Please log in to upload images', 'error');
                 return;
             }
 
@@ -1076,11 +1126,11 @@
                 } else {
                     const error = await response.json();
                     textarea.value = textarea.value.replace(placeholder, '');
-                    alert(error.detail || 'Failed to upload image');
+                    showToast(error.detail || 'Failed to upload image', 'error');
                 }
             } catch (error) {
                 textarea.value = textarea.value.replace(placeholder, '');
-                alert('Failed to upload image');
+                showToast('Failed to upload image', 'error');
             }
         }
 
@@ -1189,10 +1239,10 @@
                     document.getElementById('invite-link-display').style.display = 'block';
                     loadInvites();
                 } else {
-                    alert('Failed to create invite');
+                    showToast('Failed to create invite', 'error');
                 }
             } catch (error) {
-                alert('Failed to create invite');
+                showToast('Failed to create invite', 'error');
             }
         }
 
@@ -1200,7 +1250,7 @@
             const input = document.getElementById('invite-link-input');
             input.select();
             document.execCommand('copy');
-            alert('Link copied to clipboard!');
+            showToast('Copied!', 'success');
         }
 
         async function loadInvites() {
@@ -1251,7 +1301,7 @@
         function copyInviteLinkById(token) {
             const link = `${window.location.origin}/register.html?token=${token}`;
             navigator.clipboard.writeText(link).then(() => {
-                alert('Link copied to clipboard!');
+                showToast('Copied!', 'success');
             });
         }
 
@@ -1269,10 +1319,10 @@
                 if (response.ok) {
                     loadInvites();
                 } else {
-                    alert('Failed to delete invite');
+                    showToast('Failed to delete invite', 'error');
                 }
             } catch (error) {
-                alert('Failed to delete invite');
+                showToast('Failed to delete invite', 'error');
             }
         }
 
@@ -1334,10 +1384,10 @@
                     loadUsers();
                 } else {
                     const error = await response.json();
-                    alert(error.detail || 'Failed to update user');
+                    showToast(error.detail || 'Failed to update user', 'error');
                 }
             } catch (error) {
-                alert('Failed to update user');
+                showToast('Failed to update user', 'error');
             }
         }
 
@@ -1355,10 +1405,10 @@
                 if (response.ok) {
                     loadUsers();
                 } else {
-                    alert('Failed to delete user');
+                    showToast('Failed to delete user', 'error');
                 }
             } catch (error) {
-                alert('Failed to delete user');
+                showToast('Failed to delete user', 'error');
             }
         }
 
@@ -1448,7 +1498,7 @@
 
         function copyImageUrl(url) {
             navigator.clipboard.writeText(url).then(() => {
-                alert('URL copied to clipboard!');
+                showToast('Copied!', 'success');
             });
         }
 
@@ -1469,10 +1519,10 @@
                     loadImages();
                 } else {
                     const error = await response.json();
-                    alert(error.detail || 'Failed to delete image');
+                    showToast(error.detail || 'Failed to delete image', 'error');
                 }
             } catch (error) {
-                alert('Failed to delete image');
+                showToast('Failed to delete image', 'error');
             }
         }
 

@@ -106,10 +106,6 @@
             color: #ef4444;
             fill: #ef4444;
         }
-        .heart-icon.own {
-            color: #eab308;
-            fill: #eab308;
-        }
         .heart-icon-small {
             width: 18px;
             height: 18px;
@@ -752,11 +748,7 @@
 
             const token = localStorage.getItem('comment_token');
             const heartSvg = '<svg class="heart-icon-small active" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z"/></svg>';
-            const heartOwnSvg = '<svg class="heart-icon-small own" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z"/></svg>';
             let legendHtml = `<span>${heartSvg} = reaction</span>`;
-            if (token) {
-                legendHtml += `<span>${heartOwnSvg} = yours</span>`;
-            }
             legendHtml += '<span>Click to react</span>';
             if (token) {
                 legendHtml += '<span>Right-click to remove</span>';
@@ -915,7 +907,7 @@
                     childrenHtml = r.children.map(c => renderNode(c, depth + 1)).join('');
                 }
 
-                const heartColor = isOwn ? '#eab308' : '#ef4444';
+                const heartColor = '#ef4444';
                 const heartSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="${heartColor}" stroke="none" style="cursor: ${canReact ? 'pointer' : 'default'}; vertical-align: middle;" onclick="${canReact ? `reactToReaction(${r.id})` : ''}" title="${canReact ? 'Click to react' : ''}"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z"/></svg>`;
 
                 return `
@@ -939,11 +931,13 @@
             container.innerHTML = '';
             container.style.height = '250px';
 
-            // SVG heart as data URL for Cytoscape nodes
-            const heartPath = 'M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z';
-            const makeHeartSvg = (color) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}"><path d="${heartPath}"/></svg>`)}`;
-            const heartRed = makeHeartSvg('%23ef4444');
-            const heartYellow = makeHeartSvg('%23eab308');
+            // SVG heart with initial badge as data URL for Cytoscape nodes
+            function makeHeartWithInitial(name) {
+                const initial = name ? name.charAt(0).toUpperCase() : '?';
+                // Heart with small avatar circle in top-left - single line to avoid encoding issues
+                const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28"><path d="M14 25C14 25 5 18.5 5 12.5C5 9.5 7.5 7 10.5 7C12.24 7 13.91 7.81 14 9C14.09 7.81 15.76 7 17.5 7C20.5 7 23 9.5 23 12.5C23 18.5 14 25 14 25Z" fill="#ef4444"/><circle cx="7" cy="7" r="5.5" fill="#6366f1"/><text x="7" y="8" text-anchor="middle" fill="white" font-size="7" font-weight="600">' + initial + '</text></svg>';
+                return 'data:image/svg+xml,' + encodeURIComponent(svg);
+            }
 
             // Build nodes and edges for Cytoscape
             const elements = [];
@@ -953,7 +947,7 @@
                 elements.push({
                     data: {
                         id: 'r' + r.id,
-                        heartImg: isOwn ? heartYellow : heartRed,
+                        heartImg: makeHeartWithInitial(r.user_name),
                         name: r.user_name,
                         reactionId: r.id,
                         depth: r.depth,

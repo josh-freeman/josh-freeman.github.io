@@ -502,6 +502,7 @@
 
                         <div class="btn-group">
                             <button type="submit" class="btn btn-primary">Save Post</button>
+                            <button type="button" class="btn" id="notify-btn" onclick="notifyUsersAboutPost()" style="background: #8b5cf6; color: white; display: none;">Notify Users</button>
                             <button type="button" class="btn" id="delete-btn" onclick="deletePost()" style="background: #e74c3c; color: white; display: none;">Delete Post</button>
                         </div>
 
@@ -762,6 +763,7 @@
             document.getElementById('post-editor-view').style.display = 'block';
             document.getElementById('editor-title').textContent = slug ? 'Edit Post' : 'New Post';
             document.getElementById('delete-btn').style.display = slug ? 'inline-block' : 'none';
+            document.getElementById('notify-btn').style.display = slug ? 'inline-block' : 'none';
             document.getElementById('post-slug').disabled = !!slug;
             document.getElementById('slug-auto-badge').style.display = slug ? 'none' : 'inline';
 
@@ -867,6 +869,36 @@
                 }
             } catch (error) {
                 showToast('Failed to delete post', 'error');
+            }
+        }
+
+        async function notifyUsersAboutPost() {
+            if (!currentSlug) return;
+            if (!confirm('Send email notification about this post to all users?')) return;
+
+            const token = localStorage.getItem('comment_token');
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/posts/${currentSlug}/notify`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.sent > 0) {
+                        showToast(`Notified ${data.sent} of ${data.total} users`, 'success');
+                    } else if (data.status === 'no_users') {
+                        showToast('No users to notify', 'error');
+                    } else {
+                        showToast('No emails sent - check API key', 'error');
+                    }
+                } else {
+                    const error = await response.json();
+                    showToast(error.detail || 'Failed to send notifications', 'error');
+                }
+            } catch (error) {
+                showToast('Failed to send notifications', 'error');
             }
         }
 

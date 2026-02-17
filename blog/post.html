@@ -136,7 +136,7 @@
                     document.getElementById('og-url').content = `https://joshfreeman.me/blog/post.html?slug=${slug}`;
 
                     // Update content
-                    document.getElementById('post-title').innerHTML = post.title + (post.is_exclusive ? ' <span class="exclusive-badge">Members Only</span>' : '');
+                    document.getElementById('post-title').innerHTML = post.title + (post.is_exclusive ? ' <span class="exclusive-badge" onclick="showExclusiveModal()" title="Click for info">Members Only</span>' : '');
                     document.getElementById('post-date').textContent = formatPostDate(post.created_at);
                     document.getElementById('post-date').setAttribute('datetime', post.created_at.split('T')[0]);
 
@@ -145,23 +145,17 @@
 
                     // Style blockquotes based on content
                     styleBlockquotes();
-                } else if (response.status === 401) {
-                    // Exclusive post - user not logged in
-                    document.getElementById('post-title').textContent = 'Members Only';
+                } else if (response.status === 401 || response.status === 404) {
+                    // Show same message for 401 (exclusive) and 404 (not found) to avoid leaking info
+                    document.getElementById('post-title').textContent = 'Post Not Found';
                     document.getElementById('post-content').innerHTML = `
-                        <div style="text-align: center; padding: 3rem 1rem;">
-                            <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
-                            <p style="font-size: 1.1rem; margin-bottom: 1rem;">This post is exclusive to members.</p>
-                            <p style="color: var(--text-muted);">Please <a href="#" onclick="showLogin(); return false;">log in</a> to read this post.</p>
-                        </div>
+                        <p>This post does not exist or has been removed. <a href="/blog.html">Back to blog</a></p>
+                        ${response.status === 401 && !localStorage.getItem('comment_token') ? '<p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1.5rem;">Think this post should exist? Try <a href="#" onclick="showLogin(); return false;">logging in</a>.</p>' : ''}
                     `;
-                    // Hide reactions and comments for locked posts
+                    // Hide reactions and comments
                     document.getElementById('reaction-container').style.display = 'none';
                     document.getElementById('forest-link').style.display = 'none';
                     document.querySelector('.comments-section').style.display = 'none';
-                } else if (response.status === 404) {
-                    document.getElementById('post-title').textContent = 'Post Not Found';
-                    document.getElementById('post-content').innerHTML = '<p>This post does not exist or has been removed. <a href="/blog.html">Back to blog</a></p>';
                 } else {
                     throw new Error('Failed to load');
                 }

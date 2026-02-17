@@ -154,9 +154,10 @@ async function loadComments() {
 
     try {
         // Include auth token if logged in (needed for exclusive posts)
+        // Also include credentials for temporary access cookies
         const token = localStorage.getItem('comment_token');
         const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-        const response = await fetch(`${window.COMMENTS_API_BASE}/comments/${slug}`, { headers });
+        const response = await fetch(`${window.COMMENTS_API_BASE}/comments/${slug}`, { headers, credentials: 'include' });
         if (response.ok) {
             const comments = await response.json();
             renderComments(comments);

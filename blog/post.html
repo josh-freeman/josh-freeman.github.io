@@ -90,6 +90,9 @@
                         <button class="btn-link" onclick="editPost()">edit</button>
                         <button class="btn-link btn-danger" onclick="deletePost()">delete</button>
                     </span>
+                    <span id="share-action" style="display: none; margin-left: 1rem;">
+                        <button class="btn-link" onclick="sharePost()" title="Generate 24h access link">🔗 share</button>
+                    </span>
                 </p>
             </header>
 
@@ -140,6 +143,8 @@
     <script src="/comments.js" defer></script>
 
     <script>
+        let currentPost = null;  // Store current post data for sharing
+
         function formatPostDate(dateString) {
             const date = new Date(dateString);
             return date.toLocaleDateString('en-US', {
@@ -161,10 +166,11 @@
                 // Include auth token if logged in (for exclusive posts)
                 const token = localStorage.getItem('comment_token');
                 const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-                const response = await fetch(`${API_BASE}/posts/${slug}`, { headers });
+                const response = await fetch(`${API_BASE}/posts/${slug}`, { headers, credentials: 'include' });
 
                 if (response.ok) {
                     const post = await response.json();
+                    currentPost = post;  // Store for sharing
 
                     // Update page metadata
                     document.getElementById('page-title').textContent = `${post.title} - Joshua Freeman`;
@@ -174,7 +180,7 @@
                     document.getElementById('og-url').content = `https://joshfreeman.me/blog/post.html?slug=${slug}`;
 
                     // Update content
-                    document.getElementById('post-title').innerHTML = post.title + (post.is_exclusive ? ' <span class="exclusive-badge" onclick="showExclusiveModal()" title="Click for info">Friends Only</span>' : '');
+                    document.getElementById('post-title').innerHTML = post.title + (post.is_exclusive ? ' <span class="exclusive-badge" onclick="showExclusiveModal()" title="Click for info">Friends Only</span>' : '') + (post.is_unlisted ? ' <span class="unlisted-badge" title="Unlisted - not shown in blog listing">Unlisted</span>' : '');
                     document.getElementById('post-date').textContent = formatPostDate(post.created_at);
                     document.getElementById('post-date').setAttribute('datetime', post.created_at.split('T')[0]);
 
@@ -183,6 +189,9 @@
 
                     // Style blockquotes based on content
                     styleBlockquotes();
+
+                    // Check if user can share this post
+                    checkShareAction(post);
                 } else if (response.status === 401 || response.status === 404) {
                     // Show same message for 401 (exclusive) and 404 (not found) to avoid leaking info
                     document.getElementById('post-title').textContent = 'Post Not Found';
@@ -230,6 +239,116 @@
                     document.getElementById('admin-actions').style.display = 'inline';
                 }
             }
+        }
+
+        // Check if user can share this post and show share button
+        function checkShareAction(post) {
+            const userStr = localStorage.getItem('comment_user');
+            const token = localStorage.getItem('comment_token');
+            if (!userStr || !token) return;
+
+            const user = JSON.parse(userStr);
+
+            // For non-exclusive posts, any logged-in user can share
+            if (!post.is_exclusive) {
+                document.getElementById('share-action').style.display = 'inline';
+                return;
+            }
+
+            // For exclusive posts: only admin or users mentioned in the post
+            const isMentioned = post.content.toLowerCase().includes(user.name.toLowerCase());
+            if (user.is_admin || isMentioned) {
+                document.getElementById('share-action').style.display = 'inline';
+            }
+        }
+
+        // Generate a temporary share link
+        async function sharePost() {
+            const slug = getPostSlug();
+            const token = localStorage.getItem('comment_token');
+
+            if (!slug || !token) {
+                alert('Please log in to share');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/posts/${slug}/share`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showShareModal(data);
+                } else {
+                    const error = await response.json();
+                    alert(error.detail || 'Failed to generate share link');
+                }
+            } catch (error) {
+                alert('Failed to generate share link');
+            }
+        }
+
+        // Show modal with share link
+        function showShareModal(data) {
+            const modal = document.createElement('div');
+            modal.id = 'share-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                padding: 1rem;
+            `;
+            modal.innerHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 100%;">
+                    <h3 style="margin-bottom: 1rem;">🔗 Share Link Generated</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                        This link grants <strong>24-hour access</strong> to view this post without logging in.
+                    </p>
+                    <input
+                        type="text"
+                        id="share-url"
+                        value="${data.share_url}"
+                        readonly
+                        style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem; margin-bottom: 1rem;"
+                        onclick="this.select()"
+                    >
+                    <div style="display: flex; gap: 1rem;">
+                        <button onclick="copyShareLink()" class="btn btn-primary" style="flex: 1;">Copy Link</button>
+                        <button onclick="closeShareModal()" class="btn" style="flex: 1; background: #e0e0e0;">Close</button>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 1rem;">
+                        Expires: ${new Date(data.expires_at).toLocaleString()}
+                    </p>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeShareModal();
+            });
+        }
+
+        function copyShareLink() {
+            const input = document.getElementById('share-url');
+            input.select();
+            document.execCommand('copy');
+            // Show feedback
+            const btn = event.target;
+            btn.textContent = 'Copied!';
+            setTimeout(() => { btn.textContent = 'Copy Link'; }, 2000);
+        }
+
+        function closeShareModal() {
+            const modal = document.getElementById('share-modal');
+            if (modal) modal.remove();
         }
 
         // Edit post - opens modal with markdown editor
@@ -286,10 +405,18 @@
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Content (Markdown)</label>
                             <textarea id="edit-post-content" style="width: 100%; min-height: 300px; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-family: Monaco, Menlo, monospace; font-size: 0.9rem; resize: vertical;">${post.content.replace(/</g, '&lt;')}</textarea>
                         </div>
-                        <div style="margin-bottom: 1rem;">
+                        <div style="margin-bottom: 1rem; display: flex; gap: 2rem; flex-wrap: wrap;">
                             <label style="display: flex; align-items: center; gap: 0.5rem;">
                                 <input type="checkbox" id="edit-post-published" ${post.is_published ? 'checked' : ''}>
                                 Published
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" id="edit-post-exclusive" ${post.is_exclusive ? 'checked' : ''}>
+                                🔒 Friends Only
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" id="edit-post-unlisted" ${post.is_unlisted ? 'checked' : ''}>
+                                👻 Unlisted
                             </label>
                         </div>
                         <div style="display: flex; gap: 1rem;">
@@ -328,7 +455,9 @@
                 title: document.getElementById('edit-post-title').value,
                 excerpt: document.getElementById('edit-post-excerpt').value,
                 content: document.getElementById('edit-post-content').value,
-                is_published: document.getElementById('edit-post-published').checked
+                is_published: document.getElementById('edit-post-published').checked,
+                is_exclusive: document.getElementById('edit-post-exclusive').checked,
+                is_unlisted: document.getElementById('edit-post-unlisted').checked
             };
 
             try {
@@ -410,7 +539,8 @@
             const endpoint = token ? `${API_BASE}/reactions/${slug}/me` : `${API_BASE}/reactions/${slug}`;
             try {
                 const response = await fetch(endpoint, {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+                    credentials: 'include'
                 });
                 if (response.ok) {
                     const data = await response.json();
@@ -431,7 +561,8 @@
             const token = localStorage.getItem('comment_token');
             try {
                 const response = await fetch(`${API_BASE}/reactions/${slug}/tree`, {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+                    credentials: 'include'
                 });
                 if (response.ok) {
                     const data = await response.json();

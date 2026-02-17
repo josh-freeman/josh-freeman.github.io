@@ -245,6 +245,102 @@
             border-radius: 8px;
             margin: 1rem 0;
         }
+
+        /* Image management grid */
+        .image-card {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .image-card.orphaned {
+            border-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-card-info {
+            padding: 0.75rem;
+        }
+
+        .image-card-info .filename {
+            font-size: 0.75rem;
+            font-family: monospace;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0.25rem;
+        }
+
+        .image-card-info .meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .image-card .status-badge {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 0.65rem;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .image-card .status-badge.used {
+            background: #c3e6cb;
+            color: #155724;
+        }
+
+        .image-card .status-badge.unused {
+            background: #ffeeba;
+            color: #856404;
+        }
+
+        .image-card-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .image-card-actions button {
+            flex: 1;
+            padding: 0.4rem;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .image-card-actions .btn-copy {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .image-card-actions .btn-copy:hover {
+            background: #d0d0d0;
+        }
+
+        .image-card-actions .btn-delete {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .image-card-actions .btn-delete:hover {
+            background: #fecaca;
+        }
     </style>
 </head>
 <body>
@@ -282,6 +378,7 @@
                     <button class="btn" id="tab-posts" onclick="showTab('posts')" style="font-weight: 600;">Posts</button>
                     <button class="btn" id="tab-invites" onclick="showTab('invites')">Invites</button>
                     <button class="btn" id="tab-users" onclick="showTab('users')">Users</button>
+                    <button class="btn" id="tab-images" onclick="showTab('images')">Images</button>
                 </div>
 
                 <!-- Post List View -->
@@ -399,6 +496,25 @@
                     <h2 style="margin-bottom: 1.5rem;">Users</h2>
                     <div id="users-list" class="post-list">
                         <p>Loading users...</p>
+                    </div>
+                </div>
+
+                <!-- Images View -->
+                <div id="images-view" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h2 style="margin: 0;">Images</h2>
+                        <div id="images-stats" style="font-size: 0.9rem; color: var(--text-muted);"></div>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="filter-orphaned" onchange="filterImages()">
+                            <span>Show only unused images</span>
+                        </label>
+                    </div>
+
+                    <div id="images-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem;">
+                        <p>Loading images...</p>
                     </div>
                 </div>
             </div>
@@ -775,11 +891,13 @@
             document.getElementById('post-editor-view').style.display = 'none';
             document.getElementById('invites-view').style.display = 'none';
             document.getElementById('users-view').style.display = 'none';
+            document.getElementById('images-view').style.display = 'none';
 
             // Reset tab styles
             document.getElementById('tab-posts').style.fontWeight = 'normal';
             document.getElementById('tab-invites').style.fontWeight = 'normal';
             document.getElementById('tab-users').style.fontWeight = 'normal';
+            document.getElementById('tab-images').style.fontWeight = 'normal';
 
             // Show selected tab
             if (tab === 'posts') {
@@ -794,6 +912,10 @@
                 document.getElementById('users-view').style.display = 'block';
                 document.getElementById('tab-users').style.fontWeight = '600';
                 loadUsers();
+            } else if (tab === 'images') {
+                document.getElementById('images-view').style.display = 'block';
+                document.getElementById('tab-images').style.fontWeight = '600';
+                loadImages();
             }
         }
 
@@ -1003,6 +1125,117 @@
                 }
             } catch (error) {
                 alert('Failed to delete user');
+            }
+        }
+
+        // Image management
+        let allImages = [];
+
+        async function loadImages() {
+            const grid = document.getElementById('images-grid');
+            const stats = document.getElementById('images-stats');
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/images`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    allImages = data.images;
+
+                    // Update stats
+                    const usedCount = allImages.filter(img => img.is_used).length;
+                    const unusedCount = allImages.length - usedCount;
+                    const totalMB = (data.total_size / (1024 * 1024)).toFixed(2);
+                    stats.innerHTML = `${allImages.length} images (${totalMB} MB) &middot; ${usedCount} used, ${unusedCount} unused`;
+
+                    renderImages();
+                } else {
+                    grid.innerHTML = '<p style="color: #e74c3c;">Failed to load images</p>';
+                }
+            } catch (error) {
+                grid.innerHTML = '<p style="color: #e74c3c;">Error loading images</p>';
+            }
+        }
+
+        function renderImages() {
+            const grid = document.getElementById('images-grid');
+            const filterOrphaned = document.getElementById('filter-orphaned').checked;
+
+            let images = allImages;
+            if (filterOrphaned) {
+                images = allImages.filter(img => !img.is_used);
+            }
+
+            if (images.length === 0) {
+                grid.innerHTML = filterOrphaned
+                    ? '<p style="color: var(--text-muted);">No unused images found</p>'
+                    : '<p style="color: var(--text-muted);">No images uploaded yet</p>';
+                return;
+            }
+
+            grid.innerHTML = images.map(img => `
+                <div class="image-card ${img.is_used ? '' : 'orphaned'}">
+                    <span class="status-badge ${img.is_used ? 'used' : 'unused'}">${img.is_used ? 'Used' : 'Unused'}</span>
+                    <img src="${escapeHtml(img.url)}" alt="${escapeHtml(img.filename)}" loading="lazy">
+                    <div class="image-card-info">
+                        <div class="filename" title="${escapeHtml(img.filename)}">${escapeHtml(img.filename)}</div>
+                        <div class="meta">
+                            <span>${formatFileSize(img.size)}</span>
+                            <span>${formatShortDate(img.uploaded)}</span>
+                        </div>
+                        <div class="image-card-actions">
+                            <button class="btn-copy" onclick="copyImageUrl('${escapeHtml(img.url)}')">Copy URL</button>
+                            <button class="btn-delete" onclick="deleteImage('${escapeHtml(img.filename)}')">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterImages() {
+            renderImages();
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        function formatShortDate(dateString) {
+            return new Date(dateString).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function copyImageUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                alert('URL copied to clipboard!');
+            });
+        }
+
+        async function deleteImage(filename) {
+            if (!confirm(`Delete image ${filename}? This cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/images/${filename}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    loadImages();
+                } else {
+                    const error = await response.json();
+                    alert(error.detail || 'Failed to delete image');
+                }
+            } catch (error) {
+                alert('Failed to delete image');
             }
         }
 

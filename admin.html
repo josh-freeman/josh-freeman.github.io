@@ -541,8 +541,8 @@
                                 </select>
                             </div>
                             <div style="display: flex; gap: 1rem; margin-top: 1.5rem; align-items: center;">
-                                <button type="submit" class="btn btn-primary" id="invite-submit-btn" onclick="this.form.dataset.sendEmail='false'">Create Link Only</button>
-                                <button type="submit" class="btn" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white;" onclick="this.form.dataset.sendEmail='true'">Create & Send Email</button>
+                                <button type="submit" class="btn btn-primary" data-send-email="false">Create Link Only</button>
+                                <button type="submit" class="btn" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white;" data-send-email="true">Create & Send Email</button>
                                 <button type="button" class="btn" onclick="hideInviteForm()" style="margin-left: auto;">Cancel</button>
                             </div>
                         </form>
@@ -1307,7 +1307,7 @@
             const name = document.getElementById('invite-name').value.trim();
             const email = document.getElementById('invite-email').value.trim();
             const expiresMinutes = parseInt(document.getElementById('invite-expires').value) || 10080;
-            const sendEmail = event.target.dataset.sendEmail === 'true';
+            const sendEmail = event.submitter && event.submitter.dataset.sendEmail === 'true';
 
             try {
                 const response = await fetch(`${API_BASE}/admin/invites`, {

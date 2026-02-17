@@ -254,7 +254,7 @@
                     document.getElementById('og-url').content = `https://joshfreeman.me/blog/post.html?slug=${slug}`;
 
                     // Update content
-                    document.getElementById('post-title').innerHTML = post.title + (post.is_exclusive ? ' <span class="exclusive-badge" onclick="showExclusiveModal()" title="Click for info">Friends Only</span>' : '') + (post.is_unlisted ? ' <span class="unlisted-badge" title="Unlisted - not shown in blog listing">Unlisted</span>' : '');
+                    document.getElementById('post-title').innerHTML = post.title + (post.is_exclusive ? ' <span class="exclusive-badge" title="This post is only visible to friends">Friends Only</span>' : '') + (post.is_unlisted ? ' <span class="unlisted-badge" title="Unlisted - not shown in blog listing">Unlisted</span>' : '');
                     document.getElementById('post-date').textContent = formatPostDate(post.created_at);
                     document.getElementById('post-date').setAttribute('datetime', post.created_at.split('T')[0]);
 

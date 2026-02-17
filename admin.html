@@ -437,13 +437,13 @@
 
                     <form id="post-form" onsubmit="savePost(event)">
                         <div class="form-group">
-                            <label for="post-slug">Slug (URL path)</label>
-                            <input type="text" id="post-slug" pattern="[a-z0-9-]+" placeholder="my-post-title" required>
+                            <label for="post-title">Title</label>
+                            <input type="text" id="post-title" placeholder="My Post Title" required oninput="autoGenerateSlug()">
                         </div>
 
                         <div class="form-group">
-                            <label for="post-title">Title</label>
-                            <input type="text" id="post-title" placeholder="My Post Title" required>
+                            <label for="post-slug">Slug (URL path) <span id="slug-auto-badge" style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">— auto-generated</span></label>
+                            <input type="text" id="post-slug" pattern="[a-z0-9-]+" placeholder="my-post-title" required oninput="markSlugManual()">
                         </div>
 
                         <div class="form-group">
@@ -637,6 +637,7 @@
 
                 if (response.ok) {
                     const posts = await response.json();
+                    existingSlugs = posts.map(p => p.slug); // track for duplicate checking
                     if (posts.length === 0) {
                         container.innerHTML = '<p style="color: var(--text-muted);">No posts yet. Create your first post!</p>';
                         return;
@@ -668,13 +669,51 @@
             }
         }
 
+        let slugManuallyEdited = false;
+        let existingSlugs = [];
+
+        function slugify(text) {
+            return text
+                .toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove accents
+                .replace(/[^a-z0-9\s-]/g, '') // remove non-alphanumeric
+                .trim()
+                .replace(/\s+/g, '-') // spaces to hyphens
+                .replace(/-+/g, '-'); // collapse multiple hyphens
+        }
+
+        function getUniqueSlug(baseSlug) {
+            if (!existingSlugs.includes(baseSlug)) return baseSlug;
+            let counter = 2;
+            while (existingSlugs.includes(`${baseSlug}-${counter}`)) {
+                counter++;
+            }
+            return `${baseSlug}-${counter}`;
+        }
+
+        function autoGenerateSlug() {
+            if (slugManuallyEdited || currentSlug) return; // don't overwrite manual edits or when editing existing post
+            const title = document.getElementById('post-title').value;
+            const slug = getUniqueSlug(slugify(title));
+            document.getElementById('post-slug').value = slug;
+        }
+
+        function markSlugManual() {
+            if (!currentSlug) { // only for new posts
+                slugManuallyEdited = true;
+                document.getElementById('slug-auto-badge').style.display = 'none';
+            }
+        }
+
         function showEditor(slug = null) {
             currentSlug = slug;
+            slugManuallyEdited = false;
             document.getElementById('post-list-view').style.display = 'none';
             document.getElementById('post-editor-view').style.display = 'block';
             document.getElementById('editor-title').textContent = slug ? 'Edit Post' : 'New Post';
             document.getElementById('delete-btn').style.display = slug ? 'inline-block' : 'none';
             document.getElementById('post-slug').disabled = !!slug;
+            document.getElementById('slug-auto-badge').style.display = slug ? 'none' : 'inline';
 
             if (slug) {
                 loadPost(slug);

@@ -573,6 +573,14 @@
                 is_unlisted: document.getElementById('edit-post-unlisted').checked
             };
 
+            // Set a timeout to close modal after 5 seconds regardless of response
+            // This is a fallback in case something goes wrong with response handling
+            const timeoutId = setTimeout(() => {
+                console.log('Save timeout - closing modal anyway');
+                closeEditModal();
+                loadPost();
+            }, 5000);
+
             try {
                 const response = await fetch(`${API_BASE}/admin/posts/${slug}`, {
                     method: 'PUT',
@@ -583,26 +591,37 @@
                     body: JSON.stringify(postData)
                 });
 
-                // Always close modal first if we got any response
-                if (response.ok || response.status === 200) {
+                clearTimeout(timeoutId);
+                console.log('Save response:', response.status, response.ok, response.statusText);
+
+                // Check for success (any 2xx status)
+                if (response.status >= 200 && response.status < 300) {
                     closeEditModal();
-                    loadPost(); // Reload the post content
-                } else {
-                    let errorMsg = 'Failed to save';
-                    try {
-                        const error = await response.json();
-                        errorMsg = error.detail || errorMsg;
-                    } catch (e) {}
+                    loadPost();
+                    return;
+                }
+
+                // Handle error response
+                let errorMsg = `Failed to save (${response.status})`;
+                try {
+                    const error = await response.json();
+                    errorMsg = error.detail || errorMsg;
+                } catch (e) {
+                    console.log('Could not parse error response');
+                }
+
+                if (errorEl) {
                     errorEl.textContent = errorMsg;
                     errorEl.style.display = 'block';
-                    if (saveBtn) {
-                        saveBtn.disabled = false;
-                        saveBtn.textContent = 'Save';
-                    }
+                }
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save';
                 }
             } catch (error) {
+                clearTimeout(timeoutId);
                 console.error('Save error:', error);
-                // If fetch threw but save might have worked, close modal anyway
+                // Network error or similar - close modal and reload since save may have worked
                 closeEditModal();
                 loadPost();
             }

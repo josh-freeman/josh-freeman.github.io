@@ -947,9 +947,62 @@
             }
         }
 
-        async function notifyUsersAboutPost() {
+        function notifyUsersAboutPost() {
             if (!currentSlug) return;
-            if (!confirm('Send email notification about this post to all users?')) return;
+
+            const postTitle = document.getElementById('post-title').value || 'this post';
+
+            // Create confirmation modal
+            const modal = document.createElement('div');
+            modal.id = 'notify-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                padding: 1rem;
+            `;
+            modal.innerHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 450px; width: 100%;">
+                    <h3 style="margin: 0 0 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        Notify Users
+                    </h3>
+                    <p style="color: #4b5563; margin-bottom: 1.5rem; line-height: 1.5;">
+                        Send an email notification about <strong>"${escapeHtml(postTitle)}"</strong> to all registered users?
+                    </p>
+                    <div style="background: #fef3c7; border-left: 3px solid #f59e0b; padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; margin-bottom: 1.5rem;">
+                        <p style="margin: 0; font-size: 0.9rem; color: #92400e;">
+                            This will send emails to everyone with an account. Make sure the post is ready!
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button onclick="closeNotifyModal()" class="btn" style="padding: 0.6rem 1.2rem;">Cancel</button>
+                        <button onclick="confirmNotifyUsers()" class="btn" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 0.6rem 1.2rem;">
+                            Send Notifications
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeNotifyModal();
+            });
+        }
+
+        function closeNotifyModal() {
+            const modal = document.getElementById('notify-modal');
+            if (modal) modal.remove();
+        }
+
+        async function confirmNotifyUsers() {
+            closeNotifyModal();
 
             const token = localStorage.getItem('comment_token');
 

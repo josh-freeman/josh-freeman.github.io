@@ -665,6 +665,15 @@
         const API_BASE = 'https://api.joshfreeman.me';
         let currentSlug = null;
 
+        // Pagination
+        const PAGE_SIZE = 10;
+        let allPosts = [];
+        let allInvites = [];
+        let allUsers = [];
+        let postsVisible = PAGE_SIZE;
+        let invitesVisible = PAGE_SIZE;
+        let usersVisible = PAGE_SIZE;
+
         // Toast notification
         function showToast(message, type = 'default') {
             // Remove existing toast
@@ -760,37 +769,56 @@
                 });
 
                 if (response.ok) {
-                    const posts = await response.json();
-                    existingSlugs = posts.map(p => p.slug); // track for duplicate checking
-                    if (posts.length === 0) {
-                        container.innerHTML = '<p style="color: var(--text-muted);">No posts yet. Create your first post!</p>';
-                        return;
-                    }
-
-                    container.innerHTML = posts.map(post => `
-                        <div class="post-item">
-                            <div class="post-item-info">
-                                <h3>${escapeHtml(post.title)}</h3>
-                                <div class="meta">
-                                    <span class="badge ${post.is_published ? 'badge-published' : 'badge-draft'}">
-                                        ${post.is_published ? 'Published' : 'Draft'}
-                                    </span>
-                                    ${post.is_exclusive ? '<span class="badge badge-exclusive">Exclusive</span>' : ''}
-                                    &middot; /${post.slug} &middot; ${formatDate(post.created_at)}
-                                </div>
-                            </div>
-                            <div class="post-item-actions">
-                                <button class="btn" onclick="editPost('${post.slug}')">Edit</button>
-                                <a href="/blog/post.html?slug=${post.slug}" target="_blank" class="btn" ${!post.is_published ? 'style="opacity: 0.5;"' : ''}>View</a>
-                            </div>
-                        </div>
-                    `).join('');
+                    allPosts = await response.json();
+                    existingSlugs = allPosts.map(p => p.slug); // track for duplicate checking
+                    postsVisible = PAGE_SIZE;
+                    renderPosts();
                 } else {
                     container.innerHTML = '<p class="error-message">Failed to load posts</p>';
                 }
             } catch (error) {
                 container.innerHTML = '<p class="error-message">Failed to load posts</p>';
             }
+        }
+
+        function renderPosts() {
+            const container = document.getElementById('post-list');
+
+            if (allPosts.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted);">No posts yet. Create your first post!</p>';
+                return;
+            }
+
+            const visiblePosts = allPosts.slice(0, postsVisible);
+            const hasMore = allPosts.length > postsVisible;
+
+            container.innerHTML = visiblePosts.map(post => `
+                <div class="post-item">
+                    <div class="post-item-info">
+                        <h3>${escapeHtml(post.title)}</h3>
+                        <div class="meta">
+                            <span class="badge ${post.is_published ? 'badge-published' : 'badge-draft'}">
+                                ${post.is_published ? 'Published' : 'Draft'}
+                            </span>
+                            ${post.is_exclusive ? '<span class="badge badge-exclusive">Exclusive</span>' : ''}
+                            &middot; /${post.slug} &middot; ${formatDate(post.created_at)}
+                        </div>
+                    </div>
+                    <div class="post-item-actions">
+                        <button class="btn" onclick="editPost('${post.slug}')">Edit</button>
+                        <a href="/blog/post.html?slug=${post.slug}" target="_blank" class="btn" ${!post.is_published ? 'style="opacity: 0.5;"' : ''}>View</a>
+                    </div>
+                </div>
+            `).join('') + (hasMore ? `
+                <button class="btn" onclick="showMorePosts()" style="width: 100%; margin-top: 0.5rem; background: #f3f4f6; color: #374151;">
+                    Show more (${allPosts.length - postsVisible} remaining)
+                </button>
+            ` : '');
+        }
+
+        function showMorePosts() {
+            postsVisible += PAGE_SIZE;
+            renderPosts();
         }
 
         let slugManuallyEdited = false;
@@ -1441,39 +1469,58 @@
                 });
 
                 if (response.ok) {
-                    const invites = await response.json();
-                    if (invites.length === 0) {
-                        container.innerHTML = '<p style="color: var(--text-muted);">No invites yet.</p>';
-                        return;
-                    }
-
-                    const now = new Date();
-                    container.innerHTML = invites.map(invite => {
-                        const expired = new Date(invite.expires_at) < now;
-                        const status = invite.used ? 'Used' : (expired ? 'Expired' : 'Active');
-                        const statusClass = invite.used ? 'badge-published' : (expired ? 'badge-draft' : 'badge-published');
-
-                        return `
-                            <div class="post-item">
-                                <div class="post-item-info">
-                                    <h3 style="font-family: monospace; font-size: 0.9rem;">${invite.token.substring(0, 16)}...</h3>
-                                    <div class="meta">
-                                        <span class="badge ${statusClass}">${status}</span>
-                                        &middot; ${escapeHtml(invite.name)} (${escapeHtml(invite.email)})
-                                        &middot; Expires: ${formatDateTime(invite.expires_at)}
-                                    </div>
-                                </div>
-                                <div class="post-item-actions">
-                                    ${!invite.used && !expired ? `<button class="btn" onclick="copyInviteLinkById('${invite.token}')">Copy Link</button>` : ''}
-                                    <button class="btn" onclick="deleteInvite(${invite.id})" style="background: #e74c3c; color: white;">Delete</button>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
+                    allInvites = await response.json();
+                    invitesVisible = PAGE_SIZE;
+                    renderInvites();
                 }
             } catch (error) {
                 container.innerHTML = '<p class="error-message">Failed to load invites</p>';
             }
+        }
+
+        function renderInvites() {
+            const container = document.getElementById('invites-list');
+
+            if (allInvites.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted);">No invites yet.</p>';
+                return;
+            }
+
+            const now = new Date();
+            const visibleInvites = allInvites.slice(0, invitesVisible);
+            const hasMore = allInvites.length > invitesVisible;
+
+            container.innerHTML = visibleInvites.map(invite => {
+                const expired = new Date(invite.expires_at) < now;
+                const status = invite.used ? 'Used' : (expired ? 'Expired' : 'Active');
+                const statusClass = invite.used ? 'badge-published' : (expired ? 'badge-draft' : 'badge-published');
+
+                return `
+                    <div class="post-item">
+                        <div class="post-item-info">
+                            <h3 style="font-family: monospace; font-size: 0.9rem;">${invite.token.substring(0, 16)}...</h3>
+                            <div class="meta">
+                                <span class="badge ${statusClass}">${status}</span>
+                                &middot; ${escapeHtml(invite.name)} (${escapeHtml(invite.email)})
+                                &middot; Expires: ${formatDateTime(invite.expires_at)}
+                            </div>
+                        </div>
+                        <div class="post-item-actions">
+                            ${!invite.used && !expired ? `<button class="btn" onclick="copyInviteLinkById('${invite.token}')">Copy Link</button>` : ''}
+                            <button class="btn" onclick="deleteInvite(${invite.id})" style="background: #e74c3c; color: white;">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('') + (hasMore ? `
+                <button class="btn" onclick="showMoreInvites()" style="width: 100%; margin-top: 0.5rem; background: #f3f4f6; color: #374151;">
+                    Show more (${allInvites.length - invitesVisible} remaining)
+                </button>
+            ` : '');
+        }
+
+        function showMoreInvites() {
+            invitesVisible += PAGE_SIZE;
+            renderInvites();
         }
 
         function copyInviteLinkById(token) {
@@ -1515,27 +1562,51 @@
                 });
 
                 if (response.ok) {
-                    const users = await response.json();
-                    container.innerHTML = users.map(user => `
-                        <div class="post-item">
-                            <div class="post-item-info">
-                                <h3>${escapeHtml(user.name)}</h3>
-                                <div class="meta">
-                                    ${user.email}
-                                    &middot; <span class="badge ${user.is_admin ? 'badge-published' : 'badge-draft'}">${user.is_admin ? 'Admin' : 'User'}</span>
-                                    &middot; Joined: ${formatDate(user.created_at)}
-                                </div>
-                            </div>
-                            <div class="post-item-actions">
-                                <button class="btn" onclick="editUserName(${user.id}, '${escapeHtml(user.name).replace(/'/g, "\\'")}')">Rename</button>
-                                ${!user.is_admin ? `<button class="btn" onclick="deleteUser(${user.id})" style="background: #e74c3c; color: white;">Delete</button>` : ''}
-                            </div>
-                        </div>
-                    `).join('');
+                    allUsers = await response.json();
+                    usersVisible = PAGE_SIZE;
+                    renderUsers();
                 }
             } catch (error) {
                 container.innerHTML = '<p class="error-message">Failed to load users</p>';
             }
+        }
+
+        function renderUsers() {
+            const container = document.getElementById('users-list');
+
+            if (allUsers.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted);">No users yet.</p>';
+                return;
+            }
+
+            const visibleUsers = allUsers.slice(0, usersVisible);
+            const hasMore = allUsers.length > usersVisible;
+
+            container.innerHTML = visibleUsers.map(user => `
+                <div class="post-item">
+                    <div class="post-item-info">
+                        <h3>${escapeHtml(user.name)}</h3>
+                        <div class="meta">
+                            ${user.email}
+                            &middot; <span class="badge ${user.is_admin ? 'badge-published' : 'badge-draft'}">${user.is_admin ? 'Admin' : 'User'}</span>
+                            &middot; Joined: ${formatDate(user.created_at)}
+                        </div>
+                    </div>
+                    <div class="post-item-actions">
+                        <button class="btn" onclick="editUserName(${user.id}, '${escapeHtml(user.name).replace(/'/g, "\\'")}')">Rename</button>
+                        ${!user.is_admin ? `<button class="btn" onclick="deleteUser(${user.id})" style="background: #e74c3c; color: white;">Delete</button>` : ''}
+                    </div>
+                </div>
+            `).join('') + (hasMore ? `
+                <button class="btn" onclick="showMoreUsers()" style="width: 100%; margin-top: 0.5rem; background: #f3f4f6; color: #374151;">
+                    Show more (${allUsers.length - usersVisible} remaining)
+                </button>
+            ` : '');
+        }
+
+        function showMoreUsers() {
+            usersVisible += PAGE_SIZE;
+            renderUsers();
         }
 
         function editUserName(userId, currentName) {

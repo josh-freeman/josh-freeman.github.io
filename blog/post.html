@@ -62,35 +62,12 @@
                 <p style="color: var(--text-muted);">Loading post...</p>
             </div>
 
-            <!-- Reaction Forest Section -->
-            <section id="reactions-section" class="reactions-section" style="margin-top: 2rem;">
-                <style>
-                    .forest-container { background: linear-gradient(135deg, #fefefe 0%, #f8f9fa 100%); border: 1px solid #e0e0e0; border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-                    .forest-header { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
-                    .forest-header h3 { margin: 0; font-size: 1.2rem; }
-                    .forest-subtitle { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.35rem; }
-                    #forest-graph { margin-top: 1rem; height: 250px; border-radius: 12px; background: white; border: 1px solid #eee; }
-                    .forest-empty { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
-                    .forest-legend { display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted); flex-wrap: wrap; justify-content: center; }
-                    .forest-legend span { display: flex; align-items: center; gap: 0.3rem; }
-                </style>
-                <div class="forest-container">
-                    <div class="forest-header">
-                        <div onclick="toggleReactionForest()" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <span id="forest-toggle-icon" style="font-size: 0.8rem; transition: transform 0.2s;">▶</span>
-                            <h3>Reaction Forest <span id="forest-count" style="font-weight: normal; color: var(--text-muted);"></span></h3>
-                        </div>
-                        <div id="view-toggle" style="margin-left: auto; display: none; gap: 0.25rem; background: #eee; padding: 0.2rem; border-radius: 6px;">
-                            <button onclick="setForestView('tree')" id="view-tree-btn" style="padding: 0.3rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; background: white;">Tree</button>
-                            <button onclick="setForestView('graph')" id="view-graph-btn" style="padding: 0.3rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; background: transparent;">Graph</button>
-                        </div>
-                    </div>
-                    <p class="forest-subtitle" id="forest-subtitle" style="display: none;">Click on hearts to react to reactions</p>
-                    <div id="forest-tree" style="display: none;"></div>
-                    <div id="forest-graph" style="display: none;"></div>
-                    <div class="forest-legend" id="forest-legend" style="display: none;"></div>
-                </div>
-            </section>
+            <!-- Reaction Forest Link -->
+            <div id="forest-link" style="margin-top: 1.5rem;">
+                <button onclick="openReactionForest()" style="background: none; border: none; cursor: pointer; color: var(--primary-color); font-size: 0.95rem; padding: 0;">
+                    🌳 View Reaction Forest <span id="forest-count" style="color: var(--text-muted);"></span>
+                </button>
+            </div>
 
             <!-- Comments Section -->
             <section class="comments-section">
@@ -378,52 +355,96 @@
             }
         }
 
-        let forestCollapsed = true; // Start collapsed by default
         let forestView = 'tree'; // 'tree' or 'graph'
         let cachedReactions = null;
 
-        function toggleReactionForest() {
-            forestCollapsed = !forestCollapsed;
-            const tree = document.getElementById('forest-tree');
-            const graph = document.getElementById('forest-graph');
-            const icon = document.getElementById('forest-toggle-icon');
-            const legend = document.getElementById('forest-legend');
-            const viewToggle = document.getElementById('view-toggle');
-            const subtitle = document.getElementById('forest-subtitle');
+        function openReactionForest() {
+            const modal = document.createElement('div');
+            modal.id = 'forest-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                padding: 1rem;
+            `;
 
-            if (forestCollapsed) {
-                tree.style.display = 'none';
-                graph.style.display = 'none';
-                legend.style.display = 'none';
-                viewToggle.style.display = 'none';
-                subtitle.style.display = 'none';
-            } else {
-                viewToggle.style.display = 'flex';
-                legend.style.display = 'flex';
-                subtitle.style.display = 'block';
+            const token = localStorage.getItem('comment_token');
+            let legendHtml = '<span>❤️ = reaction</span>';
+            if (token) {
+                legendHtml += '<span>💛 = yours</span>';
+            }
+            legendHtml += '<span>Click to react</span>';
+            if (token) {
+                legendHtml += '<span>Right-click to remove</span>';
+            }
+
+            modal.innerHTML = `
+                <div style="background: white; padding: 1.5rem; border-radius: 16px; max-width: 600px; width: 95%; max-height: 80vh; overflow-y: auto;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                        <h3 style="margin: 0;">🌳 Reaction Forest</h3>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div id="modal-view-toggle" style="display: flex; gap: 0.25rem; background: #eee; padding: 0.2rem; border-radius: 6px;">
+                                <button onclick="setForestView('tree')" id="view-tree-btn" style="padding: 0.3rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; background: white;">Tree</button>
+                                <button onclick="setForestView('graph')" id="view-graph-btn" style="padding: 0.3rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; background: transparent;">Graph</button>
+                            </div>
+                            <button onclick="closeForestModal()" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: #999;">&times;</button>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Click on hearts to react to reactions</p>
+                    <div id="forest-tree" style="min-height: 100px;"></div>
+                    <div id="forest-graph" style="display: none; height: 300px; border-radius: 12px; background: #f8f9fa; border: 1px solid #eee;"></div>
+                    <div id="forest-legend" style="display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted); flex-wrap: wrap; justify-content: center;">
+                        ${legendHtml}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeForestModal();
+            });
+
+            // Render the tree view
+            if (cachedReactions) {
                 if (forestView === 'tree') {
-                    tree.style.display = 'block';
-                    graph.style.display = 'none';
+                    renderTreeView(cachedReactions);
                 } else {
-                    tree.style.display = 'none';
-                    graph.style.display = 'block';
+                    renderGraphView(cachedReactions);
                 }
             }
-            icon.textContent = forestCollapsed ? '▶' : '▼';
+        }
+
+        function closeForestModal() {
+            const modal = document.getElementById('forest-modal');
+            if (modal) modal.remove();
+            // Clean up tooltip
+            const tooltip = document.getElementById('cy-tooltip');
+            if (tooltip) tooltip.remove();
         }
 
         function setForestView(view) {
             forestView = view;
-            document.getElementById('view-tree-btn').style.background = view === 'tree' ? 'white' : 'transparent';
-            document.getElementById('view-graph-btn').style.background = view === 'graph' ? 'white' : 'transparent';
+            const treeBtn = document.getElementById('view-tree-btn');
+            const graphBtn = document.getElementById('view-graph-btn');
+            if (treeBtn) treeBtn.style.background = view === 'tree' ? 'white' : 'transparent';
+            if (graphBtn) graphBtn.style.background = view === 'graph' ? 'white' : 'transparent';
+
+            const tree = document.getElementById('forest-tree');
+            const graph = document.getElementById('forest-graph');
 
             if (view === 'tree') {
-                document.getElementById('forest-tree').style.display = 'block';
-                document.getElementById('forest-graph').style.display = 'none';
+                if (tree) tree.style.display = 'block';
+                if (graph) graph.style.display = 'none';
                 if (cachedReactions) renderTreeView(cachedReactions);
             } else {
-                document.getElementById('forest-tree').style.display = 'none';
-                document.getElementById('forest-graph').style.display = 'block';
+                if (tree) tree.style.display = 'none';
+                if (graph) graph.style.display = 'block';
                 if (cachedReactions) renderGraphView(cachedReactions);
             }
         }
@@ -454,7 +475,12 @@
             }
             reactions.forEach(collectUsers);
             const count = allUsers.size;
-            document.getElementById('forest-count').textContent = count > 0 ? `· ${count} ${count === 1 ? 'person' : 'people'}` : '';
+
+            // Update forest link count
+            const forestCountEl = document.getElementById('forest-count');
+            if (forestCountEl) {
+                forestCountEl.textContent = count > 0 ? `(${count} ${count === 1 ? 'person' : 'people'})` : '';
+            }
 
             // Update the top heart count with total distinct users
             document.getElementById('reaction-count').textContent = count;
@@ -464,43 +490,31 @@
             document.getElementById('reaction-icon').textContent = userHasReaction ? '❤️' : '🤍';
             document.getElementById('reaction-btn').style.background = userHasReaction ? 'rgba(239, 68, 68, 0.1)' : 'none';
 
+            // If modal is open, render into it
+            const modalTree = document.getElementById('forest-tree');
+            const modalGraph = document.getElementById('forest-graph');
+
             if (!reactions || reactions.length === 0) {
                 const emptyHtml = `
-                    <div class="forest-empty">
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
                         <div style="font-size: 3rem; margin-bottom: 0.75rem;">🌱</div>
                         <div style="font-size: 1.1rem;">No reactions yet</div>
                         <div style="margin-top: 0.5rem;">Be the first to plant a heart!</div>
-                        ${token ? `<button onclick="toggleReaction()" style="margin-top: 1.25rem; padding: 0.6rem 1.25rem; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; box-shadow: 0 2px 8px rgba(239,68,68,0.3);">❤️ Add Reaction</button>` : ''}
+                        ${token ? `<button onclick="toggleReaction(); closeForestModal();" style="margin-top: 1.25rem; padding: 0.6rem 1.25rem; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; box-shadow: 0 2px 8px rgba(239,68,68,0.3);">❤️ Add Reaction</button>` : ''}
                     </div>
                 `;
-                document.getElementById('forest-tree').innerHTML = emptyHtml;
-                document.getElementById('forest-graph').innerHTML = emptyHtml;
-                document.getElementById('forest-legend').style.display = 'none';
+                if (modalTree) modalTree.innerHTML = emptyHtml;
+                if (modalGraph) modalGraph.innerHTML = emptyHtml;
                 return;
             }
 
-            // Build legend dynamically based on login status
-            const legendEl = document.getElementById('forest-legend');
-            const token = localStorage.getItem('comment_token');
-            let legendHtml = '<span>❤️ = reaction</span>';
-            if (token) {
-                legendHtml += '<span>💛 = yours</span>';
-            }
-            legendHtml += '<span>Click to react</span>';
-            if (token) {
-                legendHtml += '<span>Right-click to remove</span>';
-            }
-            legendEl.innerHTML = legendHtml;
-            // Only show legend if forest is expanded
-            if (!forestCollapsed) {
-                legendEl.style.display = 'flex';
-            }
-
-            // Render active view
-            if (forestView === 'tree') {
-                renderTreeView(reactions);
-            } else {
-                renderGraphView(reactions);
+            // Render active view if modal is open
+            if (modalTree || modalGraph) {
+                if (forestView === 'tree') {
+                    renderTreeView(reactions);
+                } else {
+                    renderGraphView(reactions);
+                }
             }
         }
 

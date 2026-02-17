@@ -1341,7 +1341,6 @@
 
                 if (response.ok) {
                     const invite = await response.json();
-                    console.log('Invite response:', invite, 'sendEmail:', sendEmail);
                     const link = `${window.location.origin}/register.html?token=${invite.token}`;
                     document.getElementById('invite-link-input').value = link;
                     document.getElementById('invite-form').style.display = 'none';

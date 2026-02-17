@@ -71,7 +71,6 @@ function renderComments(comments) {
                         <span id="like-count-${comment.id}">${comment.like_count || 0}</span>
                     </button>
                     ${comment.like_count > 0 ? `<button onclick="showCommentLikers(${comment.id}, event)" style="background: none; border: none; cursor: pointer; font-size: 0.8rem; color: var(--primary-color);">see who</button>` : ''}
-                    <div id="likers-inline-${comment.id}" style="display: none; font-size: 0.85rem; color: var(--text-muted);"></div>
                 </div>
             </div>
         `;
@@ -426,28 +425,16 @@ async function deleteComment(commentId) {
     }
 }
 
-// Show who liked a comment (public)
+// Show who liked a comment (public) - in a modal
 async function showCommentLikers(commentId, event) {
     event.stopPropagation();
-
-    const inlineEl = document.getElementById(`likers-inline-${commentId}`);
-
-    // Toggle off if already showing
-    if (inlineEl.style.display === 'block') {
-        inlineEl.style.display = 'none';
-        return;
-    }
 
     try {
         const response = await fetch(`${window.COMMENTS_API_BASE}/comments/${commentId}/likers`);
 
         if (response.ok) {
             const data = await response.json();
-            if (data.likers.length > 0) {
-                const names = data.likers.map(l => l.name).join(', ');
-                inlineEl.textContent = `Liked by: ${names}`;
-                inlineEl.style.display = 'block';
-            }
+            showLikersModal(data.likers);
         }
     } catch (error) {
         console.log('Could not load likers');
@@ -455,7 +442,7 @@ async function showCommentLikers(commentId, event) {
 }
 
 // Show likers modal
-function showLikersModal(likers, title) {
+function showLikersModal(likers, title = 'Liked by') {
     const modal = document.createElement('div');
     modal.id = 'likers-modal';
     modal.style.cssText = `

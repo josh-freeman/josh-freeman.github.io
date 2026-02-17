@@ -77,22 +77,18 @@
                 <div class="forest-container">
                     <div class="forest-header">
                         <div onclick="toggleReactionForest()" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <span id="forest-toggle-icon" style="font-size: 0.8rem; transition: transform 0.2s;">▼</span>
+                            <span id="forest-toggle-icon" style="font-size: 0.8rem; transition: transform 0.2s;">▶</span>
                             <h3>Reaction Forest <span id="forest-count" style="font-weight: normal; color: var(--text-muted);"></span></h3>
                         </div>
-                        <div id="view-toggle" style="margin-left: auto; display: flex; gap: 0.25rem; background: #eee; padding: 0.2rem; border-radius: 6px;">
+                        <div id="view-toggle" style="margin-left: auto; display: none; gap: 0.25rem; background: #eee; padding: 0.2rem; border-radius: 6px;">
                             <button onclick="setForestView('tree')" id="view-tree-btn" style="padding: 0.3rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; background: white;">Tree</button>
                             <button onclick="setForestView('graph')" id="view-graph-btn" style="padding: 0.3rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; background: transparent;">Graph</button>
                         </div>
                     </div>
-                    <p class="forest-subtitle">Click on hearts to react to reactions</p>
-                    <div id="forest-tree" style="display: block;"></div>
+                    <p class="forest-subtitle" id="forest-subtitle" style="display: none;">Click on hearts to react to reactions</p>
+                    <div id="forest-tree" style="display: none;"></div>
                     <div id="forest-graph" style="display: none;"></div>
-                    <div class="forest-legend" id="forest-legend">
-                        <span>❤️ = reaction</span>
-                        <span>💛 = yours</span>
-                        <span>Click to react · Right-click to delete yours</span>
-                    </div>
+                    <div class="forest-legend" id="forest-legend" style="display: none;"></div>
                 </div>
             </section>
 
@@ -382,7 +378,7 @@
             }
         }
 
-        let forestCollapsed = false;
+        let forestCollapsed = true; // Start collapsed by default
         let forestView = 'tree'; // 'tree' or 'graph'
         let cachedReactions = null;
 
@@ -393,15 +389,18 @@
             const icon = document.getElementById('forest-toggle-icon');
             const legend = document.getElementById('forest-legend');
             const viewToggle = document.getElementById('view-toggle');
+            const subtitle = document.getElementById('forest-subtitle');
 
             if (forestCollapsed) {
                 tree.style.display = 'none';
                 graph.style.display = 'none';
                 legend.style.display = 'none';
                 viewToggle.style.display = 'none';
+                subtitle.style.display = 'none';
             } else {
                 viewToggle.style.display = 'flex';
                 legend.style.display = 'flex';
+                subtitle.style.display = 'block';
                 if (forestView === 'tree') {
                     tree.style.display = 'block';
                     graph.style.display = 'none';
@@ -480,7 +479,22 @@
                 return;
             }
 
-            document.getElementById('forest-legend').style.display = 'flex';
+            // Build legend dynamically based on login status
+            const legendEl = document.getElementById('forest-legend');
+            const token = localStorage.getItem('comment_token');
+            let legendHtml = '<span>❤️ = reaction</span>';
+            if (token) {
+                legendHtml += '<span>💛 = yours</span>';
+            }
+            legendHtml += '<span>Click to react</span>';
+            if (token) {
+                legendHtml += '<span>Right-click to remove</span>';
+            }
+            legendEl.innerHTML = legendHtml;
+            // Only show legend if forest is expanded
+            if (!forestCollapsed) {
+                legendEl.style.display = 'flex';
+            }
 
             // Render active view
             if (forestView === 'tree') {

@@ -1339,6 +1339,7 @@
 
                 if (response.ok) {
                     const invite = await response.json();
+                    console.log('Invite response:', invite, 'sendEmail:', sendEmail);
                     const link = `${window.location.origin}/register.html?token=${invite.token}`;
                     document.getElementById('invite-link-input').value = link;
                     document.getElementById('invite-form').style.display = 'none';
@@ -1347,7 +1348,7 @@
 
                     // Show email status if email was requested
                     if (sendEmail) {
-                        if (invite.email_sent) {
+                        if (invite.email_sent === true) {
                             showToast(`Invite created and email sent to ${email}`, 'success');
                         } else {
                             showToast(`Invite created but email failed: ${invite.email_error || 'Unknown error'}`, 'error');

@@ -7,6 +7,33 @@ if (typeof window.COMMENTS_API_BASE === 'undefined') {
     window.COMMENTS_API_BASE = 'https://api.joshfreeman.me';
 }
 
+// SVG heart icons
+const HEART_SVG_PATH = 'M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z';
+const HEART_OUTLINE = `<svg class="comment-heart-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="${HEART_SVG_PATH}"/></svg>`;
+const HEART_FILLED = `<svg class="comment-heart-icon active" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="${HEART_SVG_PATH}"/></svg>`;
+
+// Inject heart icon CSS early
+(function() {
+    if (!document.getElementById('comment-heart-styles')) {
+        const style = document.createElement('style');
+        style.id = 'comment-heart-styles';
+        style.textContent = `
+            .comment-heart-icon {
+                color: #9ca3af;
+                transition: all 0.15s ease;
+                vertical-align: middle;
+            }
+            .comment-heart-icon.active {
+                color: #ef4444;
+            }
+            .like-btn:hover .comment-heart-icon:not(.active) {
+                color: #fca5a5;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+})();
+
 // Get post slug from URL - can be overridden by page
 if (typeof getPostSlug === 'undefined') {
     var getPostSlug = function() {
@@ -67,7 +94,7 @@ function renderComments(comments) {
                 </div>
                 <div class="comment-footer">
                     <button onclick="toggleCommentLike(${comment.id})" class="like-btn" id="like-btn-${comment.id}">
-                        <span id="like-icon-${comment.id}">${isLiked ? '❤️' : '🤍'}</span>
+                        <span id="like-icon-${comment.id}">${isLiked ? HEART_FILLED : HEART_OUTLINE}</span>
                         <span id="like-count-${comment.id}">${comment.like_count || 0}</span>
                     </button>
                     ${comment.like_count > 0 ? `<button onclick="showCommentLikers(${comment.id}, event)" class="see-who-btn">see who</button>` : ''}
@@ -98,7 +125,7 @@ async function loadUserLikes(commentIds) {
                 const data = await response.json();
                 if (data.user_liked) {
                     userLikedComments.add(commentId);
-                    document.getElementById(`like-icon-${commentId}`).textContent = '❤️';
+                    document.getElementById(`like-icon-${commentId}`).innerHTML = HEART_FILLED;
                 }
             }
         } catch (e) {}
@@ -125,7 +152,7 @@ async function toggleCommentLike(commentId) {
         if (response.ok) {
             const data = await response.json();
             document.getElementById(`like-count-${commentId}`).textContent = data.count;
-            document.getElementById(`like-icon-${commentId}`).textContent = data.user_liked ? '❤️' : '🤍';
+            document.getElementById(`like-icon-${commentId}`).innerHTML = data.user_liked ? HEART_FILLED : HEART_OUTLINE;
 
             if (data.user_liked) {
                 userLikedComments.add(commentId);

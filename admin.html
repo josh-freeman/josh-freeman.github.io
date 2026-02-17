@@ -450,12 +450,9 @@
                         <h2 style="margin: 0;">Posts</h2>
                         <button class="btn btn-primary" onclick="showEditor()">New Post</button>
                     </div>
-                    <div id="post-list" class="post-list">
-                        <p>Loading posts...</p>
-                    </div>
 
                     <!-- Post Notification Email Template -->
-                    <details style="margin-top: 2rem; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px;">
+                    <details style="margin-bottom: 1.5rem; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px;">
                         <summary style="padding: 1rem; cursor: pointer; font-weight: 600;">Notification Email Template</summary>
                         <div style="padding: 0 1.5rem 1.5rem 1.5rem;">
                             <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
@@ -485,6 +482,10 @@
                             </div>
                         </div>
                     </details>
+
+                    <div id="post-list" class="post-list">
+                        <p>Loading posts...</p>
+                    </div>
                 </div>
 
                 <!-- Post Editor View -->
@@ -585,12 +586,8 @@
                         <button class="btn" onclick="copyInviteLink()" style="margin-top: 0.5rem;">Copy Link</button>
                     </div>
 
-                    <div id="invites-list" class="post-list">
-                        <p>Loading invites...</p>
-                    </div>
-
                     <!-- Invite Email Template -->
-                    <details style="margin-top: 2rem; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px;">
+                    <details style="margin-bottom: 1.5rem; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px;">
                         <summary style="padding: 1rem; cursor: pointer; font-weight: 600;">Email Template</summary>
                         <div style="padding: 0 1.5rem 1.5rem 1.5rem;">
                             <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
@@ -620,6 +617,11 @@
                             </div>
                         </div>
                     </details>
+
+                    <h3 style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">Invite History</h3>
+                    <div id="invites-list" class="post-list">
+                        <p>Loading invites...</p>
+                    </div>
                 </div>
 
                 <!-- Users View -->

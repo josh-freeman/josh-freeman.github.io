@@ -290,7 +290,8 @@ async function handleLogin(event) {
             localStorage.setItem('comment_token', data.token);
             localStorage.setItem('comment_user', JSON.stringify(data.user));
             closeLogin();
-            updateCommentForm();
+            // Refresh page to show newly accessible content (exclusive posts, comments, etc.)
+            window.location.reload();
         } else {
             const error = await response.json();
             errorEl.textContent = error.detail || 'Invalid credentials';

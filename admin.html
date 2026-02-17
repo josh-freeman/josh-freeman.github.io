@@ -643,6 +643,99 @@
             });
         }
 
+        // Image upload functionality
+        function setupImageUpload() {
+            const textarea = document.getElementById('post-content');
+
+            // Drag and drop
+            textarea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                textarea.style.borderColor = 'var(--primary-color)';
+                textarea.style.background = '#f0f7ff';
+            });
+
+            textarea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                textarea.style.borderColor = '#e0e0e0';
+                textarea.style.background = '';
+            });
+
+            textarea.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                textarea.style.borderColor = '#e0e0e0';
+                textarea.style.background = '';
+
+                const files = e.dataTransfer.files;
+                for (const file of files) {
+                    if (file.type.startsWith('image/')) {
+                        await uploadAndInsertImage(file, textarea);
+                    }
+                }
+            });
+
+            // Paste images
+            textarea.addEventListener('paste', async (e) => {
+                const items = e.clipboardData.items;
+                for (const item of items) {
+                    if (item.type.startsWith('image/')) {
+                        e.preventDefault();
+                        const file = item.getAsFile();
+                        await uploadAndInsertImage(file, textarea);
+                        break;
+                    }
+                }
+            });
+        }
+
+        async function uploadAndInsertImage(file, textarea) {
+            const token = localStorage.getItem('comment_token');
+            if (!token) {
+                alert('Please log in to upload images');
+                return;
+            }
+
+            // Show uploading indicator
+            const cursorPos = textarea.selectionStart;
+            const placeholder = `![Uploading ${file.name}...]()`;
+            insertAtCursor(textarea, placeholder);
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch(`${API_BASE}/admin/upload-image`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // Replace placeholder with actual markdown
+                    const markdown = `![${file.name}](${data.url})`;
+                    textarea.value = textarea.value.replace(placeholder, markdown);
+                    updatePreview();
+                } else {
+                    const error = await response.json();
+                    textarea.value = textarea.value.replace(placeholder, '');
+                    alert(error.detail || 'Failed to upload image');
+                }
+            } catch (error) {
+                textarea.value = textarea.value.replace(placeholder, '');
+                alert('Failed to upload image');
+            }
+        }
+
+        function insertAtCursor(textarea, text) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const before = textarea.value.substring(0, start);
+            const after = textarea.value.substring(end);
+            textarea.value = before + text + after;
+            textarea.selectionStart = textarea.selectionEnd = start + text.length;
+            textarea.focus();
+        }
+
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
@@ -918,6 +1011,7 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            setupImageUpload();
             if (!checkAuth()) {
                 document.getElementById('login-section').style.display = 'block';
             } else {

@@ -139,6 +139,11 @@
             color: #155724;
         }
 
+        .badge-exclusive {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            color: white;
+        }
+
         .editor-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -322,6 +327,11 @@
                             <label for="post-published" style="margin-bottom: 0;">Published</label>
                         </div>
 
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="post-exclusive">
+                            <label for="post-exclusive" style="margin-bottom: 0;">Exclusive (members only)</label>
+                        </div>
+
                         <div class="btn-group">
                             <button type="submit" class="btn btn-primary">Save Post</button>
                             <button type="button" class="btn" id="delete-btn" onclick="deletePost()" style="background: #e74c3c; color: white; display: none;">Delete Post</button>
@@ -477,6 +487,7 @@
                                     <span class="badge ${post.is_published ? 'badge-published' : 'badge-draft'}">
                                         ${post.is_published ? 'Published' : 'Draft'}
                                     </span>
+                                    ${post.is_exclusive ? '<span class="badge badge-exclusive">Exclusive</span>' : ''}
                                     &middot; /${post.slug} &middot; ${formatDate(post.created_at)}
                                 </div>
                             </div>
@@ -506,6 +517,7 @@
                 loadPost(slug);
             } else {
                 document.getElementById('post-form').reset();
+                document.getElementById('post-exclusive').checked = false;
                 document.getElementById('preview-content').innerHTML = '';
             }
         }
@@ -532,6 +544,7 @@
                     document.getElementById('post-excerpt').value = post.excerpt || '';
                     document.getElementById('post-content').value = post.content;
                     document.getElementById('post-published').checked = post.is_published;
+                    document.getElementById('post-exclusive').checked = post.is_exclusive || false;
                     updatePreview();
                 }
             } catch (error) {
@@ -549,7 +562,8 @@
                 title: document.getElementById('post-title').value,
                 excerpt: document.getElementById('post-excerpt').value,
                 content: document.getElementById('post-content').value,
-                is_published: document.getElementById('post-published').checked
+                is_published: document.getElementById('post-published').checked,
+                is_exclusive: document.getElementById('post-exclusive').checked
             };
 
             try {

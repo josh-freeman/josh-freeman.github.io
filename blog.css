@@ -312,6 +312,21 @@ a.comment-author:hover {
     color: #065f46;
 }
 
+/* Exclusive post badge */
+.exclusive-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-left: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 /* Comment Form */
 .comment-form {
     margin-top: 1.5rem;

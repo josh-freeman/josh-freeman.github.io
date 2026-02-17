@@ -442,7 +442,6 @@
                     <button class="btn" id="tab-invites" onclick="showTab('invites')">Invites</button>
                     <button class="btn" id="tab-users" onclick="showTab('users')">Users</button>
                     <button class="btn" id="tab-images" onclick="showTab('images')">Images</button>
-                    <button class="btn" id="tab-settings" onclick="showTab('settings')">Settings</button>
                 </div>
 
                 <!-- Post List View -->
@@ -454,6 +453,38 @@
                     <div id="post-list" class="post-list">
                         <p>Loading posts...</p>
                     </div>
+
+                    <!-- Post Notification Email Template -->
+                    <details style="margin-top: 2rem; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px;">
+                        <summary style="padding: 1rem; cursor: pointer; font-weight: 600;">Notification Email Template</summary>
+                        <div style="padding: 0 1.5rem 1.5rem 1.5rem;">
+                            <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+                                Placeholders: <code>{name}</code>, <code>{url}</code>, <code>{title}</code>, <code>{excerpt}</code>
+                            </p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>From Name</label>
+                                    <input type="text" id="post-tpl-from-name" placeholder="Josh Freeman">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>From Email</label>
+                                    <input type="email" id="post-tpl-from-email" placeholder="josh@joshfreeman.me">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <input type="text" id="post-tpl-subject">
+                            </div>
+                            <div class="form-group">
+                                <label>Body (HTML)</label>
+                                <textarea id="post-tpl-body" style="min-height: 150px; font-family: monospace; font-size: 0.85rem;"></textarea>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-primary" onclick="savePostTemplate()">Save Template</button>
+                                <button class="btn" onclick="resetPostTemplate()">Reset to Default</button>
+                            </div>
+                        </div>
+                    </details>
                 </div>
 
                 <!-- Post Editor View -->
@@ -557,6 +588,38 @@
                     <div id="invites-list" class="post-list">
                         <p>Loading invites...</p>
                     </div>
+
+                    <!-- Invite Email Template -->
+                    <details style="margin-top: 2rem; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px;">
+                        <summary style="padding: 1rem; cursor: pointer; font-weight: 600;">Email Template</summary>
+                        <div style="padding: 0 1.5rem 1.5rem 1.5rem;">
+                            <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+                                Placeholders: <code>{name}</code>, <code>{url}</code>, <code>{expires}</code>
+                            </p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>From Name</label>
+                                    <input type="text" id="invite-tpl-from-name" placeholder="Josh Freeman">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>From Email</label>
+                                    <input type="email" id="invite-tpl-from-email" placeholder="josh@joshfreeman.me">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <input type="text" id="invite-tpl-subject">
+                            </div>
+                            <div class="form-group">
+                                <label>Body (HTML)</label>
+                                <textarea id="invite-tpl-body" style="min-height: 150px; font-family: monospace; font-size: 0.85rem;"></textarea>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-primary" onclick="saveInviteTemplate()">Save Template</button>
+                                <button class="btn" onclick="resetInviteTemplate()">Reset to Default</button>
+                            </div>
+                        </div>
+                    </details>
                 </div>
 
                 <!-- Users View -->
@@ -586,63 +649,6 @@
                     </div>
                 </div>
 
-                <!-- Settings View -->
-                <div id="settings-view" style="display: none;">
-                    <h2 style="margin-bottom: 1.5rem;">Email Settings</h2>
-
-                    <!-- Sender Settings -->
-                    <div style="background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
-                        <h3 style="margin-top: 0; margin-bottom: 1rem;">Sender</h3>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label>From Name</label>
-                                <input type="text" id="sender-name" placeholder="Josh Freeman">
-                            </div>
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label>From Email</label>
-                                <input type="email" id="sender-email" placeholder="josh@joshfreeman.me">
-                            </div>
-                        </div>
-                        <button class="btn btn-primary" onclick="saveSenderSettings()" style="margin-top: 1rem;">Save Sender</button>
-                    </div>
-
-                    <h3 style="margin-bottom: 1rem;">Email Templates</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
-                        Placeholders: <code>{name}</code>, <code>{url}</code>, <code>{expires}</code> (invite), <code>{title}</code>, <code>{excerpt}</code> (post).
-                    </p>
-
-                    <div style="display: flex; flex-direction: column; gap: 2rem;">
-                        <!-- Invite Email Template -->
-                        <div style="background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem;">
-                            <h3 style="margin-top: 0; margin-bottom: 1rem;">Invite Email</h3>
-                            <div class="form-group">
-                                <label>Subject</label>
-                                <input type="text" id="template-invite-subject" value="You're invited to joshfreeman.me">
-                            </div>
-                            <div class="form-group">
-                                <label>Body (HTML)</label>
-                                <textarea id="template-invite-body" style="min-height: 200px; font-family: monospace; font-size: 0.85rem;"></textarea>
-                            </div>
-                            <button class="btn btn-primary" onclick="saveEmailTemplate('invite')">Save Invite Template</button>
-                            <button class="btn" onclick="resetEmailTemplate('invite')" style="margin-left: 0.5rem;">Reset to Default</button>
-                        </div>
-
-                        <!-- New Post Email Template -->
-                        <div style="background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem;">
-                            <h3 style="margin-top: 0; margin-bottom: 1rem;">New Post Notification</h3>
-                            <div class="form-group">
-                                <label>Subject</label>
-                                <input type="text" id="template-post-subject" value="New post: {title}">
-                            </div>
-                            <div class="form-group">
-                                <label>Body (HTML)</label>
-                                <textarea id="template-post-body" style="min-height: 200px; font-family: monospace; font-size: 0.85rem;"></textarea>
-                            </div>
-                            <button class="btn btn-primary" onclick="saveEmailTemplate('post')">Save Post Template</button>
-                            <button class="btn" onclick="resetEmailTemplate('post')" style="margin-left: 0.5rem;">Reset to Default</button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -1276,24 +1282,24 @@
             document.getElementById('invites-view').style.display = 'none';
             document.getElementById('users-view').style.display = 'none';
             document.getElementById('images-view').style.display = 'none';
-            document.getElementById('settings-view').style.display = 'none';
 
             // Reset tab styles
             document.getElementById('tab-posts').style.fontWeight = 'normal';
             document.getElementById('tab-invites').style.fontWeight = 'normal';
             document.getElementById('tab-users').style.fontWeight = 'normal';
             document.getElementById('tab-images').style.fontWeight = 'normal';
-            document.getElementById('tab-settings').style.fontWeight = 'normal';
 
             // Show selected tab
             if (tab === 'posts') {
                 document.getElementById('post-list-view').style.display = 'block';
                 document.getElementById('tab-posts').style.fontWeight = '600';
                 loadPosts();
+                loadPostTemplate();
             } else if (tab === 'invites') {
                 document.getElementById('invites-view').style.display = 'block';
                 document.getElementById('tab-invites').style.fontWeight = '600';
                 loadInvites();
+                loadInviteTemplate();
             } else if (tab === 'users') {
                 document.getElementById('users-view').style.display = 'block';
                 document.getElementById('tab-users').style.fontWeight = '600';
@@ -1302,10 +1308,6 @@
                 document.getElementById('images-view').style.display = 'block';
                 document.getElementById('tab-images').style.fontWeight = '600';
                 loadImages();
-            } else if (tab === 'settings') {
-                document.getElementById('settings-view').style.display = 'block';
-                document.getElementById('tab-settings').style.fontWeight = '600';
-                loadEmailTemplates();
             }
         }
 
@@ -1644,10 +1646,12 @@
         }
 
         // Email template management
-        const defaultTemplates = {
-            invite: {
-                subject: "You're invited to joshfreeman.me",
-                body: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+        // Default templates with sender info
+        const defaultInviteTemplate = {
+            from_name: "Josh Freeman",
+            from_email: "josh@joshfreeman.me",
+            subject: "You're invited to joshfreeman.me",
+            body: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
     <h2 style="color: #1f2937;">Hey {name}!</h2>
     <p style="color: #4b5563; line-height: 1.6;">
         You've been invited to join my blog as a friend. This gives you access to exclusive posts and the ability to leave comments.
@@ -1663,10 +1667,13 @@
     </p>
     <p style="color: #4b5563; margin-top: 24px;">— Josh</p>
 </div>`
-            },
-            post: {
-                subject: "New post: {title}",
-                body: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+        };
+
+        const defaultPostTemplate = {
+            from_name: "Josh Freeman",
+            from_email: "josh@joshfreeman.me",
+            subject: "New post: {title}",
+            body: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
     <h2 style="color: #1f2937;">New Post: {title}</h2>
     <p style="color: #4b5563; line-height: 1.6; font-style: italic;">"{excerpt}"</p>
     <p style="margin: 24px 0;">
@@ -1679,102 +1686,100 @@
         You're receiving this because you're a friend on joshfreeman.me
     </p>
 </div>`
-            }
         };
 
-        async function loadEmailTemplates() {
+        async function loadInviteTemplate() {
             const token = localStorage.getItem('comment_token');
-
-            // Load sender settings
             try {
-                const senderRes = await fetch(`${API_BASE}/admin/settings/email-sender`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (senderRes.ok) {
-                    const sender = await senderRes.json();
-                    document.getElementById('sender-name').value = sender.name || 'Josh Freeman';
-                    document.getElementById('sender-email').value = sender.email || 'josh@joshfreeman.me';
-                }
-            } catch (error) {
-                document.getElementById('sender-name').value = 'Josh Freeman';
-                document.getElementById('sender-email').value = 'josh@joshfreeman.me';
-            }
-
-            // Load templates
-            try {
-                const response = await fetch(`${API_BASE}/admin/settings/email-templates`, {
+                const response = await fetch(`${API_BASE}/admin/settings/email-templates/invite`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (response.ok) {
-                    const templates = await response.json();
-                    document.getElementById('template-invite-subject').value = templates.invite?.subject || defaultTemplates.invite.subject;
-                    document.getElementById('template-invite-body').value = templates.invite?.body || defaultTemplates.invite.body;
-                    document.getElementById('template-post-subject').value = templates.post?.subject || defaultTemplates.post.subject;
-                    document.getElementById('template-post-body').value = templates.post?.body || defaultTemplates.post.body;
+                    const tpl = await response.json();
+                    document.getElementById('invite-tpl-from-name').value = tpl.from_name || defaultInviteTemplate.from_name;
+                    document.getElementById('invite-tpl-from-email').value = tpl.from_email || defaultInviteTemplate.from_email;
+                    document.getElementById('invite-tpl-subject').value = tpl.subject || defaultInviteTemplate.subject;
+                    document.getElementById('invite-tpl-body').value = tpl.body || defaultInviteTemplate.body;
                 } else {
-                    // Use defaults
-                    resetEmailTemplate('invite');
-                    resetEmailTemplate('post');
+                    resetInviteTemplate();
                 }
             } catch (error) {
-                resetEmailTemplate('invite');
-                resetEmailTemplate('post');
+                resetInviteTemplate();
             }
         }
 
-        async function saveSenderSettings() {
+        async function saveInviteTemplate() {
             const token = localStorage.getItem('comment_token');
-            const name = document.getElementById('sender-name').value;
-            const email = document.getElementById('sender-email').value;
-
+            const data = {
+                from_name: document.getElementById('invite-tpl-from-name').value,
+                from_email: document.getElementById('invite-tpl-from-email').value,
+                subject: document.getElementById('invite-tpl-subject').value,
+                body: document.getElementById('invite-tpl-body').value
+            };
             try {
-                const response = await fetch(`${API_BASE}/admin/settings/email-sender`, {
+                const response = await fetch(`${API_BASE}/admin/settings/email-templates/invite`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ name, email })
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(data)
                 });
-
-                if (response.ok) {
-                    showToast('Sender settings saved', 'success');
-                } else {
-                    showToast('Failed to save sender settings', 'error');
-                }
-            } catch (error) {
-                showToast('Failed to save sender settings', 'error');
-            }
-        }
-
-        async function saveEmailTemplate(type) {
-            const token = localStorage.getItem('comment_token');
-            const subject = document.getElementById(`template-${type}-subject`).value;
-            const body = document.getElementById(`template-${type}-body`).value;
-
-            try {
-                const response = await fetch(`${API_BASE}/admin/settings/email-templates/${type}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ subject, body })
-                });
-
-                if (response.ok) {
-                    showToast(`${type === 'invite' ? 'Invite' : 'Post'} template saved`, 'success');
-                } else {
-                    showToast('Failed to save template', 'error');
-                }
+                showToast(response.ok ? 'Invite template saved' : 'Failed to save template', response.ok ? 'success' : 'error');
             } catch (error) {
                 showToast('Failed to save template', 'error');
             }
         }
 
-        function resetEmailTemplate(type) {
-            document.getElementById(`template-${type}-subject`).value = defaultTemplates[type].subject;
-            document.getElementById(`template-${type}-body`).value = defaultTemplates[type].body;
+        function resetInviteTemplate() {
+            document.getElementById('invite-tpl-from-name').value = defaultInviteTemplate.from_name;
+            document.getElementById('invite-tpl-from-email').value = defaultInviteTemplate.from_email;
+            document.getElementById('invite-tpl-subject').value = defaultInviteTemplate.subject;
+            document.getElementById('invite-tpl-body').value = defaultInviteTemplate.body;
+        }
+
+        async function loadPostTemplate() {
+            const token = localStorage.getItem('comment_token');
+            try {
+                const response = await fetch(`${API_BASE}/admin/settings/email-templates/post`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const tpl = await response.json();
+                    document.getElementById('post-tpl-from-name').value = tpl.from_name || defaultPostTemplate.from_name;
+                    document.getElementById('post-tpl-from-email').value = tpl.from_email || defaultPostTemplate.from_email;
+                    document.getElementById('post-tpl-subject').value = tpl.subject || defaultPostTemplate.subject;
+                    document.getElementById('post-tpl-body').value = tpl.body || defaultPostTemplate.body;
+                } else {
+                    resetPostTemplate();
+                }
+            } catch (error) {
+                resetPostTemplate();
+            }
+        }
+
+        async function savePostTemplate() {
+            const token = localStorage.getItem('comment_token');
+            const data = {
+                from_name: document.getElementById('post-tpl-from-name').value,
+                from_email: document.getElementById('post-tpl-from-email').value,
+                subject: document.getElementById('post-tpl-subject').value,
+                body: document.getElementById('post-tpl-body').value
+            };
+            try {
+                const response = await fetch(`${API_BASE}/admin/settings/email-templates/post`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(data)
+                });
+                showToast(response.ok ? 'Post template saved' : 'Failed to save template', response.ok ? 'success' : 'error');
+            } catch (error) {
+                showToast('Failed to save template', 'error');
+            }
+        }
+
+        function resetPostTemplate() {
+            document.getElementById('post-tpl-from-name').value = defaultPostTemplate.from_name;
+            document.getElementById('post-tpl-from-email').value = defaultPostTemplate.from_email;
+            document.getElementById('post-tpl-subject').value = defaultPostTemplate.subject;
+            document.getElementById('post-tpl-body').value = defaultPostTemplate.body;
         }
 
         // Handle hash-based navigation for editing posts

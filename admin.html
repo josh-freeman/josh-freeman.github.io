@@ -856,6 +856,7 @@
                     if (!data.user.is_admin) {
                         errorEl.textContent = 'Admin access required';
                         errorEl.style.display = 'block';
+                        guard.end();
                         return;
                     }
                     localStorage.setItem('comment_token', data.token);

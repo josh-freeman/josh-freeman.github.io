@@ -155,13 +155,15 @@ function showProfileEditModal(profile) {
             </div>
 
             <div style="margin-bottom: 1.5rem; text-align: center;">
-                <img id="profile-preview" src="${profile.profile_picture_url || '/resources/profile.png'}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #e0e0e0;">
-            </div>
-
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Profile Picture URL</label>
-                <input type="text" id="profile-pic-url" value="${profile.profile_picture_url || ''}" placeholder="https://images.joshfreeman.me/..." style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
-                <small style="color: #666; font-size: 0.8rem;">Use a URL from images.joshfreeman.me</small>
+                <div style="position: relative; display: inline-block; cursor: pointer;" onclick="document.getElementById('profile-pic-input').click()">
+                    <img id="profile-preview" src="${profile.profile_picture_url || '/resources/profile.png'}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #e0e0e0;">
+                    <div style="position: absolute; bottom: 0; right: 0; background: #6366f1; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 3px solid white;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                    </div>
+                </div>
+                <input type="file" id="profile-pic-input" accept="image/*" style="display: none;">
+                <input type="hidden" id="profile-pic-url" value="${profile.profile_picture_url || ''}">
+                <p id="upload-status" style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">Click to upload a new photo</p>
             </div>
 
             <div style="margin-bottom: 1.5rem;">
@@ -181,11 +183,55 @@ function showProfileEditModal(profile) {
     // Set bio value after DOM insertion to avoid escaping issues
     document.getElementById('profile-bio').value = bioToShow;
 
-    // Live preview for profile picture
-    document.getElementById('profile-pic-url').addEventListener('input', function() {
+    // Handle file upload
+    document.getElementById('profile-pic-input').addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file');
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image must be less than 5MB');
+            return;
+        }
+
+        const statusEl = document.getElementById('upload-status');
         const preview = document.getElementById('profile-preview');
-        if (this.value) {
-            preview.src = this.value;
+        const urlInput = document.getElementById('profile-pic-url');
+
+        statusEl.textContent = 'Uploading...';
+        statusEl.style.color = '#6366f1';
+
+        try {
+            const token = localStorage.getItem('comment_token');
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch(`${API_BASE}/admin/upload-image`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData
+            });
+
+            if (!response.ok) throw new Error('Upload failed');
+
+            const result = await response.json();
+
+            // Update preview and hidden input
+            preview.src = result.url;
+            urlInput.value = result.url;
+
+            statusEl.textContent = 'Uploaded! Click Save to apply.';
+            statusEl.style.color = '#22c55e';
+        } catch (err) {
+            console.error('Upload error:', err);
+            statusEl.textContent = 'Upload failed. Try again.';
+            statusEl.style.color = '#ef4444';
         }
     });
 }

@@ -521,7 +521,7 @@
                             </button>
                         </div>
                         <div style="display: flex; gap: 1rem;">
-                            <button type="submit" class="btn btn-primary" style="flex: 1;">Save</button>
+                            <button type="button" onclick="handleEditSave()" class="btn btn-primary" style="flex: 1;">Save</button>
                             <button type="button" onclick="document.getElementById('edit-post-modal').remove()" class="btn" style="flex: 1; background: #e0e0e0;">Cancel</button>
                         </div>
                         <p id="edit-post-error" style="color: #e74c3c; margin-top: 1rem; display: none;"></p>
@@ -805,6 +805,44 @@
             } catch (error) {
                 alert('Failed to send notifications');
             }
+        }
+
+        // Global save handler for edit modal (called via onclick)
+        function handleEditSave() {
+            const slug = getPostSlug();
+            if (!slug) return;
+
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+
+            const token = localStorage.getItem('comment_token');
+
+            // Get values directly from form
+            const postData = {
+                title: document.getElementById('edit-post-title')?.value || '',
+                excerpt: document.getElementById('edit-post-excerpt')?.value || '',
+                content: document.getElementById('edit-post-content')?.value || '',
+                is_published: document.getElementById('edit-post-published')?.value === 'true',
+                is_exclusive: document.getElementById('edit-post-exclusive')?.value === 'true',
+                is_unlisted: document.getElementById('edit-post-unlisted')?.value === 'true'
+            };
+
+            // Send save request
+            fetch(`${API_BASE}/admin/posts/${slug}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(postData)
+            }).catch(() => {});
+
+            // Close modal and reload after brief delay
+            setTimeout(function() {
+                document.getElementById('edit-post-modal')?.remove();
+                loadPost();
+            }, 300);
         }
 
         function closeEditModal() {

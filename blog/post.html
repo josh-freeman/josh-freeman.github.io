@@ -581,15 +581,18 @@
                         <div style="margin-bottom: 1rem; display: flex; gap: 2rem; flex-wrap: wrap;">
                             <label style="display: flex; align-items: center; gap: 0.5rem;">
                                 <input type="checkbox" id="edit-post-published" ${post.is_published ? 'checked' : ''}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
                                 Published
                             </label>
                             <label style="display: flex; align-items: center; gap: 0.5rem;">
                                 <input type="checkbox" id="edit-post-exclusive" ${post.is_exclusive ? 'checked' : ''}>
-                                🔒 Friends Only
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 16v-2a2 2 0 0 0-4 0v2"/><path d="M9.5 15H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><rect x="13" y="16" width="8" height="5" rx=".899"/></svg>
+                                Friends Only
                             </label>
                             <label style="display: flex; align-items: center; gap: 0.5rem;">
                                 <input type="checkbox" id="edit-post-unlisted" ${post.is_unlisted ? 'checked' : ''}>
-                                👻 Unlisted
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>
+                                Unlisted
                             </label>
                         </div>
                         <div style="display: flex; gap: 1rem;">

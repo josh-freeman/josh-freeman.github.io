@@ -119,12 +119,21 @@ fetchSiteOwnerProfile().then(profile => {
 });
 
 // Profile edit modal for admin
+let profileModalLoading = false;
+
 function openProfileEditModal() {
+    // Prevent duplicate modals or concurrent requests
+    if (document.getElementById('profile-edit-modal') || profileModalLoading) {
+        return;
+    }
+
     const token = localStorage.getItem('comment_token');
     if (!token) {
         alert('Please log in first');
         return;
     }
+
+    profileModalLoading = true;
 
     // Fetch current profile
     fetch(`${API_BASE}/admin/profile`, {
@@ -132,9 +141,13 @@ function openProfileEditModal() {
     })
     .then(r => r.json())
     .then(profile => {
+        profileModalLoading = false;
         showProfileEditModal(profile);
     })
-    .catch(() => alert('Failed to load profile'));
+    .catch(() => {
+        profileModalLoading = false;
+        alert('Failed to load profile');
+    });
 }
 
 function showProfileEditModal(profile) {

@@ -35,7 +35,9 @@ function loadNavbarDiv() {
         : '';
 
     const editProfileBtn = isAdminLoggedIn()
-        ? '<button onclick="openProfileEditModal()" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 14px;" title="Edit Profile">✏️</button>'
+        ? `<button onclick="openProfileEditModal()" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.95); border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" title="Edit Profile">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+           </button>`
         : '';
 
     const navbarHTML = `
@@ -136,6 +138,10 @@ function openProfileEditModal() {
 }
 
 function showProfileEditModal(profile) {
+    // Get current displayed bio as fallback if API bio is empty
+    const currentDisplayedBio = document.getElementById('dynamic-bio')?.textContent || '';
+    const bioToShow = profile.bio || currentDisplayedBio;
+
     const modal = document.createElement('div');
     modal.id = 'profile-edit-modal';
     modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 1rem;';
@@ -154,13 +160,13 @@ function showProfileEditModal(profile) {
 
             <div style="margin-bottom: 1rem;">
                 <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Profile Picture URL</label>
-                <input type="text" id="profile-pic-url" value="${profile.profile_picture_url || ''}" placeholder="https://images.joshfreeman.me/..." style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem;">
+                <input type="text" id="profile-pic-url" value="${profile.profile_picture_url || ''}" placeholder="https://images.joshfreeman.me/..." style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
                 <small style="color: #666; font-size: 0.8rem;">Use a URL from images.joshfreeman.me</small>
             </div>
 
             <div style="margin-bottom: 1.5rem;">
                 <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Bio</label>
-                <textarea id="profile-bio" rows="4" placeholder="Tell visitors about yourself..." style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem; resize: vertical;">${profile.bio || ''}</textarea>
+                <textarea id="profile-bio" rows="4" placeholder="Tell visitors about yourself..." style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem; resize: vertical; box-sizing: border-box;"></textarea>
             </div>
 
             <div style="display: flex; gap: 1rem;">
@@ -171,6 +177,9 @@ function showProfileEditModal(profile) {
     `;
 
     document.body.appendChild(modal);
+
+    // Set bio value after DOM insertion to avoid escaping issues
+    document.getElementById('profile-bio').value = bioToShow;
 
     // Live preview for profile picture
     document.getElementById('profile-pic-url').addEventListener('input', function() {

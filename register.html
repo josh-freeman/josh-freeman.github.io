@@ -204,8 +204,14 @@
             document.getElementById('invalid-section').style.display = 'block';
         }
 
+        // Simple loading guard for registration
+        let registerLoading = false;
+
         async function handleRegister(event) {
             event.preventDefault();
+
+            if (registerLoading) return;
+            registerLoading = true;
 
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
@@ -217,6 +223,7 @@
             if (password !== passwordConfirm) {
                 errorEl.textContent = 'Passwords do not match';
                 errorEl.style.display = 'block';
+                registerLoading = false;
                 return;
             }
 
@@ -249,6 +256,8 @@
             } catch (error) {
                 errorEl.textContent = 'Unable to connect. Please try again.';
                 errorEl.style.display = 'block';
+            } finally {
+                registerLoading = false;
             }
         }
 

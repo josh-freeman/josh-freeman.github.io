@@ -408,6 +408,66 @@
         .toast.error {
             background: #dc2626;
         }
+
+        /* Write/Preview tab component (GitHub-style) */
+        .html-editor-tabs {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 0;
+        }
+        .html-editor-tab {
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            border-bottom: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #57606a;
+            margin-bottom: -1px;
+            border-radius: 6px 6px 0 0;
+        }
+        .html-editor-tab:hover {
+            color: #24292f;
+        }
+        .html-editor-tab.active {
+            background: #fff;
+            border-color: #e0e0e0;
+            color: #24292f;
+            font-weight: 500;
+        }
+        .html-editor-content {
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            min-height: 200px;
+        }
+        .html-editor-content textarea {
+            border: none;
+            border-radius: 0 0 8px 8px;
+            min-height: 200px;
+            resize: vertical;
+        }
+        .html-editor-content textarea:focus {
+            outline: none;
+            box-shadow: inset 0 0 0 1px var(--primary-color);
+        }
+        .html-editor-preview {
+            padding: 1rem;
+            background: #fafafa;
+            border-radius: 0 0 8px 8px;
+            min-height: 200px;
+            display: none;
+        }
+        .html-editor-preview.active {
+            display: block;
+        }
+        .html-editor-preview iframe {
+            width: 100%;
+            border: none;
+            min-height: 300px;
+            background: white;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -476,9 +536,18 @@
                                 <label>Subject</label>
                                 <input type="text" id="post-tpl-subject">
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom: 0.5rem;">
                                 <label>Body (HTML)</label>
-                                <textarea id="post-tpl-body" style="min-height: 150px; font-family: monospace; font-size: 0.85rem;"></textarea>
+                                <div class="html-editor-tabs">
+                                    <button type="button" class="html-editor-tab active" onclick="showTemplateTab('post', 'write')">Write</button>
+                                    <button type="button" class="html-editor-tab" onclick="showTemplateTab('post', 'preview')">Preview</button>
+                                </div>
+                                <div class="html-editor-content">
+                                    <textarea id="post-tpl-body" style="min-height: 150px; font-family: monospace; font-size: 0.85rem;"></textarea>
+                                    <div id="post-tpl-preview" class="html-editor-preview">
+                                        <iframe id="post-tpl-iframe" sandbox="allow-same-origin"></iframe>
+                                    </div>
+                                </div>
                             </div>
                             <div style="display: flex; gap: 0.5rem;">
                                 <button class="btn btn-primary" onclick="savePostTemplate()">Save Template</button>
@@ -515,15 +584,17 @@
                             <input type="text" id="post-excerpt" placeholder="A brief description of the post...">
                         </div>
 
-                        <div class="editor-container">
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label for="post-content">Content (Markdown)</label>
-                                <textarea id="post-content" placeholder="Write your post in Markdown..." oninput="updatePreview()"></textarea>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="post-content">Content (Markdown)</label>
+                            <div class="html-editor-tabs">
+                                <button type="button" class="html-editor-tab active" onclick="showPostEditorTab('write')">Write</button>
+                                <button type="button" class="html-editor-tab" onclick="showPostEditorTab('preview')">Preview</button>
                             </div>
-
-                            <div class="preview-container">
-                                <h2>Preview</h2>
-                                <div id="preview-content"></div>
+                            <div class="html-editor-content" style="min-height: 350px;">
+                                <textarea id="post-content" placeholder="Write your post in Markdown..." oninput="updatePreview()" style="min-height: 350px;"></textarea>
+                                <div id="post-preview-container" class="html-editor-preview" style="min-height: 350px; max-height: 500px; overflow-y: auto;">
+                                    <div id="preview-content" class="blog-content"></div>
+                                </div>
                             </div>
                         </div>
 
@@ -625,9 +696,18 @@
                                 <label>Subject</label>
                                 <input type="text" id="invite-tpl-subject">
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" style="margin-bottom: 0.5rem;">
                                 <label>Body (HTML)</label>
-                                <textarea id="invite-tpl-body" style="min-height: 150px; font-family: monospace; font-size: 0.85rem;"></textarea>
+                                <div class="html-editor-tabs">
+                                    <button type="button" class="html-editor-tab active" onclick="showTemplateTab('invite', 'write')">Write</button>
+                                    <button type="button" class="html-editor-tab" onclick="showTemplateTab('invite', 'preview')">Preview</button>
+                                </div>
+                                <div class="html-editor-content">
+                                    <textarea id="invite-tpl-body" style="min-height: 150px; font-family: monospace; font-size: 0.85rem;"></textarea>
+                                    <div id="invite-tpl-preview" class="html-editor-preview">
+                                        <iframe id="invite-tpl-iframe" sandbox="allow-same-origin"></iframe>
+                                    </div>
+                                </div>
                             </div>
                             <div style="display: flex; gap: 0.5rem;">
                                 <button class="btn btn-primary" onclick="saveInviteTemplate()">Save Template</button>
@@ -756,6 +836,10 @@
 
         async function handleLogin(event) {
             event.preventDefault();
+
+            const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.login : { start: () => true, end: () => {} };
+            if (!guard.start()) return;
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const errorEl = document.getElementById('login-error');
@@ -785,6 +869,8 @@
             } catch (error) {
                 errorEl.textContent = 'Login failed';
                 errorEl.style.display = 'block';
+            } finally {
+                guard.end();
             }
         }
 
@@ -950,6 +1036,10 @@
 
         async function savePost(event) {
             event.preventDefault();
+
+            const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.postSave : { start: () => true, end: () => {} };
+            if (!guard.start()) return;
+
             const token = localStorage.getItem('comment_token');
             const errorEl = document.getElementById('editor-error');
 
@@ -990,6 +1080,8 @@
             } catch (error) {
                 errorEl.textContent = 'Failed to save post';
                 errorEl.style.display = 'block';
+            } finally {
+                guard.end();
             }
         }
 
@@ -1176,6 +1268,9 @@
         }
 
         async function sendNotification(mode, userIds) {
+            const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.notify : { start: () => true, end: () => {} };
+            if (!guard.start()) return;
+
             const token = localStorage.getItem('comment_token');
 
             try {
@@ -1209,6 +1304,8 @@
                 }
             } catch (error) {
                 showToast('Failed to send notifications', 'error');
+            } finally {
+                guard.end();
             }
         }
 
@@ -1228,6 +1325,27 @@
             preview.innerHTML = marked.parse(content);
             // Style blockquotes
             stylePreviewBlockquotes();
+        }
+
+        // Write/Preview tab switching for post editor
+        function showPostEditorTab(tab) {
+            const container = document.getElementById('post-content').closest('.form-group');
+            const tabs = container.querySelectorAll('.html-editor-tab');
+            const textarea = document.getElementById('post-content');
+            const preview = document.getElementById('post-preview-container');
+
+            tabs.forEach((t, i) => {
+                t.classList.toggle('active', (tab === 'write' && i === 0) || (tab === 'preview' && i === 1));
+            });
+
+            if (tab === 'write') {
+                textarea.style.display = 'block';
+                preview.classList.remove('active');
+            } else {
+                textarea.style.display = 'none';
+                preview.classList.add('active');
+                updatePreview();
+            }
         }
 
         function stylePreviewBlockquotes() {
@@ -1565,6 +1683,10 @@
 
         async function createInvite(event) {
             event.preventDefault();
+
+            const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.inviteCreate : { start: () => true, end: () => {} };
+            if (!guard.start()) return;
+
             const token = localStorage.getItem('comment_token');
             const name = document.getElementById('invite-name').value.trim();
             const email = document.getElementById('invite-email').value.trim();
@@ -1603,6 +1725,8 @@
                 }
             } catch (error) {
                 showToast('Failed to create invite', 'error');
+            } finally {
+                guard.end();
             }
         }
 
@@ -2058,6 +2182,9 @@
         }
 
         async function saveInviteTemplate() {
+            const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.templateSave : { start: () => true, end: () => {} };
+            if (!guard.start()) return;
+
             const token = localStorage.getItem('comment_token');
             const data = {
                 from_name: document.getElementById('invite-tpl-from-name').value,
@@ -2074,6 +2201,8 @@
                 showToast(response.ok ? 'Invite template saved' : 'Failed to save template', response.ok ? 'success' : 'error');
             } catch (error) {
                 showToast('Failed to save template', 'error');
+            } finally {
+                guard.end();
             }
         }
 
@@ -2105,6 +2234,9 @@
         }
 
         async function savePostTemplate() {
+            const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.templateSave : { start: () => true, end: () => {} };
+            if (!guard.start()) return;
+
             const token = localStorage.getItem('comment_token');
             const data = {
                 from_name: document.getElementById('post-tpl-from-name').value,
@@ -2121,6 +2253,8 @@
                 showToast(response.ok ? 'Post template saved' : 'Failed to save template', response.ok ? 'success' : 'error');
             } catch (error) {
                 showToast('Failed to save template', 'error');
+            } finally {
+                guard.end();
             }
         }
 
@@ -2129,6 +2263,69 @@
             document.getElementById('post-tpl-from-email').value = defaultPostTemplate.from_email;
             document.getElementById('post-tpl-subject').value = defaultPostTemplate.subject;
             document.getElementById('post-tpl-body').value = defaultPostTemplate.body;
+        }
+
+        // Write/Preview tab switching for email templates
+        function showTemplateTab(templateType, tab) {
+            const tabsContainer = document.querySelector(`#${templateType}-tpl-body`).closest('.form-group');
+            const tabs = tabsContainer.querySelectorAll('.html-editor-tab');
+            const textarea = document.getElementById(`${templateType}-tpl-body`);
+            const preview = document.getElementById(`${templateType}-tpl-preview`);
+            const iframe = document.getElementById(`${templateType}-tpl-iframe`);
+
+            // Update tab active states
+            tabs.forEach((t, i) => {
+                t.classList.toggle('active', (tab === 'write' && i === 0) || (tab === 'preview' && i === 1));
+            });
+
+            if (tab === 'write') {
+                textarea.style.display = 'block';
+                preview.classList.remove('active');
+            } else {
+                textarea.style.display = 'none';
+                preview.classList.add('active');
+
+                // Render preview with sample placeholder values
+                const html = textarea.value;
+                const sampleData = templateType === 'invite' ? {
+                    name: 'John Doe',
+                    url: 'https://joshfreeman.me/register.html?token=SAMPLE_TOKEN',
+                    expires: '7 days'
+                } : {
+                    name: 'John Doe',
+                    url: 'https://joshfreeman.me/blog/post.html?slug=sample-post',
+                    title: 'My Awesome Blog Post',
+                    excerpt: 'This is a sample excerpt that shows what the post preview will look like...'
+                };
+
+                let renderedHtml = html;
+                Object.entries(sampleData).forEach(([key, value]) => {
+                    renderedHtml = renderedHtml.replace(new RegExp(`\\{${key}\\}`, 'g'), escapeHtml(value));
+                });
+
+                // Render in iframe for proper isolation
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                iframeDoc.open();
+                iframeDoc.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <style>
+                            body { margin: 0; padding: 16px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+                        </style>
+                    </head>
+                    <body>${renderedHtml}</body>
+                    </html>
+                `);
+                iframeDoc.close();
+
+                // Auto-resize iframe to content
+                setTimeout(() => {
+                    try {
+                        iframe.style.height = Math.max(200, iframeDoc.body.scrollHeight + 32) + 'px';
+                    } catch (e) {}
+                }, 50);
+            }
         }
 
         // Handle hash-based navigation for editing posts

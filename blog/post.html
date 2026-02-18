@@ -41,6 +41,56 @@
         #reaction-btn:hover .heart-icon:not(.active) {
             color: #fca5a5;
         }
+
+        /* Write/Preview tab component (GitHub-style) */
+        .md-editor-tabs {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 0;
+        }
+        .md-editor-tab {
+            padding: 0.4rem 0.8rem;
+            border: 1px solid transparent;
+            border-bottom: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: #57606a;
+            margin-bottom: -1px;
+            border-radius: 6px 6px 0 0;
+        }
+        .md-editor-tab:hover { color: #24292f; }
+        .md-editor-tab.active {
+            background: #fff;
+            border-color: #e0e0e0;
+            color: #24292f;
+            font-weight: 500;
+        }
+        .md-editor-content {
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            min-height: 250px;
+        }
+        .md-editor-content textarea {
+            border: none;
+            border-radius: 0 0 8px 8px;
+            min-height: 250px;
+        }
+        .md-editor-content textarea:focus {
+            outline: none;
+            box-shadow: inset 0 0 0 1px var(--primary-color);
+        }
+        .md-editor-preview {
+            padding: 1rem;
+            background: #fafafa;
+            border-radius: 0 0 8px 8px;
+            min-height: 250px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+        .md-editor-preview.active { display: block; }
     </style>
 
     <!-- Set initial OG title from URL slug for better previews -->
@@ -348,8 +398,11 @@
             });
         }
 
-        // Generate temporary 24h access link
+        // Generate temporary 24h access link (with loading guard)
         async function generateTempLink() {
+            const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.shareLink : { start: () => true, end: () => {} };
+            if (!guard.start()) return;
+
             const btn = document.getElementById('generate-temp-btn');
             const section = document.getElementById('temp-link-section');
             const token = localStorage.getItem('comment_token');
@@ -388,6 +441,8 @@
                 btn.disabled = false;
                 btn.textContent = 'Generate 24-hour link';
                 alert('Failed to generate link');
+            } finally {
+                guard.end();
             }
         }
 
@@ -495,7 +550,14 @@
                         </div>
                         <div style="margin-bottom: 1rem;">
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Content (Markdown)</label>
-                            <textarea id="edit-post-content" style="width: 100%; min-height: 300px; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-family: Monaco, Menlo, monospace; font-size: 0.9rem; resize: vertical;"></textarea>
+                            <div class="md-editor-tabs">
+                                <button type="button" class="md-editor-tab active" onclick="showEditTab('write')">Write</button>
+                                <button type="button" class="md-editor-tab" onclick="showEditTab('preview')">Preview</button>
+                            </div>
+                            <div class="md-editor-content">
+                                <textarea id="edit-post-content" style="width: 100%; min-height: 300px; padding: 0.75rem; font-family: Monaco, Menlo, monospace; font-size: 0.9rem; resize: vertical;"></textarea>
+                                <div id="edit-preview-content" class="md-editor-preview blog-content"></div>
+                            </div>
                         </div>
                         <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
                             <input type="hidden" id="edit-post-published" value="false">
@@ -833,6 +895,9 @@
         }
 
         async function sendNotifyEdit(mode, userIds) {
+            const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.notify : { start: () => true, end: () => {} };
+            if (!guard.start()) return;
+
             const token = localStorage.getItem('comment_token');
             const slug = getPostSlug();
 
@@ -870,6 +935,8 @@
                 }
             } catch (error) {
                 alert('Failed to send notifications');
+            } finally {
+                guard.end();
             }
         }
 
@@ -895,6 +962,30 @@
                 }
             } else {
                 document.getElementById('edit-post-modal')?.remove();
+            }
+        }
+
+        // Write/Preview tab switching for edit modal
+        function showEditTab(tab) {
+            const tabs = document.querySelectorAll('.md-editor-tab');
+            const textarea = document.getElementById('edit-post-content');
+            const preview = document.getElementById('edit-preview-content');
+
+            if (!tabs.length || !textarea || !preview) return;
+
+            tabs.forEach((t, i) => {
+                t.classList.toggle('active', (tab === 'write' && i === 0) || (tab === 'preview' && i === 1));
+            });
+
+            if (tab === 'write') {
+                textarea.style.display = 'block';
+                preview.classList.remove('active');
+            } else {
+                textarea.style.display = 'none';
+                preview.classList.add('active');
+                // Render markdown preview
+                const content = textarea.value;
+                preview.innerHTML = marked.parse(content);
             }
         }
 
@@ -1454,9 +1545,13 @@
         }
 
         async function toggleReaction() {
+            const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.reaction : { start: () => true, end: () => {} };
+            if (!guard.start()) return;
+
             const token = localStorage.getItem('comment_token');
             if (!token) {
                 alert('Please log in to react');
+                guard.end();
                 return;
             }
 
@@ -1484,13 +1579,21 @@
                 }
             } catch (error) {
                 console.log('Could not update reaction');
+            } finally {
+                guard.end();
             }
         }
 
         async function reactToReaction(parentId) {
+            const guard = typeof getOrCreateGuard === 'function'
+                ? getOrCreateGuard(loadingGuards?.reactionNested || {}, parentId)
+                : { start: () => true, end: () => {} };
+            if (!guard.start()) return;
+
             const token = localStorage.getItem('comment_token');
             if (!token) {
                 alert('Please log in to react');
+                guard.end();
                 return;
             }
 
@@ -1509,6 +1612,8 @@
                 }
             } catch (error) {
                 console.log('Could not add reaction');
+            } finally {
+                guard.end();
             }
         }
 
@@ -1517,6 +1622,11 @@
             if (!token) return;
 
             if (!confirm('Remove this reaction and all nested reactions?')) return;
+
+            const guard = typeof getOrCreateGuard === 'function'
+                ? getOrCreateGuard(loadingGuards?.reactionNested || {}, 'del-' + reactionId)
+                : { start: () => true, end: () => {} };
+            if (!guard.start()) return;
 
             const slug = getPostSlug();
             try {
@@ -1531,6 +1641,8 @@
                 }
             } catch (error) {
                 console.log('Could not remove reaction');
+            } finally {
+                guard.end();
             }
         }
 

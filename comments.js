@@ -224,16 +224,27 @@ function hideReplyForm(parentId) {
     if (container) container.innerHTML = '';
 }
 
-// Submit reply
+// Submit reply (with loading guard per parent)
 async function submitReply(parentId) {
+    // Get or create guard for this parent
+    const guard = typeof getOrCreateGuard === 'function'
+        ? getOrCreateGuard(loadingGuards?.replySubmit || {}, parentId)
+        : { start: () => true, end: () => {} };
+
+    if (!guard.start()) return; // Already submitting
+
     const textarea = document.getElementById(`reply-content-${parentId}`);
     const content = textarea.value.trim();
-    if (!content) return;
+    if (!content) {
+        guard.end();
+        return;
+    }
 
     const slug = getPostSlug();
     const token = localStorage.getItem('comment_token');
     if (!token) {
         alert('Please log in to reply');
+        guard.end();
         return;
     }
 
@@ -260,6 +271,8 @@ async function submitReply(parentId) {
         }
     } catch (error) {
         alert('Failed to post reply');
+    } finally {
+        guard.end();
     }
 }
 
@@ -284,11 +297,19 @@ async function loadUserLikes(commentIds) {
     }
 }
 
-// Toggle like on a comment
+// Toggle like on a comment (with loading guard per comment)
 async function toggleCommentLike(commentId) {
+    // Get or create guard for this comment
+    const guard = typeof getOrCreateGuard === 'function'
+        ? getOrCreateGuard(loadingGuards?.commentLike || {}, commentId)
+        : { start: () => true, end: () => {} };
+
+    if (!guard.start()) return; // Already processing
+
     const token = localStorage.getItem('comment_token');
     if (!token) {
         alert('Please log in to like comments');
+        guard.end();
         return;
     }
 
@@ -316,6 +337,8 @@ async function toggleCommentLike(commentId) {
         }
     } catch (error) {
         console.log('Could not update like');
+    } finally {
+        guard.end();
     }
 }
 
@@ -457,9 +480,13 @@ function closeLogin() {
     if (modal) modal.remove();
 }
 
-// Handle login form submission
+// Handle login form submission (with loading guard)
 async function handleLogin(event) {
     event.preventDefault();
+
+    const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.login : { start: () => true, end: () => {} };
+    if (!guard.start()) return;
+
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
     const errorEl = document.getElementById('login-error');
@@ -486,6 +513,8 @@ async function handleLogin(event) {
     } catch (error) {
         errorEl.textContent = 'Unable to connect. Please try again.';
         errorEl.style.display = 'block';
+    } finally {
+        guard.end();
     }
 }
 
@@ -496,14 +525,21 @@ function logout() {
     updateCommentForm();
 }
 
-// Submit comment
+// Submit comment (with loading guard)
 async function submitComment(event) {
     event.preventDefault();
+
+    const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.commentSubmit : { start: () => true, end: () => {} };
+    if (!guard.start()) return;
+
     const content = document.getElementById('comment-content').value;
     const slug = getPostSlug();
     const token = localStorage.getItem('comment_token');
 
-    if (!content || !slug || !token) return;
+    if (!content || !slug || !token) {
+        guard.end();
+        return;
+    }
 
     try {
         const response = await fetch(`${window.COMMENTS_API_BASE}/comments`, {
@@ -524,6 +560,8 @@ async function submitComment(event) {
         }
     } catch (error) {
         alert('Comment service not available yet');
+    } finally {
+        guard.end();
     }
 }
 
@@ -569,6 +607,10 @@ function closeEditModal() {
 
 async function submitEdit(event, commentId) {
     event.preventDefault();
+
+    const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.commentEdit : { start: () => true, end: () => {} };
+    if (!guard.start()) return;
+
     const content = document.getElementById('edit-content').value;
     const token = localStorage.getItem('comment_token');
     const errorEl = document.getElementById('edit-error');
@@ -594,12 +636,17 @@ async function submitEdit(event, commentId) {
     } catch (error) {
         errorEl.textContent = 'Failed to edit comment';
         errorEl.style.display = 'block';
+    } finally {
+        guard.end();
     }
 }
 
-// Delete comment
+// Delete comment (with loading guard)
 async function deleteComment(commentId) {
     if (!confirm('Are you sure you want to delete this comment?')) return;
+
+    const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.commentDelete : { start: () => true, end: () => {} };
+    if (!guard.start()) return;
 
     const token = localStorage.getItem('comment_token');
 
@@ -619,6 +666,8 @@ async function deleteComment(commentId) {
         }
     } catch (error) {
         alert('Failed to delete comment');
+    } finally {
+        guard.end();
     }
 }
 

@@ -134,6 +134,99 @@ function debounce(func, wait) {
 }
 
 /**
+ * Loading state manager for preventing double-clicks on async operations.
+ * Creates a guard that prevents concurrent execution of async functions.
+ *
+ * @example
+ * const guard = createLoadingGuard();
+ *
+ * async function submitForm() {
+ *     if (!guard.start()) return; // Already in progress
+ *     try {
+ *         await fetch(...);
+ *     } finally {
+ *         guard.end();
+ *     }
+ * }
+ *
+ * // Or use the wrap helper:
+ * const safeSubmit = guard.wrap(async () => {
+ *     await fetch(...);
+ * });
+ *
+ * @returns {Object} Guard object with start, end, isLoading, and wrap methods
+ */
+function createLoadingGuard() {
+    let loading = false;
+
+    return {
+        /** Start the operation. Returns false if already loading. */
+        start() {
+            if (loading) return false;
+            loading = true;
+            return true;
+        },
+        /** End the operation. */
+        end() {
+            loading = false;
+        },
+        /** Check if currently loading. */
+        isLoading() {
+            return loading;
+        },
+        /** Wrap an async function to prevent concurrent execution. */
+        wrap(fn) {
+            const self = this;
+            return async function(...args) {
+                if (!self.start()) return;
+                try {
+                    return await fn.apply(this, args);
+                } finally {
+                    self.end();
+                }
+            };
+        }
+    };
+}
+
+// Global loading guards for common operations (prevents 429 errors)
+const loadingGuards = {
+    login: createLoadingGuard(),
+    register: createLoadingGuard(),
+    commentSubmit: createLoadingGuard(),
+    commentEdit: createLoadingGuard(),
+    commentDelete: createLoadingGuard(),
+    commentLike: {},  // Per-comment guards
+    replySubmit: {},  // Per-parent guards
+    reaction: createLoadingGuard(),
+    reactionNested: {},  // Per-reaction guards
+    postSave: createLoadingGuard(),
+    postDelete: createLoadingGuard(),
+    inviteCreate: createLoadingGuard(),
+    notify: createLoadingGuard(),
+    templateSave: createLoadingGuard(),
+    profileSave: createLoadingGuard(),
+    imageUpload: createLoadingGuard(),
+    shareLink: createLoadingGuard(),
+    modalOpen: {}  // Per-modal guards
+};
+
+/**
+ * Get or create a per-ID loading guard.
+ * Useful for operations on specific items (like liking a specific comment).
+ *
+ * @param {Object} guardMap - The map to store guards in (e.g., loadingGuards.commentLike)
+ * @param {string|number} id - The unique ID for this guard
+ * @returns {Object} Loading guard for this ID
+ */
+function getOrCreateGuard(guardMap, id) {
+    if (!guardMap[id]) {
+        guardMap[id] = createLoadingGuard();
+    }
+    return guardMap[id];
+}
+
+/**
  * Generate a URL-friendly slug from text
  * @param {string} text - Text to slugify
  * @returns {string} Slug
@@ -159,6 +252,9 @@ if (typeof module !== 'undefined' && module.exports) {
         getUrlParam,
         copyToClipboard,
         debounce,
-        slugify
+        slugify,
+        createLoadingGuard,
+        loadingGuards,
+        getOrCreateGuard
     };
 }

@@ -616,11 +616,11 @@
             if (!statsEl) return;
 
             statsEl.innerHTML = `
-                <span style="display: flex; align-items: center; gap: 0.4rem;">
+                <span onclick="showFriendsViewedDetails()" style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='#e0e7ff'" onmouseout="this.style.background='transparent'">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
                     <strong>${stats.friend_views}</strong> friends viewed
                 </span>
-                <span style="display: flex; align-items: center; gap: 0.4rem;">
+                <span onclick="showAnonymousViewsDetails()" style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     <strong>${stats.anonymous_views}</strong> anonymous
                 </span>
@@ -637,6 +637,65 @@
                 notifyBtn.style.display = 'inline-flex';
                 notifyBtn.style.alignItems = 'center';
             }
+        }
+
+        function showFriendsViewedDetails() {
+            if (!editPostStats || !editPostStats.friends_who_viewed) return;
+
+            const friends = editPostStats.friends_who_viewed;
+            if (friends.length === 0) {
+                alert('No friends have viewed this post yet.');
+                return;
+            }
+
+            let listHtml = friends.map(f => {
+                const lastViewed = new Date(f.last_viewed_at).toLocaleDateString();
+                return `<div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #eee;">
+                    <span style="font-weight: 500;">${f.name}</span>
+                    <span style="color: #6b7280; font-size: 0.85rem;">${f.view_count}× · last ${lastViewed}</span>
+                </div>`;
+            }).join('');
+
+            // Create a popup
+            const popup = document.createElement('div');
+            popup.id = 'friends-viewed-popup';
+            popup.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1002;';
+            popup.onclick = function(e) { if (e.target === this) this.remove(); };
+            popup.innerHTML = `
+                <div style="background: white; padding: 1.5rem; border-radius: 12px; max-width: 400px; width: 90%; max-height: 70vh; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h4 style="margin: 0;">Friends Who Viewed (${friends.length})</h4>
+                        <button onclick="document.getElementById('friends-viewed-popup').remove()" style="background: none; border: none; cursor: pointer; font-size: 1.25rem; color: #999;">&times;</button>
+                    </div>
+                    ${listHtml}
+                </div>
+            `;
+            document.body.appendChild(popup);
+        }
+
+        function showAnonymousViewsDetails() {
+            if (!editPostStats) return;
+
+            const count = editPostStats.anonymous_views;
+            const popup = document.createElement('div');
+            popup.id = 'anonymous-views-popup';
+            popup.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1002;';
+            popup.onclick = function(e) { if (e.target === this) this.remove(); };
+            popup.innerHTML = `
+                <div style="background: white; padding: 1.5rem; border-radius: 12px; max-width: 400px; width: 90%;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h4 style="margin: 0;">Anonymous Views (${count})</h4>
+                        <button onclick="document.getElementById('anonymous-views-popup').remove()" style="background: none; border: none; cursor: pointer; font-size: 1.25rem; color: #999;">&times;</button>
+                    </div>
+                    <p style="color: #4b5563; margin: 0 0 0.75rem;">
+                        ${count} unique visitor${count !== 1 ? 's' : ''} viewed this post without being logged in.
+                    </p>
+                    <p style="color: #6b7280; font-size: 0.85rem; margin: 0;">
+                        Anonymous views are tracked by a hash of IP address and browser fingerprint. No personal information is stored.
+                    </p>
+                </div>
+            `;
+            document.body.appendChild(popup);
         }
 
         function openNotifyFromEdit() {

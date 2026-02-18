@@ -263,6 +263,13 @@
 
                     // Style blockquotes based on content
                     styleBlockquotes();
+
+                    // Record view (fire and forget)
+                    fetch(`${API_BASE}/posts/${slug}/view`, {
+                        method: 'POST',
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+                        credentials: 'include'
+                    }).catch(() => {});
                 } else if (response.status === 401 || response.status === 404) {
                     // Show same message for 401 (exclusive) and 404 (not found) to avoid leaking info
                     document.getElementById('post-title').textContent = 'Post Not Found';

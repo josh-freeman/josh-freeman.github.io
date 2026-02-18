@@ -455,10 +455,6 @@
                 z-index: 1000;
                 padding: 1rem;
             `;
-            // Click on overlay background to close
-            modal.onclick = function(e) {
-                if (e.target === this) closeEditModal();
-            };
 
             // Fetch stats in background
             fetch(`${API_BASE}/admin/posts/${post.slug}/stats`, {
@@ -469,10 +465,10 @@
             }).catch(() => {});
 
             modal.innerHTML = `
-                <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto;">
+                <div class="edit-modal-content" style="background: white; padding: 2rem; border-radius: 12px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
                         <h3 style="margin: 0;">Edit Post</h3>
-                        <button type="button" id="edit-modal-close-btn" onclick="closeEditModal()" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: #999; line-height: 1;">&times;</button>
+                        <button type="button" class="edit-modal-close-x" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: #999; line-height: 1;">&times;</button>
                     </div>
 
                     <!-- View Stats & Notify Section -->
@@ -526,7 +522,7 @@
                         </div>
                         <div style="display: flex; gap: 1rem;">
                             <button type="submit" class="btn btn-primary" style="flex: 1;">Save</button>
-                            <button type="button" id="edit-modal-cancel-btn" onclick="closeEditModal()" class="btn" style="flex: 1; background: #e0e0e0;">Cancel</button>
+                            <button type="button" class="edit-modal-cancel-btn btn" style="flex: 1; background: #e0e0e0;">Cancel</button>
                         </div>
                         <p id="edit-post-error" style="color: #e74c3c; margin-top: 1rem; display: none;"></p>
                     </form>
@@ -544,14 +540,51 @@
             editToggle.set('exclusive', post.is_exclusive || false);
             editToggle.set('unlisted', post.is_unlisted || false);
 
-            // Attach event listeners (more reliable than inline onclick)
-            document.getElementById('edit-modal-close-btn').addEventListener('click', closeEditModal);
-            document.getElementById('toggle-published').addEventListener('click', () => editToggle.toggle('published'));
-            document.getElementById('toggle-exclusive').addEventListener('click', () => editToggle.toggle('exclusive'));
-            document.getElementById('toggle-unlisted').addEventListener('click', () => editToggle.toggle('unlisted'));
-            document.getElementById('edit-modal-cancel-btn').addEventListener('click', closeEditModal);
-            document.getElementById('edit-notify-btn').addEventListener('click', openNotifyFromEdit);
-            document.getElementById('edit-post-form').addEventListener('submit', (e) => {
+            // Use event delegation on the modal - more reliable than getElementById
+            modal.addEventListener('click', function(e) {
+                const target = e.target;
+
+                // Click on backdrop (the modal overlay itself, not content)
+                if (target === modal) {
+                    closeEditModal();
+                    return;
+                }
+
+                // X close button
+                if (target.closest('.edit-modal-close-x')) {
+                    closeEditModal();
+                    return;
+                }
+
+                // Cancel button
+                if (target.closest('.edit-modal-cancel-btn')) {
+                    closeEditModal();
+                    return;
+                }
+
+                // Toggle buttons
+                if (target.closest('#toggle-published')) {
+                    editToggle.toggle('published');
+                    return;
+                }
+                if (target.closest('#toggle-exclusive')) {
+                    editToggle.toggle('exclusive');
+                    return;
+                }
+                if (target.closest('#toggle-unlisted')) {
+                    editToggle.toggle('unlisted');
+                    return;
+                }
+
+                // Notify button
+                if (target.closest('#edit-notify-btn')) {
+                    openNotifyFromEdit();
+                    return;
+                }
+            });
+
+            // Form submit handler
+            document.getElementById('edit-post-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 savePostEdit(post.slug);
             });

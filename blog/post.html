@@ -114,6 +114,38 @@
         #reaction-btn:hover .heart-icon:not(.active) {
             color: #fca5a5;
         }
+
+        /* Icon toggle buttons */
+        .icon-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f9fafb;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        .icon-toggle:hover {
+            border-color: var(--primary-color);
+            background: #f3f4f6;
+        }
+        .icon-toggle.active {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, #ede9fe, #e0e7ff);
+            color: #5b21b6;
+        }
+        .icon-toggle .icon-on,
+        .icon-toggle .icon-off {
+            display: flex;
+            align-items: center;
+        }
+        .icon-toggle .icon-off { display: none; }
+        .icon-toggle:not(.active) .icon-on { display: none; }
+        .icon-toggle:not(.active) .icon-off { display: flex; }
     </style>
 
     <!-- Set initial OG title from URL slug for better previews -->
@@ -578,22 +610,28 @@
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Content (Markdown)</label>
                             <textarea id="edit-post-content" style="width: 100%; min-height: 300px; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-family: Monaco, Menlo, monospace; font-size: 0.9rem; resize: vertical;"></textarea>
                         </div>
-                        <div style="margin-bottom: 1rem; display: flex; gap: 2rem; flex-wrap: wrap;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem;">
-                                <input type="checkbox" id="edit-post-published">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-                                Published
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem;">
-                                <input type="checkbox" id="edit-post-exclusive">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 16v-2a2 2 0 0 0-4 0v2"/><path d="M9.5 15H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><rect x="13" y="16" width="8" height="5" rx=".899"/></svg>
-                                Friends Only
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem;">
-                                <input type="checkbox" id="edit-post-unlisted">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>
-                                Unlisted
-                            </label>
+                        <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <input type="hidden" id="edit-post-published" value="false">
+                            <input type="hidden" id="edit-post-exclusive" value="false">
+                            <input type="hidden" id="edit-post-unlisted" value="false">
+
+                            <button type="button" id="toggle-published" class="icon-toggle" title="Toggle Published/Draft">
+                                <span class="icon-on"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span>
+                                <span class="icon-off"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg></span>
+                                <span class="label-text">Published</span>
+                            </button>
+
+                            <button type="button" id="toggle-exclusive" class="icon-toggle" title="Toggle Friends Only/Public">
+                                <span class="icon-on"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 16v-2a2 2 0 0 0-4 0v2"/><path d="M9.5 15H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><rect x="13" y="16" width="8" height="5" rx=".899"/></svg></span>
+                                <span class="icon-off"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                                <span class="label-text">Friends Only</span>
+                            </button>
+
+                            <button type="button" id="toggle-unlisted" class="icon-toggle" title="Toggle Unlisted/Listed">
+                                <span class="icon-on"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg></span>
+                                <span class="icon-off"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 19H3"/><path d="M16 5H3"/><path d="M16 12H3"/><path d="m15 18 2 2 4-4"/></svg></span>
+                                <span class="label-text">Unlisted</span>
+                            </button>
                         </div>
                         <div style="display: flex; gap: 1rem;">
                             <button type="submit" class="btn btn-primary" style="flex: 1;">Save</button>
@@ -609,12 +647,17 @@
             document.getElementById('edit-post-title').value = post.title;
             document.getElementById('edit-post-excerpt').value = post.excerpt || '';
             document.getElementById('edit-post-content').value = post.content;
-            document.getElementById('edit-post-published').checked = post.is_published;
-            document.getElementById('edit-post-exclusive').checked = post.is_exclusive || false;
-            document.getElementById('edit-post-unlisted').checked = post.is_unlisted || false;
+
+            // Set toggle states
+            setToggleState('published', post.is_published);
+            setToggleState('exclusive', post.is_exclusive || false);
+            setToggleState('unlisted', post.is_unlisted || false);
 
             // Attach event listeners (more reliable than inline onclick)
             document.getElementById('edit-modal-close-btn').addEventListener('click', closeEditModal);
+            document.getElementById('toggle-published').addEventListener('click', () => toggleState('published'));
+            document.getElementById('toggle-exclusive').addEventListener('click', () => toggleState('exclusive'));
+            document.getElementById('toggle-unlisted').addEventListener('click', () => toggleState('unlisted'));
             document.getElementById('edit-modal-cancel-btn').addEventListener('click', closeEditModal);
             document.getElementById('edit-notify-btn').addEventListener('click', openNotifyFromEdit);
             document.getElementById('edit-post-form').addEventListener('submit', (e) => {
@@ -626,6 +669,35 @@
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) closeEditModal();
             });
+        }
+
+        function setToggleState(name, value) {
+            const btn = document.getElementById('toggle-' + name);
+            const input = document.getElementById('edit-post-' + name);
+            if (btn && input) {
+                input.value = value ? 'true' : 'false';
+                btn.classList.toggle('active', value);
+                // Update label text
+                const label = btn.querySelector('.label-text');
+                if (label) {
+                    if (name === 'published') label.textContent = value ? 'Published' : 'Draft';
+                    if (name === 'exclusive') label.textContent = value ? 'Friends Only' : 'Public';
+                    if (name === 'unlisted') label.textContent = value ? 'Unlisted' : 'Listed';
+                }
+            }
+        }
+
+        function toggleState(name) {
+            const input = document.getElementById('edit-post-' + name);
+            if (input) {
+                const newValue = input.value !== 'true';
+                setToggleState(name, newValue);
+            }
+        }
+
+        function getToggleValue(name) {
+            const input = document.getElementById('edit-post-' + name);
+            return input && input.value === 'true';
         }
 
         function updateEditModalStats(stats, isPublished) {
@@ -857,9 +929,9 @@
                 title: document.getElementById('edit-post-title').value,
                 excerpt: document.getElementById('edit-post-excerpt').value,
                 content: document.getElementById('edit-post-content').value,
-                is_published: document.getElementById('edit-post-published').checked,
-                is_exclusive: document.getElementById('edit-post-exclusive').checked,
-                is_unlisted: document.getElementById('edit-post-unlisted').checked
+                is_published: getToggleValue('published'),
+                is_exclusive: getToggleValue('exclusive'),
+                is_unlisted: getToggleValue('unlisted')
             };
 
             // Fire and forget - close modal immediately, reload post

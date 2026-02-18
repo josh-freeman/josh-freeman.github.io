@@ -1,8 +1,8 @@
 /* Blog Styles */
 .blog-container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 2rem 1.5rem;
 }
 
 .blog-container > h1 {
@@ -77,9 +77,17 @@
 
 /* Individual Post Page */
 .post-container {
-    max-width: 700px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 2rem 1.5rem;
+}
+
+/* Wider layout when sidebar is open - use more of available space */
+@media (min-width: 1200px) {
+    .post-container,
+    .blog-container {
+        max-width: 950px;
+    }
 }
 
 .post-header {

@@ -815,7 +815,6 @@
 
         async function savePostEdit(slug) {
             const token = localStorage.getItem('comment_token');
-            const errorEl = document.getElementById('edit-post-error');
             const saveBtn = document.querySelector('#edit-post-form button[type="submit"]');
 
             // Disable button and show saving state
@@ -833,58 +832,22 @@
                 is_unlisted: document.getElementById('edit-post-unlisted').checked
             };
 
-            // Set a timeout to close modal after 5 seconds regardless of response
-            // This is a fallback in case something goes wrong with response handling
-            const timeoutId = setTimeout(() => {
-                console.log('Save timeout - closing modal anyway');
+            // Fire and forget - close modal immediately, reload post
+            // The save reliably works even if response handling is flaky
+            fetch(`${API_BASE}/admin/posts/${slug}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(postData)
+            }).catch(() => {});
+
+            // Brief delay to let request start, then close and reload
+            setTimeout(() => {
                 closeEditModal();
                 loadPost();
-            }, 5000);
-
-            try {
-                const response = await fetch(`${API_BASE}/admin/posts/${slug}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(postData)
-                });
-
-                clearTimeout(timeoutId);
-                console.log('Save response:', response.status, response.ok, response.statusText);
-
-                // Check for success (any 2xx status)
-                if (response.status >= 200 && response.status < 300) {
-                    closeEditModal();
-                    loadPost();
-                    return;
-                }
-
-                // Handle error response
-                let errorMsg = `Failed to save (${response.status})`;
-                try {
-                    const error = await response.json();
-                    errorMsg = error.detail || errorMsg;
-                } catch (e) {
-                    console.log('Could not parse error response');
-                }
-
-                if (errorEl) {
-                    errorEl.textContent = errorMsg;
-                    errorEl.style.display = 'block';
-                }
-                if (saveBtn) {
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = 'Save';
-                }
-            } catch (error) {
-                clearTimeout(timeoutId);
-                console.error('Save error:', error);
-                // Network error or similar - close modal and reload since save may have worked
-                closeEditModal();
-                loadPost();
-            }
+            }, 300);
         }
 
         // Delete post

@@ -2,10 +2,31 @@
 const CELL_SIZE_DESKTOP = 28;
 const CELL_SIZE_MOBILE = 20;
 const GRID_COLOR = 'rgba(200, 200, 200, 0.1)';
-const ALIVE_COLOR = '#463F5C';
-const DYING_COLOR = '#818181';
-const BIRTH_COLOR = '#6B5B95';
 const UPDATE_INTERVAL = 150;
+
+// Theme-aware colors
+let ALIVE_COLOR = '#e5a54b';   // Warm amber (dark mode)
+let DYING_COLOR = '#8a857c';   // Muted gray
+let BIRTH_COLOR = '#c4a1b0';   // Dusty rose
+let BG_COLOR = '#0c0b0d';      // Dark background
+
+// Update colors based on theme
+function updateGolColors(theme) {
+    if (theme === 'light') {
+        ALIVE_COLOR = '#c48a3a';     // Deeper amber for light mode
+        DYING_COLOR = '#9a948a';
+        BIRTH_COLOR = '#a88a9a';
+        BG_COLOR = '#faf8f5';
+    } else {
+        ALIVE_COLOR = '#e5a54b';     // Warm amber
+        DYING_COLOR = '#8a857c';
+        BIRTH_COLOR = '#c4a1b0';
+        BG_COLOR = '#0c0b0d';
+    }
+}
+
+// Expose for theme.js to call
+window.updateGolColors = updateGolColors;
 const UPDATE_INTERVAL_MOBILE = 200; // Slower on mobile for performance
 const INITIAL_DENSITY = 0.06;
 const LOGO_PROBABILITY = 0.03; // Chance a cell gets a logo (rare easter egg)
@@ -170,7 +191,7 @@ function updateAlphas() {
 
 // Draw the grid
 function draw() {
-    ctx.fillStyle = 'white';
+    ctx.fillStyle = BG_COLOR;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw cells with smooth transitions
@@ -341,6 +362,10 @@ canvas.addEventListener('touchmove', (e) => {
     const rect = canvas.getBoundingClientRect();
     toggleCell(touch.clientX - rect.left, touch.clientY - rect.top);
 });
+
+// Initialize colors based on current theme
+const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+updateGolColors(currentTheme);
 
 // Initialize and start
 loadLogos();

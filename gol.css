@@ -1,4 +1,11 @@
-/* Game of Life Canvas Styles */
+/**
+ * Game of Life Canvas Styles
+ * Integrates with dark theme for atmospheric effect
+ */
+
+/* ========================================
+   Canvas Background
+   ======================================== */
 #canvas {
     position: fixed;
     top: 0;
@@ -7,25 +14,63 @@
     height: 100%;
     z-index: 0;
     pointer-events: auto;
-    mask: linear-gradient(to top, white 10%, transparent 90%);
-    -webkit-mask: linear-gradient(to top, white 10%, transparent 90%);
+    /* Fade out toward the top for content readability */
+    mask: linear-gradient(to top, white 15%, transparent 85%);
+    -webkit-mask: linear-gradient(to top, white 15%, transparent 85%);
+    opacity: 0.6;
+    transition: opacity var(--transition-slow);
 }
 
-/* Content sits above the canvas */
+/* Light mode: reduce opacity further */
+[data-theme="light"] #canvas {
+    opacity: 0.4;
+    mask: linear-gradient(to top, white 10%, transparent 70%);
+    -webkit-mask: linear-gradient(to top, white 10%, transparent 70%);
+}
+
+/* ========================================
+   Hero Content (Index Page)
+   ======================================== */
 .hero-content {
     position: relative;
     z-index: 1;
-    padding-top: 5rem;
-    max-width: 700px;
+    padding-top: var(--space-12);
+    max-width: 650px;
+    animation: fadeIn 0.8s ease-out forwards;
 }
 
-/* Semi-transparent backdrop for better readability */
+.hero-content h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: 400;
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-5);
+    color: var(--text-primary);
+}
+
+/* No text shadow needed in dark mode */
 .hero-content h1,
 .hero-content p {
-    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9);
+    text-shadow: none;
 }
 
-/* Ensure main content area allows canvas interaction when not over text */
+/* Light mode needs subtle shadow for readability over canvas */
+[data-theme="light"] .hero-content h1,
+[data-theme="light"] .hero-content p {
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.hero-content p {
+    font-family: var(--font-body);
+    font-size: var(--text-xl);
+    line-height: var(--leading-relaxed);
+    color: var(--text-secondary);
+    max-width: 550px;
+}
+
+/* ========================================
+   Main Content Layer
+   ======================================== */
 #main {
     background: transparent;
     pointer-events: none;
@@ -51,17 +96,45 @@ footer button {
     z-index: 10;
 }
 
-/* Mobile adjustments */
+/* ========================================
+   Mobile Adjustments
+   ======================================== */
 @media (max-width: 768px) {
     #canvas {
         /* Show more of the GoL on mobile since content is shorter */
-        mask: linear-gradient(to top, white 20%, transparent 80%);
-        -webkit-mask: linear-gradient(to top, white 20%, transparent 80%);
+        mask: linear-gradient(to top, white 25%, transparent 75%);
+        -webkit-mask: linear-gradient(to top, white 25%, transparent 75%);
+        opacity: 0.5;
+    }
+
+    [data-theme="light"] #canvas {
+        opacity: 0.35;
     }
 
     .hero-content {
-        padding-top: 5rem;
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
+        padding-top: var(--space-8);
+        padding-left: var(--space-2);
+        padding-right: var(--space-2);
+    }
+
+    .hero-content h1 {
+        font-size: clamp(1.5rem, 7vw, 2rem);
+    }
+
+    .hero-content p {
+        font-size: var(--text-base);
+    }
+}
+
+/* ========================================
+   Reduced Motion
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+    #canvas {
+        opacity: 0.3;
+    }
+
+    .hero-content {
+        animation: none;
     }
 }

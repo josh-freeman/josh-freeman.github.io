@@ -16,28 +16,33 @@
     <!-- Favicon -->
     <link rel="icon" href="/resources/icon_blue.png" type="image/png">
 
-    <!-- Fonts -->
+    <!-- Fonts: Fraunces (display), Source Serif 4 (body), DM Sans (UI) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
 
     <!-- Styles -->
+    <link rel="stylesheet" href="/css/theme.css">
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/buttons.css">
+
+    <!-- Theme Script (before body to prevent flash) -->
+    <script src="/js/theme.js"></script>
 
     <style>
         .register-container {
             max-width: 400px;
             margin: 4rem auto;
             padding: 2rem;
-            background: #fafafa;
-            border-radius: 12px;
-            border: 1px solid #e0e0e0;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-default);
         }
 
         .register-container h1 {
             margin-bottom: 0.5rem;
             font-size: 1.75rem;
+            font-family: var(--font-display);
         }
 
         .register-container .subtitle {
@@ -53,20 +58,24 @@
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
+            font-family: var(--font-ui);
         }
 
         .form-group input {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
             font-family: inherit;
             font-size: 1rem;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            box-sizing: border-box;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: var(--accent-primary);
         }
 
         .form-group .hint {
@@ -76,19 +85,21 @@
         }
 
         .error-message {
-            color: #e74c3c;
+            color: var(--error);
             margin-top: 1rem;
             padding: 0.75rem;
-            background: #fdeaea;
-            border-radius: 8px;
+            background: rgba(212, 114, 106, 0.15);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--error);
         }
 
         .success-message {
-            color: #155724;
+            color: var(--success);
             margin-top: 1rem;
             padding: 0.75rem;
-            background: #d4edda;
-            border-radius: 8px;
+            background: rgba(126, 184, 168, 0.15);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--success);
         }
 
         .invalid-invite {
@@ -97,7 +108,7 @@
         }
 
         .invalid-invite h2 {
-            color: #e74c3c;
+            color: var(--error);
         }
     </style>
 </head>

@@ -1,0 +1,242 @@
+/**
+ * Theme System - "Nocturnal Scholar"
+ * A warm, intellectual aesthetic with dark mode primary
+ */
+
+/* ========================================
+   CSS Custom Properties (Theme Tokens)
+   ======================================== */
+:root {
+    /* Dark theme (default) */
+    --bg-primary: #0c0b0d;
+    --bg-secondary: #151418;
+    --bg-tertiary: #1e1c21;
+    --bg-elevated: #262329;
+    --bg-hover: #2d2a31;
+
+    /* Text colors */
+    --text-primary: #f5f2ed;
+    --text-secondary: #c4bfb6;
+    --text-muted: #8a857c;
+    --text-accent: #e8c574;
+
+    /* Accent colors */
+    --accent-primary: #e5a54b;        /* Warm amber - like lamplight */
+    --accent-primary-dim: #c48a3a;
+    --accent-primary-glow: rgba(229, 165, 75, 0.15);
+    --accent-secondary: #c4a1b0;      /* Dusty rose - poetic */
+    --accent-tertiary: #7eb8a8;       /* Sage green - calming */
+
+    /* Functional colors */
+    --success: #7eb8a8;
+    --warning: #e5a54b;
+    --error: #d4726a;
+    --info: #7da8c9;
+
+    /* Borders & surfaces */
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-default: rgba(255, 255, 255, 0.1);
+    --border-strong: rgba(255, 255, 255, 0.15);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.6);
+    --shadow-glow: 0 0 30px var(--accent-primary-glow);
+
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-base: 250ms ease;
+    --transition-slow: 400ms ease;
+
+    /* Spacing scale */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-8: 3rem;
+    --space-10: 4rem;
+    --space-12: 5rem;
+
+    /* Border radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-full: 9999px;
+
+    /* Typography */
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Source Serif 4', Georgia, serif;
+    --font-ui: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+    /* Font sizes */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 2rem;
+    --text-4xl: 2.5rem;
+    --text-5xl: 3.25rem;
+
+    /* Line heights */
+    --leading-tight: 1.2;
+    --leading-snug: 1.4;
+    --leading-normal: 1.6;
+    --leading-relaxed: 1.8;
+
+    /* Z-index scale */
+    --z-base: 1;
+    --z-dropdown: 50;
+    --z-sticky: 80;
+    --z-sidebar: 100;
+    --z-modal: 200;
+    --z-toast: 300;
+}
+
+/* Light theme overrides */
+[data-theme="light"] {
+    --bg-primary: #faf8f5;
+    --bg-secondary: #f5f2ed;
+    --bg-tertiary: #ebe7e0;
+    --bg-elevated: #ffffff;
+    --bg-hover: #e8e4dc;
+
+    --text-primary: #1a1817;
+    --text-secondary: #4a4541;
+    --text-muted: #7a756d;
+    --text-accent: #9a6f1c;
+
+    --accent-primary: #c48a3a;
+    --accent-primary-dim: #a87530;
+    --accent-primary-glow: rgba(196, 138, 58, 0.12);
+
+    --border-subtle: rgba(0, 0, 0, 0.04);
+    --border-default: rgba(0, 0, 0, 0.08);
+    --border-strong: rgba(0, 0, 0, 0.12);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* ========================================
+   Noise/Grain Texture Overlay
+   ======================================== */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+[data-theme="light"] body::before {
+    opacity: 0.015;
+}
+
+/* ========================================
+   Theme Toggle Button
+   ======================================== */
+.theme-toggle {
+    position: fixed;
+    bottom: var(--space-5);
+    right: var(--space-5);
+    z-index: var(--z-sticky);
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-default);
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-md);
+}
+
+.theme-toggle:hover {
+    background: var(--bg-hover);
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+    transform: scale(1.05);
+}
+
+.theme-toggle svg {
+    width: 22px;
+    height: 22px;
+    transition: transform var(--transition-base);
+}
+
+.theme-toggle:hover svg {
+    transform: rotate(15deg);
+}
+
+/* Sun icon (shown in dark mode) */
+.theme-toggle .sun-icon {
+    display: block;
+}
+.theme-toggle .moon-icon {
+    display: none;
+}
+
+/* Moon icon (shown in light mode) */
+[data-theme="light"] .theme-toggle .sun-icon {
+    display: none;
+}
+[data-theme="light"] .theme-toggle .moon-icon {
+    display: block;
+}
+
+/* ========================================
+   Selection & Focus Styles
+   ======================================== */
+::selection {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+/* ========================================
+   Scrollbar Styling
+   ======================================== */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: var(--radius-full);
+    border: 2px solid var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* Firefox scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) var(--bg-secondary);
+}

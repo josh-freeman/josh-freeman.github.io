@@ -19,7 +19,7 @@ const HEART_FILLED = `<svg class="comment-heart-icon active" width="16" height="
         style.id = 'comment-styles';
         style.textContent = `
             .comment-heart-icon {
-                color: #9ca3af;
+                color: var(--text-muted, #8a857c);
                 transition: all 0.15s ease;
                 vertical-align: middle;
             }
@@ -34,7 +34,7 @@ const HEART_FILLED = `<svg class="comment-heart-icon active" width="16" height="
             .comment-replies {
                 margin-left: 0.75rem;
                 padding-left: 0.75rem;
-                border-left: 2px solid #e5e7eb;
+                border-left: 2px solid var(--border-default, rgba(255, 255, 255, 0.1));
                 margin-top: 0.5rem;
             }
             .comment-replies .comment {
@@ -49,30 +49,32 @@ const HEART_FILLED = `<svg class="comment-heart-icon active" width="16" height="
             .reply-btn {
                 background: none;
                 border: none;
-                color: var(--text-muted, #6b7280);
+                color: var(--text-muted, #8a857c);
                 font-size: 0.8rem;
                 cursor: pointer;
                 padding: 0;
                 margin-left: 0.75rem;
             }
             .reply-btn:hover {
-                color: var(--primary-color, #6366f1);
+                color: var(--accent-primary, #e5a54b);
             }
             .reply-form {
                 margin-top: 0.75rem;
                 margin-left: 1.5rem;
                 padding-left: 1rem;
-                border-left: 2px solid #e5e7eb;
+                border-left: 2px solid var(--border-default, rgba(255, 255, 255, 0.1));
             }
             .reply-form textarea {
                 width: 100%;
                 min-height: 60px;
                 padding: 0.5rem;
-                border: 1px solid #e0e0e0;
+                border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
                 border-radius: 6px;
                 font-size: 0.9rem;
                 resize: vertical;
                 font-family: inherit;
+                background: var(--bg-secondary, #151418);
+                color: var(--text-primary, #f5f2ed);
             }
             .reply-form-actions {
                 display: flex;
@@ -86,14 +88,15 @@ const HEART_FILLED = `<svg class="comment-heart-icon active" width="16" height="
                 cursor: pointer;
             }
             .reply-form-actions .submit-reply {
-                background: var(--primary-color, #6366f1);
-                color: white;
+                background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a));
+                color: var(--bg-primary, #0c0b0d);
                 border: none;
+                font-weight: 500;
             }
             .reply-form-actions .cancel-reply {
-                background: #e5e7eb;
-                border: none;
-                color: #374151;
+                background: var(--bg-tertiary, #1e1c21);
+                border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
+                color: var(--text-primary, #f5f2ed);
             }
         `;
         document.head.appendChild(style);
@@ -419,8 +422,8 @@ function updateCommentForm() {
             <p class="comment-login-notice">
                 <a href="#" onclick="showLogin(); return false;">Log in</a> to leave a comment.
             </p>
-            <p style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.9rem; margin-top: 0.5rem; border-left: 4px solid #f59e0b;">
-                <strong>Looking for a signup link?</strong> There isn't one! Comments are invite-only. Ask me (Josh :) for an invite if you think I forgot to send you one!
+            <p style="background: var(--bg-tertiary, #1e1c21); color: var(--text-secondary, #c4bfb6); padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.9rem; margin-top: 0.5rem; border-left: 4px solid var(--accent-primary, #e5a54b);">
+                <strong style="color: var(--text-accent, #e8c574);">Looking for a signup link?</strong> There isn't one! Comments are invite-only. Ask me (Josh :) for an invite if you think I forgot to send you one!
             </p>
         `;
     }
@@ -443,10 +446,10 @@ function showLogin() {
         z-index: 1000;
     `;
     modal.innerHTML = `
-        <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 400px; width: 90%;">
-            <h3 style="margin-bottom: 1rem;">Log in to comment</h3>
-            <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem; border-left: 4px solid #f59e0b;">
-                <strong>No signup?</strong> Correct! This is invite-only. Ask me (Josh :) if you think I forgot to send you one!
+        <div style="background: var(--bg-elevated, #262329); color: var(--text-primary, #f5f2ed); padding: 2rem; border-radius: 12px; max-width: 400px; width: 90%; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">
+            <h3 style="margin-bottom: 1rem; color: var(--text-primary, #f5f2ed);">Log in to comment</h3>
+            <div style="background: var(--bg-tertiary, #1e1c21); color: var(--text-secondary, #c4bfb6); padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem; border-left: 4px solid var(--accent-primary, #e5a54b);">
+                <strong style="color: var(--text-accent, #e8c574);">No signup?</strong> Correct! This is invite-only. Ask me (Josh :) if you think I forgot to send you one!
             </div>
             <form onsubmit="handleLogin(event)">
                 <input
@@ -454,20 +457,20 @@ function showLogin() {
                     id="login-email"
                     placeholder="Email"
                     required
-                    style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1rem;"
+                    style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; font-size: 1rem; background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed);"
                 >
                 <input
                     type="password"
                     id="login-password"
                     placeholder="Password"
                     required
-                    style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1rem;"
+                    style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; font-size: 1rem; background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed);"
                 >
                 <div style="display: flex; gap: 1rem;">
                     <button type="submit" class="btn btn-primary" style="flex: 1;">Log in</button>
-                    <button type="button" onclick="closeLogin()" class="btn" style="flex: 1; background: #e0e0e0;">Cancel</button>
+                    <button type="button" onclick="closeLogin()" class="btn" style="flex: 1;">Cancel</button>
                 </div>
-                <p id="login-error" style="color: #e74c3c; margin-top: 1rem; display: none;"></p>
+                <p id="login-error" style="color: var(--error, #d4726a); margin-top: 1rem; display: none;"></p>
             </form>
         </div>
     `;
@@ -582,18 +585,18 @@ function editComment(commentId, currentContent) {
         z-index: 1000;
     `;
     modal.innerHTML = `
-        <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;">
-            <h3 style="margin-bottom: 1rem;">Edit Comment</h3>
+        <div style="background: var(--bg-elevated, #262329); color: var(--text-primary, #f5f2ed); padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">
+            <h3 style="margin-bottom: 1rem; color: var(--text-primary, #f5f2ed);">Edit Comment</h3>
             <form onsubmit="submitEdit(event, ${commentId})">
                 <textarea
                     id="edit-content"
-                    style="width: 100%; min-height: 100px; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1rem; resize: vertical;"
+                    style="width: 100%; min-height: 100px; padding: 0.75rem; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; font-size: 1rem; resize: vertical; background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed);"
                 >${currentContent}</textarea>
                 <div style="display: flex; gap: 1rem; margin-top: 1rem;">
                     <button type="submit" class="btn btn-primary" style="flex: 1;">Save</button>
-                    <button type="button" onclick="closeEditModal()" class="btn" style="flex: 1; background: #e0e0e0;">Cancel</button>
+                    <button type="button" onclick="closeEditModal()" class="btn" style="flex: 1;">Cancel</button>
                 </div>
-                <p id="edit-error" style="color: #e74c3c; margin-top: 1rem; display: none;"></p>
+                <p id="edit-error" style="color: var(--error, #d4726a); margin-top: 1rem; display: none;"></p>
             </form>
         </div>
     `;
@@ -705,16 +708,16 @@ function showLikersModal(likers, title = 'Liked by') {
     `;
 
     const likersList = likers.length > 0
-        ? likers.map(l => `<li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;"><a href="/profile.html?id=${l.id}" style="color: var(--text-color); text-decoration: none; font-weight: 500;">${escapeHtml(l.name)}</a> <span style="color: #999; font-size: 0.85rem;">(${new Date(l.liked_at).toLocaleDateString()})</span></li>`).join('')
-        : '<li style="color: #999;">No likes yet</li>';
+        ? likers.map(l => `<li style="padding: 0.5rem 0; border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));"><a href="/profile.html?id=${l.id}" style="color: var(--text-primary, #f5f2ed); text-decoration: none; font-weight: 500;">${escapeHtml(l.name)}</a> <span style="color: var(--text-muted, #8a857c); font-size: 0.85rem;">(${new Date(l.liked_at).toLocaleDateString()})</span></li>`).join('')
+        : '<li style="color: var(--text-muted, #8a857c);">No likes yet</li>';
 
     modal.innerHTML = `
-        <div style="background: white; padding: 1.5rem; border-radius: 12px; max-width: 350px; width: 90%;">
-            <h3 style="margin-bottom: 1rem;">${title}</h3>
+        <div style="background: var(--bg-elevated, #262329); color: var(--text-primary, #f5f2ed); padding: 1.5rem; border-radius: 12px; max-width: 350px; width: 90%; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">
+            <h3 style="margin-bottom: 1rem; color: var(--text-primary, #f5f2ed);">${title}</h3>
             <ul style="list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto;">
                 ${likersList}
             </ul>
-            <button onclick="document.getElementById('likers-modal').remove()" style="margin-top: 1rem; width: 100%; padding: 0.75rem; background: #e0e0e0; border: none; border-radius: 8px; cursor: pointer;">Close</button>
+            <button onclick="document.getElementById('likers-modal').remove()" style="margin-top: 1rem; width: 100%; padding: 0.75rem; background: var(--bg-tertiary, #1e1c21); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; cursor: pointer; color: var(--text-primary, #f5f2ed);">Close</button>
         </div>
     `;
     document.body.appendChild(modal);
@@ -744,10 +747,10 @@ function setupMentionAutocomplete(textarea, dropdown) {
         style.textContent = `
             .mention-dropdown {
                 position: absolute;
-                background: white;
-                border: 1px solid #e0e0e0;
+                background: var(--bg-elevated, #262329);
+                border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
                 border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                box-shadow: var(--shadow-lg, 0 8px 30px rgba(0, 0, 0, 0.6));
                 max-height: 200px;
                 overflow-y: auto;
                 z-index: 1000;
@@ -760,18 +763,19 @@ function setupMentionAutocomplete(textarea, dropdown) {
                 padding: 0.5rem 0.75rem;
                 cursor: pointer;
                 font-size: 0.9rem;
+                color: var(--text-primary, #f5f2ed);
             }
             .mention-dropdown-item:hover,
             .mention-dropdown-item.selected {
-                background: #f0f0f0;
+                background: var(--bg-hover, #2d2a31);
             }
             .mention-dropdown-item.selected {
-                background: var(--primary-color, #3b82f6);
-                color: white;
+                background: var(--accent-primary, #e5a54b);
+                color: var(--bg-primary, #0c0b0d);
             }
             .mention-dropdown-empty {
                 padding: 0.5rem 0.75rem;
-                color: var(--text-muted, #6b7280);
+                color: var(--text-muted, #8a857c);
                 font-size: 0.85rem;
                 font-style: italic;
             }

@@ -13,13 +13,13 @@ const defaultInviteTemplate = {
         You've been invited to join my blog as a friend. This gives you access to exclusive posts and the ability to leave comments.
     </p>
     <p style="margin: 24px 0;">
-        <a href="{url}" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500;">
+        <a href="{url}" style="background: linear-gradient(135deg, #e5a54b, #c48a3a); color: #0c0b0d; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500;">
             Accept Invitation
         </a>
     </p>
     <p style="color: #6b7280; font-size: 14px;">
         This invite expires in {expires}. If the button doesn't work, copy this link:<br>
-        <a href="{url}" style="color: #6366f1;">{url}</a>
+        <a href="{url}" style="color: #c48a3a;">{url}</a>
     </p>
     <p style="color: #4b5563; margin-top: 24px;">— Josh</p>
 </div>`
@@ -163,7 +163,7 @@ function renderInvites() {
         const statusClass = invite.used ? 'badge-published' : (expired ? 'badge-draft' : 'badge-published');
 
         return `
-            <div class="post-item ${(invite.used || expired) ? 'inactive' : ''}" style="${(invite.used || expired) ? 'opacity: 0.7; background: #fef3c7;' : ''}">
+            <div class="post-item ${(invite.used || expired) ? 'inactive' : ''}" style="${(invite.used || expired) ? 'opacity: 0.7; background: rgba(229, 165, 75, 0.1);' : ''}">
                 <div class="post-item-info">
                     <h3 style="font-family: monospace; font-size: 0.9rem;">${invite.token.substring(0, 16)}...</h3>
                     <div class="meta">
@@ -174,12 +174,12 @@ function renderInvites() {
                 </div>
                 <div class="post-item-actions">
                     ${!invite.used && !expired ? `<button class="btn" onclick="copyInviteLinkById('${invite.token}')">Copy Link</button>` : ''}
-                    <button class="btn" onclick="deleteInvite(${invite.id})" style="background: #e74c3c; color: white;">Delete</button>
+                    <button class="btn" onclick="deleteInvite(${invite.id})" style="background: var(--error, #d4726a); color: var(--bg-primary, #0c0b0d);">Delete</button>
                 </div>
             </div>
         `;
     }).join('') + (hasMore ? `
-        <button class="btn" onclick="showMoreInvites()" style="width: 100%; margin-top: 0.5rem; background: #f3f4f6; color: #374151;">
+        <button class="btn" onclick="showMoreInvites()" style="width: 100%; margin-top: 0.5rem; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed);">
             Show more (${filteredInvites.length - invitesVisible} remaining)
         </button>
     ` : '');

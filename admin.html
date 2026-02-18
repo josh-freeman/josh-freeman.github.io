@@ -40,7 +40,7 @@
             align-items: center;
             margin-bottom: 2rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
         }
 
         .admin-header h1 {
@@ -51,9 +51,9 @@
             max-width: 400px;
             margin: 4rem auto;
             padding: 2rem;
-            background: #fafafa;
+            background: var(--bg-tertiary, #1e1c21);
             border-radius: 12px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
         }
 
         .login-container h2 {
@@ -76,10 +76,12 @@
         .form-group select {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
             border-radius: 8px;
             font-family: inherit;
             font-size: 1rem;
+            background: var(--bg-secondary, #151418);
+            color: var(--text-primary, #f5f2ed);
         }
 
         .form-group textarea {
@@ -106,8 +108,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 1rem 1.25rem;
-            background: #fafafa;
-            border: 1px solid #e0e0e0;
+            background: var(--bg-tertiary, #1e1c21);
+            border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
             border-radius: 8px;
         }
 
@@ -135,18 +137,18 @@
         }
 
         .badge-draft {
-            background: #ffeeba;
-            color: #856404;
+            background: rgba(229, 165, 75, 0.2);
+            color: var(--warning, #e5a54b);
         }
 
         .badge-published {
-            background: #c3e6cb;
-            color: #155724;
+            background: rgba(126, 184, 168, 0.2);
+            color: var(--success, #7eb8a8);
         }
 
         .badge-exclusive {
-            background: linear-gradient(135deg, #8b5cf6, #6366f1);
-            color: white;
+            background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a));
+            color: var(--bg-primary, #0c0b0d);
         }
 
         .editor-container {
@@ -157,8 +159,8 @@
 
         .preview-container {
             padding: 1rem 1.5rem;
-            background: #fafafa;
-            border: 1px solid #e0e0e0;
+            background: var(--bg-tertiary, #1e1c21);
+            border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
             border-radius: 8px;
             max-height: 500px;
             overflow-y: auto;
@@ -171,7 +173,7 @@
             margin-top: 0;
             font-size: 1rem;
             color: var(--text-muted);
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
             padding-bottom: 0.5rem;
             margin-bottom: 1rem;
         }
@@ -193,7 +195,7 @@
         }
 
         .error-message {
-            color: #e74c3c;
+            color: var(--error, #d4726a);
             margin-top: 1rem;
         }
 
@@ -223,27 +225,27 @@
         #preview-content blockquote {
             margin: 1rem 0;
             padding: 0.75rem 1rem;
-            border-radius: 8px;
-            border-left: 4px solid #6b7280;
-            background: #f9fafb;
-            color: #374151;
+            border-radius: 0 8px 8px 0;
+            border-left: 4px solid var(--text-muted, #8a857c);
+            background: var(--bg-secondary, #151418);
+            color: var(--text-secondary, #c4bfb6);
             font-size: 0.95rem;
         }
         #preview-content blockquote p { margin: 0; }
         #preview-content blockquote.note {
-            border-left-color: #3b82f6;
-            background: #eff6ff;
-            color: #1e40af;
+            border-left-color: var(--info, #7da8c9);
+            background: var(--bg-secondary, #151418);
+            color: var(--text-secondary, #c4bfb6);
         }
         #preview-content blockquote.warning {
-            border-left-color: #f59e0b;
-            background: #fffbeb;
-            color: #92400e;
+            border-left-color: var(--warning, #e5a54b);
+            background: var(--bg-secondary, #151418);
+            color: var(--text-secondary, #c4bfb6);
         }
         #preview-content blockquote.tip {
-            border-left-color: #10b981;
-            background: #ecfdf5;
-            color: #065f46;
+            border-left-color: var(--success, #7eb8a8);
+            background: var(--bg-secondary, #151418);
+            color: var(--text-secondary, #c4bfb6);
         }
 
         /* Image styles for preview */
@@ -256,16 +258,16 @@
 
         /* Image management grid */
         .image-card {
-            background: #fafafa;
-            border: 1px solid #e0e0e0;
+            background: var(--bg-tertiary, #1e1c21);
+            border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
             border-radius: 8px;
             overflow: hidden;
             position: relative;
         }
 
         .image-card.orphaned {
-            border-color: #f59e0b;
-            background: #fffbeb;
+            border-color: var(--warning, #e5a54b);
+            background: rgba(229, 165, 75, 0.1);
         }
 
         .image-card img {
@@ -308,13 +310,13 @@
         }
 
         .image-card .status-badge.used {
-            background: #c3e6cb;
-            color: #155724;
+            background: rgba(126, 184, 168, 0.2);
+            color: var(--success, #7eb8a8);
         }
 
         .image-card .status-badge.unused {
-            background: #ffeeba;
-            color: #856404;
+            background: rgba(229, 165, 75, 0.2);
+            color: var(--warning, #e5a54b);
         }
 
         .image-card-actions {
@@ -333,30 +335,30 @@
         }
 
         .image-card-actions .btn-copy {
-            background: #e0e0e0;
-            color: #333;
+            background: var(--bg-hover, #2d2a31);
+            color: var(--text-primary, #f5f2ed);
         }
 
         .image-card-actions .btn-copy:hover {
-            background: #d0d0d0;
+            background: var(--bg-elevated, #262329);
         }
 
         .image-card-actions .btn-delete {
-            background: #fee2e2;
-            color: #dc2626;
+            background: rgba(212, 114, 106, 0.2);
+            color: var(--error, #d4726a);
         }
 
         .image-card-actions .btn-delete:hover {
-            background: #fecaca;
+            background: rgba(212, 114, 106, 0.3);
         }
 
         /* @mention autocomplete */
         .mention-dropdown {
             position: absolute;
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: var(--bg-elevated, #262329);
+            border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: var(--shadow-lg, 0 8px 30px rgba(0, 0, 0, 0.6));
             max-height: 200px;
             overflow-y: auto;
             z-index: 1000;
@@ -367,16 +369,17 @@
             padding: 0.5rem 0.75rem;
             cursor: pointer;
             font-size: 0.9rem;
+            color: var(--text-primary, #f5f2ed);
         }
 
         .mention-dropdown-item:hover,
         .mention-dropdown-item.selected {
-            background: #f0f0f0;
+            background: var(--bg-hover, #2d2a31);
         }
 
         .mention-dropdown-item.selected {
-            background: var(--primary-color);
-            color: white;
+            background: var(--accent-primary, #e5a54b);
+            color: var(--bg-primary, #0c0b0d);
         }
 
         .mention-dropdown-empty {
@@ -416,7 +419,7 @@
         /* Write/Preview tab component (GitHub-style) */
         .html-editor-tabs {
             display: flex;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
             margin-bottom: 0;
         }
         .html-editor-tab {
@@ -426,21 +429,21 @@
             background: none;
             cursor: pointer;
             font-size: 0.9rem;
-            color: #57606a;
+            color: var(--text-muted, #8a857c);
             margin-bottom: -1px;
             border-radius: 6px 6px 0 0;
         }
         .html-editor-tab:hover {
-            color: #24292f;
+            color: var(--text-primary, #f5f2ed);
         }
         .html-editor-tab.active {
-            background: #fff;
-            border-color: #e0e0e0;
-            color: #24292f;
+            background: var(--bg-tertiary, #1e1c21);
+            border-color: var(--border-default, rgba(255, 255, 255, 0.1));
+            color: var(--text-primary, #f5f2ed);
             font-weight: 500;
         }
         .html-editor-content {
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
             border-top: none;
             border-radius: 0 0 8px 8px;
             min-height: 200px;
@@ -453,11 +456,11 @@
         }
         .html-editor-content textarea:focus {
             outline: none;
-            box-shadow: inset 0 0 0 1px var(--primary-color);
+            box-shadow: inset 0 0 0 1px var(--accent-primary, #e5a54b);
         }
         .html-editor-preview {
             padding: 1rem;
-            background: #fafafa;
+            background: var(--bg-tertiary, #1e1c21);
             border-radius: 0 0 8px 8px;
             min-height: 200px;
             display: none;
@@ -469,7 +472,7 @@
             width: 100%;
             border: none;
             min-height: 300px;
-            background: white;
+            background: var(--bg-elevated, #262329);
             border-radius: 4px;
         }
     </style>
@@ -505,7 +508,7 @@
                 </div>
 
                 <!-- Tab Navigation -->
-                <div id="tab-navigation" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid #e0e0e0; padding-bottom: 1rem;">
+                <div id="tab-navigation" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); padding-bottom: 1rem;">
                     <button class="btn" id="tab-posts" onclick="showTab('posts')" style="font-weight: 600;">Posts</button>
                     <button class="btn" id="tab-invites" onclick="showTab('invites')">Invites</button>
                     <button class="btn" id="tab-users" onclick="showTab('users')">Users</button>
@@ -520,7 +523,7 @@
                     </div>
 
                     <!-- Post Notification Email Template -->
-                    <details style="margin-bottom: 1.5rem; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px;">
+                    <details style="margin-bottom: 1.5rem; background: var(--bg-tertiary, #1e1c21); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px;">
                         <summary style="padding: 1rem; cursor: pointer; font-weight: 600;">Notification Email Template</summary>
                         <div style="padding: 0 1.5rem 1.5rem 1.5rem;">
                             <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
@@ -628,8 +631,8 @@
 
                         <div class="btn-group">
                             <button type="submit" class="btn btn-primary">Save Post</button>
-                            <button type="button" class="btn" id="notify-btn" onclick="notifyUsersAboutPost()" style="background: #8b5cf6; color: white; display: none;">Notify Users</button>
-                            <button type="button" class="btn" id="delete-btn" onclick="deletePost()" style="background: #e74c3c; color: white; display: none;">Delete Post</button>
+                            <button type="button" class="btn" id="notify-btn" onclick="notifyUsersAboutPost()" style="background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); display: none; font-weight: 500;">Notify Users</button>
+                            <button type="button" class="btn" id="delete-btn" onclick="deletePost()" style="background: var(--error, #d4726a); color: var(--bg-primary, #0c0b0d); display: none;">Delete Post</button>
                         </div>
 
                         <p id="editor-error" class="error-message" style="display: none;"></p>
@@ -643,7 +646,7 @@
                         <button class="btn btn-primary" onclick="showInviteForm()">Create Invite</button>
                     </div>
 
-                    <div id="invite-form" style="display: none; margin-bottom: 1.5rem; padding: 1.5rem; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0;">
+                    <div id="invite-form" style="display: none; margin-bottom: 1.5rem; padding: 1.5rem; background: var(--bg-tertiary, #1e1c21); border-radius: 8px; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">
                         <h3 style="margin-top: 0;">New Invite</h3>
                         <form onsubmit="createInvite(event)">
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
@@ -667,7 +670,7 @@
                             </div>
                             <div style="display: flex; gap: 1rem; margin-top: 1.5rem; align-items: center;">
                                 <button type="submit" class="btn btn-primary" data-send-email="false">Create Link Only</button>
-                                <button type="submit" class="btn" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white;" data-send-email="true">Create & Send Email</button>
+                                <button type="submit" class="btn" style="background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); font-weight: 500;" data-send-email="true">Create & Send Email</button>
                                 <button type="button" class="btn" onclick="hideInviteForm()" style="margin-left: auto;">Cancel</button>
                             </div>
                         </form>
@@ -680,7 +683,7 @@
                     </div>
 
                     <!-- Invite Email Template -->
-                    <details style="margin-bottom: 1.5rem; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px;">
+                    <details style="margin-bottom: 1.5rem; background: var(--bg-tertiary, #1e1c21); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px;">
                         <summary style="padding: 1rem; cursor: pointer; font-weight: 600;">Email Template</summary>
                         <div style="padding: 0 1.5rem 1.5rem 1.5rem;">
                             <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">

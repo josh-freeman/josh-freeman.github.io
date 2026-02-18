@@ -38,13 +38,15 @@ function createModal(id, content, options = {}) {
     const maxWidth = options.wide ? '800px' : '500px';
     modal.innerHTML = `
         <div class="modal-content" style="
-            background: white;
+            background: var(--bg-elevated, #262329);
+            color: var(--text-primary, #f5f2ed);
             padding: 1.75rem;
             border-radius: 12px;
             max-width: ${maxWidth};
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
+            border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
         ">
             ${content}
         </div>
@@ -104,18 +106,18 @@ function confirmModal(title, message, options = {}) {
         const confirmText = options.confirmText || 'Confirm';
         const cancelText = options.cancelText || 'Cancel';
         const confirmBg = options.confirmStyle === 'danger'
-            ? 'background: #ef4444;'
-            : 'background: linear-gradient(135deg, #6366f1, #8b5cf6);';
+            ? 'background: var(--error, #d4726a);'
+            : 'background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a));';
 
         const content = `
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                <h3 style="margin: 0;">${escapeHtml(title)}</h3>
-                <button onclick="closeModal('confirm-modal')" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: #999;">&times;</button>
+                <h3 style="margin: 0; color: var(--text-primary, #f5f2ed);">${escapeHtml(title)}</h3>
+                <button onclick="closeModal('confirm-modal')" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: var(--text-muted, #8a857c);">&times;</button>
             </div>
-            <p style="color: #4b5563; margin-bottom: 1.5rem;">${escapeHtml(message)}</p>
+            <p style="color: var(--text-secondary, #c4bfb6); margin-bottom: 1.5rem;">${escapeHtml(message)}</p>
             <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-                <button id="confirm-modal-cancel" style="padding: 0.6rem 1.2rem; background: #f3f4f6; border: none; border-radius: 8px; cursor: pointer;">${escapeHtml(cancelText)}</button>
-                <button id="confirm-modal-confirm" style="padding: 0.6rem 1.2rem; ${confirmBg} color: white; border: none; border-radius: 8px; cursor: pointer;">${escapeHtml(confirmText)}</button>
+                <button id="confirm-modal-cancel" style="padding: 0.6rem 1.2rem; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; cursor: pointer;">${escapeHtml(cancelText)}</button>
+                <button id="confirm-modal-confirm" style="padding: 0.6rem 1.2rem; ${confirmBg} color: var(--bg-primary, #0c0b0d); border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">${escapeHtml(confirmText)}</button>
             </div>
         `;
 
@@ -146,12 +148,12 @@ function alertModal(title, message, buttonText = 'OK') {
     return new Promise((resolve) => {
         const content = `
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                <h3 style="margin: 0;">${escapeHtml(title)}</h3>
-                <button onclick="closeModal('alert-modal')" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: #999;">&times;</button>
+                <h3 style="margin: 0; color: var(--text-primary, #f5f2ed);">${escapeHtml(title)}</h3>
+                <button onclick="closeModal('alert-modal')" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: var(--text-muted, #8a857c);">&times;</button>
             </div>
-            <p style="color: #4b5563; margin-bottom: 1.5rem;">${message}</p>
+            <p style="color: var(--text-secondary, #c4bfb6); margin-bottom: 1.5rem;">${message}</p>
             <div style="display: flex; justify-content: flex-end;">
-                <button id="alert-modal-ok" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; border-radius: 8px; cursor: pointer;">${escapeHtml(buttonText)}</button>
+                <button id="alert-modal-ok" style="padding: 0.6rem 1.2rem; background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">${escapeHtml(buttonText)}</button>
             </div>
         `;
 
@@ -230,11 +232,11 @@ function showToast(message, type = 'info', duration = 3000) {
 function modalHeader(title, modalId, iconSvg = '') {
     return `
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-            <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary, #f5f2ed);">
                 ${iconSvg}
                 ${escapeHtml(title)}
             </h3>
-            <button onclick="closeModal('${modalId}')" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: #999; line-height: 1;">&times;</button>
+            <button onclick="closeModal('${modalId}')" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: var(--text-muted, #8a857c); line-height: 1;">&times;</button>
         </div>
     `;
 }

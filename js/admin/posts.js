@@ -26,7 +26,7 @@ const defaultPostTemplate = {
     <h2 style="color: #1f2937;">New Post: {title}</h2>
     <p style="color: #4b5563; line-height: 1.6; font-style: italic;">"{excerpt}"</p>
     <p style="margin: 24px 0;">
-        <a href="{url}" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500;">
+        <a href="{url}" style="background: linear-gradient(135deg, #e5a54b, #c48a3a); color: #0c0b0d; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500;">
             Read Post
         </a>
     </p>
@@ -89,7 +89,7 @@ function renderPosts() {
             </div>
         </div>
     `).join('') + (hasMore ? `
-        <button class="btn" onclick="showMorePosts()" style="width: 100%; margin-top: 0.5rem; background: #f3f4f6; color: #374151;">
+        <button class="btn" onclick="showMorePosts()" style="width: 100%; margin-top: 0.5rem; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed);">
             Show more (${allPosts.length - postsVisible} remaining)
         </button>
     ` : '');
@@ -331,7 +331,7 @@ async function notifyUsersAboutPost() {
         padding: 1rem;
     `;
     modal.innerHTML = `
-        <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 100%;">
+        <div style="background: var(--bg-elevated, #262329); color: var(--text-primary, #f5f2ed); padding: 2rem; border-radius: 12px; max-width: 500px; width: 100%; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">
             <p style="text-align: center; color: var(--text-muted);">Loading stats...</p>
         </div>
     `;
@@ -370,8 +370,8 @@ function renderNotifyModal(postTitle) {
 
     for (const user of allUsers) {
         const statusBadges = [];
-        if (user.viewed) statusBadges.push('<span style="background: #d1fae5; color: #065f46; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">viewed</span>');
-        if (user.notified) statusBadges.push('<span style="background: #e0e7ff; color: #3730a3; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">notified</span>');
+        if (user.viewed) statusBadges.push('<span style="background: rgba(126, 184, 168, 0.2); color: var(--success, #7eb8a8); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">viewed</span>');
+        if (user.notified) statusBadges.push('<span style="background: rgba(125, 168, 201, 0.2); color: var(--info, #7da8c9); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">notified</span>');
 
         userListHtml += `
             <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; cursor: pointer;">
@@ -383,48 +383,48 @@ function renderNotifyModal(postTitle) {
     }
 
     modal.querySelector('div').outerHTML = `
-        <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 100%; max-height: 80vh; overflow-y: auto;">
-            <h3 style="margin: 0 0 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <div style="background: var(--bg-elevated, #262329); color: var(--text-primary, #f5f2ed); padding: 2rem; border-radius: 12px; max-width: 500px; width: 100%; max-height: 80vh; overflow-y: auto; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">
+            <h3 style="margin: 0 0 1rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary, #f5f2ed);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary, #e5a54b)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                 Notify Users
             </h3>
-            <p style="color: #4b5563; margin-bottom: 1rem;">
+            <p style="color: var(--text-secondary, #c4bfb6); margin-bottom: 1rem;">
                 Post: <strong>"${escapeHtml(postTitle)}"</strong>
             </p>
 
-            <div style="background: #f9fafb; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
+            <div style="background: var(--bg-tertiary, #1e1c21); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
                 <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.9rem;">
                     <div style="display: flex; align-items: center; gap: 0.4rem;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary, #e5a54b)" stroke-width="2"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
                         <span><strong>${viewedCount}</strong> friends viewed</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.4rem;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                         <span><strong>${anonymousCount}</strong> anonymous</span>
                     </div>
                 </div>
             </div>
 
             ${smartCount > 0 ? `
-            <div style="background: linear-gradient(135deg, #ede9fe, #e0e7ff); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                <p style="margin: 0 0 0.75rem; font-size: 0.9rem; color: #5b21b6;">
+            <div style="background: var(--accent-primary-glow, rgba(229, 165, 75, 0.15)); border-left: 3px solid var(--accent-primary, #e5a54b); padding: 1rem; border-radius: 0 8px 8px 0; margin-bottom: 1rem;">
+                <p style="margin: 0 0 0.75rem; font-size: 0.9rem; color: var(--text-accent, #e8c574);">
                     <strong>${smartCount} friend${smartCount !== 1 ? 's' : ''}</strong> haven't seen this post yet
                 </p>
-                <button onclick="sendSmartNotify()" class="btn" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 0.5rem 1rem; width: 100%;">
+                <button onclick="sendSmartNotify()" class="btn" style="background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); padding: 0.5rem 1rem; width: 100%; font-weight: 500;">
                     Notify Them
                 </button>
             </div>
             ` : `
-            <div style="background: #d1fae5; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                <p style="margin: 0; font-size: 0.9rem; color: #065f46;">
+            <div style="background: rgba(126, 184, 168, 0.15); border-left: 3px solid var(--success, #7eb8a8); padding: 1rem; border-radius: 0 8px 8px 0; margin-bottom: 1rem;">
+                <p style="margin: 0; font-size: 0.9rem; color: var(--success, #7eb8a8);">
                     All friends have either viewed this post or been notified already!
                 </p>
             </div>
             `}
 
             <details style="margin-bottom: 1rem;">
-                <summary style="cursor: pointer; font-weight: 500; padding: 0.5rem 0;">Manual selection</summary>
-                <div style="margin-top: 0.75rem; max-height: 200px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 8px; padding: 0.75rem;">
+                <summary style="cursor: pointer; font-weight: 500; padding: 0.5rem 0; color: var(--text-primary, #f5f2ed);">Manual selection</summary>
+                <div style="margin-top: 0.75rem; max-height: 200px; overflow-y: auto; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; padding: 0.75rem;">
                     ${userListHtml || '<p style="color: var(--text-muted); margin: 0;">No users available</p>'}
                 </div>
                 <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
@@ -434,7 +434,7 @@ function renderNotifyModal(postTitle) {
                 </div>
             </details>
 
-            <div style="display: flex; gap: 1rem; justify-content: flex-end; border-top: 1px solid #e0e0e0; padding-top: 1rem; margin-top: 0.5rem;">
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; border-top: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); padding-top: 1rem; margin-top: 0.5rem;">
                 <button onclick="closeNotifyModal()" class="btn" style="padding: 0.6rem 1.2rem;">Done</button>
             </div>
         </div>

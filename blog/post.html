@@ -530,17 +530,8 @@
             `;
             document.body.appendChild(modal);
 
-            // Set values after DOM insertion (avoids template literal escaping issues)
-            document.getElementById('edit-post-title').value = post.title;
-            document.getElementById('edit-post-excerpt').value = post.excerpt || '';
-            document.getElementById('edit-post-content').value = post.content;
-
-            // Set toggle states
-            editToggle.set('published', post.is_published);
-            editToggle.set('exclusive', post.is_exclusive || false);
-            editToggle.set('unlisted', post.is_unlisted || false);
-
-            // Use event delegation on the modal - more reliable than getElementById
+            // CRITICAL: Attach event listeners FIRST, before anything that might fail
+            // Use event delegation on the modal
             modal.addEventListener('click', function(e) {
                 const target = e.target;
 
@@ -564,15 +555,15 @@
 
                 // Toggle buttons
                 if (target.closest('#toggle-published')) {
-                    editToggle.toggle('published');
+                    try { editToggle.toggle('published'); } catch(err) { console.error(err); }
                     return;
                 }
                 if (target.closest('#toggle-exclusive')) {
-                    editToggle.toggle('exclusive');
+                    try { editToggle.toggle('exclusive'); } catch(err) { console.error(err); }
                     return;
                 }
                 if (target.closest('#toggle-unlisted')) {
-                    editToggle.toggle('unlisted');
+                    try { editToggle.toggle('unlisted'); } catch(err) { console.error(err); }
                     return;
                 }
 
@@ -588,6 +579,20 @@
                 e.preventDefault();
                 savePostEdit(post.slug);
             });
+
+            // Now set up values and toggles (wrapped in try-catch so it doesn't break close buttons)
+            try {
+                document.getElementById('edit-post-title').value = post.title;
+                document.getElementById('edit-post-excerpt').value = post.excerpt || '';
+                document.getElementById('edit-post-content').value = post.content;
+
+                // Set toggle states
+                editToggle.set('published', post.is_published);
+                editToggle.set('exclusive', post.is_exclusive || false);
+                editToggle.set('unlisted', post.is_unlisted || false);
+            } catch (err) {
+                console.error('Error setting up edit modal:', err);
+            }
         }
 
         function updateEditModalStats(stats, isPublished) {
@@ -795,17 +800,36 @@
         }
 
         function closeEditModal() {
-            // Try multiple selectors in case ID lookup fails
-            const modal = document.getElementById('edit-post-modal');
-            if (modal) {
-                modal.remove();
-                return;
-            }
-            // Fallback: try query selector
-            const modalAlt = document.querySelector('[id="edit-post-modal"]');
-            if (modalAlt) {
-                modalAlt.remove();
-            }
+            console.log('closeEditModal called');
+            // Try multiple approaches to find and remove the modal
+            try {
+                const modal = document.getElementById('edit-post-modal');
+                if (modal) {
+                    modal.remove();
+                    console.log('Modal removed via getElementById');
+                    return;
+                }
+            } catch (e) { console.error('getElementById failed:', e); }
+
+            try {
+                const modalAlt = document.querySelector('#edit-post-modal');
+                if (modalAlt) {
+                    modalAlt.remove();
+                    console.log('Modal removed via querySelector');
+                    return;
+                }
+            } catch (e) { console.error('querySelector failed:', e); }
+
+            // Nuclear option: remove any fixed overlay with z-index 1000
+            try {
+                document.querySelectorAll('div').forEach(el => {
+                    const style = window.getComputedStyle(el);
+                    if (style.position === 'fixed' && style.zIndex === '1000' && style.background.includes('rgba')) {
+                        el.remove();
+                        console.log('Modal removed via style matching');
+                    }
+                });
+            } catch (e) { console.error('Fallback removal failed:', e); }
         }
 
         async function savePostEdit(slug) {
@@ -818,27 +842,43 @@
                 saveBtn.textContent = 'Saving...';
             }
 
-            const postData = {
-                title: document.getElementById('edit-post-title').value,
-                excerpt: document.getElementById('edit-post-excerpt').value,
-                content: document.getElementById('edit-post-content').value,
-                is_published: editToggle.get('published'),
-                is_exclusive: editToggle.get('exclusive'),
-                is_unlisted: editToggle.get('unlisted')
-            };
+            try {
+                // Get toggle values with fallbacks
+                let isPublished = false, isExclusive = false, isUnlisted = false;
+                try {
+                    isPublished = editToggle.get('published');
+                    isExclusive = editToggle.get('exclusive');
+                    isUnlisted = editToggle.get('unlisted');
+                } catch (e) {
+                    // Fallback: read from hidden inputs directly
+                    isPublished = document.getElementById('edit-post-published')?.value === 'true';
+                    isExclusive = document.getElementById('edit-post-exclusive')?.value === 'true';
+                    isUnlisted = document.getElementById('edit-post-unlisted')?.value === 'true';
+                }
 
-            // Fire and forget - close modal immediately, reload post
-            // The save reliably works even if response handling is flaky
-            fetch(`${API_BASE}/admin/posts/${slug}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(postData)
-            }).catch(() => {});
+                const postData = {
+                    title: document.getElementById('edit-post-title').value,
+                    excerpt: document.getElementById('edit-post-excerpt').value,
+                    content: document.getElementById('edit-post-content').value,
+                    is_published: isPublished,
+                    is_exclusive: isExclusive,
+                    is_unlisted: isUnlisted
+                };
 
-            // Brief delay to let request start, then close and reload
+                // Fire and forget - close modal immediately, reload post
+                fetch(`${API_BASE}/admin/posts/${slug}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(postData)
+                }).catch(() => {});
+            } catch (err) {
+                console.error('Error saving post:', err);
+            }
+
+            // ALWAYS close modal and reload, even if there was an error
             setTimeout(() => {
                 closeEditModal();
                 loadPost();

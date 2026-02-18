@@ -35,9 +35,7 @@ function loadNavbarDiv() {
         : '';
 
     const editProfileBtn = isAdminLoggedIn()
-        ? `<button onclick="openProfileEditModal()" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.95); border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" title="Edit Profile">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-           </button>`
+        ? '<button onclick="openProfileEditModal()" style="position:absolute; bottom:10px; right:10px; background:#6366f1; border:2px solid #1e1e2e; border-radius:50%; width:30px; height:30px; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;" title="Edit Profile"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>'
         : '';
 
     const navbarHTML = `

@@ -468,7 +468,7 @@
                 <div class="edit-modal-content" style="background: white; padding: 2rem; border-radius: 12px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto;" onclick="event.stopPropagation()">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
                         <h3 style="margin: 0;">Edit Post</h3>
-                        <button type="button" onclick="document.getElementById('edit-post-modal').remove()" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: #999; line-height: 1;">&times;</button>
+                        <button type="button" onclick="confirmCloseEditModal()" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: #999; line-height: 1;">&times;</button>
                     </div>
 
                     <!-- View Stats & Notify Section -->
@@ -522,7 +522,7 @@
                         </div>
                         <div style="display: flex; gap: 1rem;">
                             <button type="button" onclick="handleEditSave()" class="btn btn-primary" style="flex: 1;">Save</button>
-                            <button type="button" onclick="document.getElementById('edit-post-modal').remove()" class="btn" style="flex: 1; background: #e0e0e0;">Cancel</button>
+                            <button type="button" onclick="confirmCloseEditModal()" class="btn" style="flex: 1; background: #e0e0e0;">Cancel</button>
                         </div>
                         <p id="edit-post-error" style="color: #e74c3c; margin-top: 1rem; display: none;"></p>
                     </form>
@@ -532,7 +532,7 @@
             // Add click handler for clicking outside (on overlay)
             modal.onclick = function(e) {
                 if (e.target === this) {
-                    this.remove();
+                    confirmCloseEditModal();
                 }
             };
 
@@ -593,6 +593,13 @@
                 document.getElementById('edit-post-title').value = post.title;
                 document.getElementById('edit-post-excerpt').value = post.excerpt || '';
                 document.getElementById('edit-post-content').value = post.content;
+
+                // Store original values for change detection
+                editModalOriginalValues = {
+                    title: post.title || '',
+                    excerpt: post.excerpt || '',
+                    content: post.content || ''
+                };
 
                 // Set toggle states
                 editToggle.set('published', post.is_published);
@@ -804,6 +811,31 @@
                 }
             } catch (error) {
                 alert('Failed to send notifications');
+            }
+        }
+
+        // Store original values to detect changes
+        let editModalOriginalValues = {};
+
+        // Check if there are unsaved changes
+        function hasUnsavedChanges() {
+            const title = document.getElementById('edit-post-title')?.value || '';
+            const excerpt = document.getElementById('edit-post-excerpt')?.value || '';
+            const content = document.getElementById('edit-post-content')?.value || '';
+
+            return title !== editModalOriginalValues.title ||
+                   excerpt !== editModalOriginalValues.excerpt ||
+                   content !== editModalOriginalValues.content;
+        }
+
+        // Close with confirmation if there are unsaved changes
+        function confirmCloseEditModal() {
+            if (hasUnsavedChanges()) {
+                if (confirm('You have unsaved changes. Are you sure you want to close?')) {
+                    document.getElementById('edit-post-modal')?.remove();
+                }
+            } else {
+                document.getElementById('edit-post-modal')?.remove();
             }
         }
 

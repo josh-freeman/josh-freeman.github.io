@@ -25,69 +25,10 @@
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/buttons.css">
     <link rel="stylesheet" href="/blog.css">
+    <link rel="stylesheet" href="/css/components.css">
 
     <style>
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #e0e0e0;
-            border-top-color: var(--primary-color, #6366f1);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            vertical-align: middle;
-            margin-right: 8px;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .loading-text {
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-        }
-
-        /* Share buttons */
-        .share-btn-inline {
-            background: none;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            padding: 0.35rem 0.75rem;
-            font-size: 0.85rem;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            color: var(--text-color);
-            margin-left: 1rem;
-            transition: all 0.2s;
-        }
-        .share-btn-inline:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .share-btn-prominent {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0.6rem 1.2rem;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s;
-            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
-        }
-        .share-btn-prominent:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
-        }
-
+        /* Page-specific styles */
         .forest-btn {
             background: none;
             border: none;
@@ -97,55 +38,9 @@
             padding: 0.6rem 0;
         }
 
-        /* Heart icon styles */
-        .heart-icon {
-            color: #9ca3af;
-            transition: all 0.2s ease;
-        }
-        .heart-icon.active {
-            color: #ef4444;
-            fill: #ef4444;
-        }
-        .heart-icon-small {
-            width: 18px;
-            height: 18px;
-            vertical-align: middle;
-        }
         #reaction-btn:hover .heart-icon:not(.active) {
             color: #fca5a5;
         }
-
-        /* Icon toggle buttons */
-        .icon-toggle {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            background: #f9fafb;
-            cursor: pointer;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            transition: all 0.2s;
-        }
-        .icon-toggle:hover {
-            border-color: var(--primary-color);
-            background: #f3f4f6;
-        }
-        .icon-toggle.active {
-            border-color: var(--primary-color);
-            background: linear-gradient(135deg, #ede9fe, #e0e7ff);
-            color: #5b21b6;
-        }
-        .icon-toggle .icon-on,
-        .icon-toggle .icon-off {
-            display: flex;
-            align-items: center;
-        }
-        .icon-toggle .icon-off { display: none; }
-        .icon-toggle:not(.active) .icon-on { display: none; }
-        .icon-toggle:not(.active) .icon-off { display: flex; }
     </style>
 
     <!-- Set initial OG title from URL slug for better previews -->
@@ -238,31 +133,20 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="/submenus.js"></script>
 
-    <script>
-        // Define these before comments.js loads so it can use them
-        const API_BASE = 'https://api.joshfreeman.me';
-        window.COMMENTS_API_BASE = API_BASE;
-
-        function getPostSlug() {
-            // Get slug from URL parameter
-            const params = new URLSearchParams(window.location.search);
-            return params.get('slug');
-        }
-    </script>
+    <!-- Shared modules -->
+    <script src="/js/utils.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/toggle-component.js"></script>
+    <script src="/js/modal.js"></script>
 
     <script src="/comments.js" defer></script>
 
     <script>
         let currentPost = null;  // Store current post data for sharing
 
-        function formatPostDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-        }
+        // Create toggle manager for edit modal
+        const editToggle = createToggleManager('toggle', 'edit-post');
 
         async function loadPost() {
             const slug = getPostSlug();
@@ -291,7 +175,7 @@
 
                     // Update content
                     document.getElementById('post-title').innerHTML = post.title + (post.is_exclusive ? ' <span class="exclusive-badge" title="This post is only visible to friends">Friends Only</span>' : '') + (post.is_unlisted ? ' <span class="unlisted-badge" title="Unlisted - not shown in blog listing">Unlisted</span>' : '');
-                    document.getElementById('post-date').textContent = formatPostDate(post.created_at);
+                    document.getElementById('post-date').textContent = formatDate(post.created_at);
                     document.getElementById('post-date').setAttribute('datetime', post.created_at.split('T')[0]);
 
                     // Render markdown content
@@ -649,15 +533,15 @@
             document.getElementById('edit-post-content').value = post.content;
 
             // Set toggle states
-            setToggleState('published', post.is_published);
-            setToggleState('exclusive', post.is_exclusive || false);
-            setToggleState('unlisted', post.is_unlisted || false);
+            editToggle.set('published', post.is_published);
+            editToggle.set('exclusive', post.is_exclusive || false);
+            editToggle.set('unlisted', post.is_unlisted || false);
 
             // Attach event listeners (more reliable than inline onclick)
             document.getElementById('edit-modal-close-btn').addEventListener('click', closeEditModal);
-            document.getElementById('toggle-published').addEventListener('click', () => toggleState('published'));
-            document.getElementById('toggle-exclusive').addEventListener('click', () => toggleState('exclusive'));
-            document.getElementById('toggle-unlisted').addEventListener('click', () => toggleState('unlisted'));
+            document.getElementById('toggle-published').addEventListener('click', () => editToggle.toggle('published'));
+            document.getElementById('toggle-exclusive').addEventListener('click', () => editToggle.toggle('exclusive'));
+            document.getElementById('toggle-unlisted').addEventListener('click', () => editToggle.toggle('unlisted'));
             document.getElementById('edit-modal-cancel-btn').addEventListener('click', closeEditModal);
             document.getElementById('edit-notify-btn').addEventListener('click', openNotifyFromEdit);
             document.getElementById('edit-post-form').addEventListener('submit', (e) => {
@@ -669,35 +553,6 @@
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) closeEditModal();
             });
-        }
-
-        function setToggleState(name, value) {
-            const btn = document.getElementById('toggle-' + name);
-            const input = document.getElementById('edit-post-' + name);
-            if (btn && input) {
-                input.value = value ? 'true' : 'false';
-                btn.classList.toggle('active', value);
-                // Update label text
-                const label = btn.querySelector('.label-text');
-                if (label) {
-                    if (name === 'published') label.textContent = value ? 'Published' : 'Draft';
-                    if (name === 'exclusive') label.textContent = value ? 'Friends Only' : 'Public';
-                    if (name === 'unlisted') label.textContent = value ? 'Unlisted' : 'Listed';
-                }
-            }
-        }
-
-        function toggleState(name) {
-            const input = document.getElementById('edit-post-' + name);
-            if (input) {
-                const newValue = input.value !== 'true';
-                setToggleState(name, newValue);
-            }
-        }
-
-        function getToggleValue(name) {
-            const input = document.getElementById('edit-post-' + name);
-            return input && input.value === 'true';
         }
 
         function updateEditModalStats(stats, isPublished) {
@@ -929,9 +784,9 @@
                 title: document.getElementById('edit-post-title').value,
                 excerpt: document.getElementById('edit-post-excerpt').value,
                 content: document.getElementById('edit-post-content').value,
-                is_published: getToggleValue('published'),
-                is_exclusive: getToggleValue('exclusive'),
-                is_unlisted: getToggleValue('unlisted')
+                is_published: editToggle.get('published'),
+                is_exclusive: editToggle.get('exclusive'),
+                is_unlisted: editToggle.get('unlisted')
             };
 
             // Fire and forget - close modal immediately, reload post

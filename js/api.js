@@ -2,11 +2,13 @@
  * API utilities for joshfreeman.me
  */
 
-// API base URL - can be overridden by setting window.API_BASE before loading this script
-const API_BASE = window.API_BASE || 'https://api.joshfreeman.me';
+// API base URL - set on window to share with other scripts (sidebar.js, etc.)
+if (typeof window.API_BASE === 'undefined') {
+    window.API_BASE = 'https://api.joshfreeman.me';
+}
 
 // Also set for comments.js compatibility
-window.COMMENTS_API_BASE = API_BASE;
+window.COMMENTS_API_BASE = window.API_BASE;
 
 /**
  * Make an authenticated API request
@@ -30,7 +32,7 @@ async function fetchApi(endpoint, options = {}) {
         options.body = JSON.stringify(options.body);
     }
 
-    return fetch(`${API_BASE}${endpoint}`, {
+    return fetch(`${window.API_BASE}${endpoint}`, {
         ...options,
         headers,
         credentials: 'include'
@@ -128,7 +130,7 @@ async function apiUpload(endpoint, file, fieldName = 'file') {
 // Export for module usage
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        API_BASE,
+        API_BASE: window.API_BASE,
         fetchApi,
         apiGet,
         apiPost,

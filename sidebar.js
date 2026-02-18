@@ -1,5 +1,8 @@
 // Sidebar Navigation Component
-const API_BASE = 'https://api.joshfreeman.me';
+// Set API_BASE on window if not already set (api.js may also set this)
+if (typeof window.API_BASE === 'undefined') {
+    window.API_BASE = 'https://api.joshfreeman.me';
+}
 
 function isAdminLoggedIn() {
     try {
@@ -18,7 +21,7 @@ let siteOwnerProfile = null;
 async function fetchSiteOwnerProfile() {
     if (siteOwnerProfile) return siteOwnerProfile;
     try {
-        const response = await fetch(`${API_BASE}/users/site-owner`);
+        const response = await fetch(`${window.API_BASE}/users/site-owner`);
         if (response.ok) {
             siteOwnerProfile = await response.json();
             return siteOwnerProfile;
@@ -134,7 +137,7 @@ function openProfileEditModal() {
     profileModalLoading = true;
 
     // Fetch current profile
-    fetch(`${API_BASE}/admin/profile`, {
+    fetch(`${window.API_BASE}/admin/profile`, {
         headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(r => r.json())
@@ -223,7 +226,7 @@ function showProfileEditModal(profile) {
             const formData = new FormData();
             formData.append('file', file);
 
-            const response = await fetch(`${API_BASE}/admin/upload-image`, {
+            const response = await fetch(`${window.API_BASE}/admin/upload-image`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formData
@@ -252,7 +255,7 @@ function saveProfile() {
     const bio = document.getElementById('profile-bio').value;
     const profilePictureUrl = document.getElementById('profile-pic-url').value;
 
-    fetch(`${API_BASE}/admin/profile`, {
+    fetch(`${window.API_BASE}/admin/profile`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',

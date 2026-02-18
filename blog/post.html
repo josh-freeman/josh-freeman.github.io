@@ -820,15 +820,8 @@
             if (modal) modal.remove();
         }
 
-        async function savePostEdit(slug) {
+        function savePostEdit(slug) {
             const token = localStorage.getItem('comment_token');
-            const saveBtn = document.querySelector('#edit-post-form button[type="submit"]');
-
-            // Disable button and show saving state
-            if (saveBtn) {
-                saveBtn.disabled = true;
-                saveBtn.textContent = 'Saving...';
-            }
 
             const postData = {
                 title: document.getElementById('edit-post-title').value,
@@ -840,7 +833,6 @@
             };
 
             // Fire and forget - close modal immediately, reload post
-            // The save reliably works even if response handling is flaky
             fetch(`${API_BASE}/admin/posts/${slug}`, {
                 method: 'PUT',
                 headers: {
@@ -850,11 +842,9 @@
                 body: JSON.stringify(postData)
             }).catch(() => {});
 
-            // Brief delay to let request start, then close and reload
-            setTimeout(() => {
-                closeEditModal();
-                loadPost();
-            }, 300);
+            // Close immediately and reload
+            closeEditModal();
+            loadPost();
         }
 
         // Delete post

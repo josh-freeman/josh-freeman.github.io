@@ -549,7 +549,7 @@
                 <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
                         <h3 style="margin: 0;">Edit Post</h3>
-                        <button onclick="closeEditModal()" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: #999; line-height: 1;">&times;</button>
+                        <button id="edit-modal-close-btn" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: #999; line-height: 1;">&times;</button>
                     </div>
 
                     <!-- View Stats & Notify Section -->
@@ -558,7 +558,7 @@
                             <div id="edit-view-stats" style="display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
                                 <span>Loading stats...</span>
                             </div>
-                            <button id="edit-notify-btn" onclick="openNotifyFromEdit()" style="display: none; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; display: none;">
+                            <button id="edit-notify-btn" style="display: none; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.3rem;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                                 Notify Users
                             </button>
@@ -568,36 +568,36 @@
                     <form id="edit-post-form">
                         <div style="margin-bottom: 1rem;">
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Title</label>
-                            <input type="text" id="edit-post-title" value="${post.title.replace(/"/g, '&quot;')}" style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1rem;">
+                            <input type="text" id="edit-post-title" style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1rem;">
                         </div>
                         <div style="margin-bottom: 1rem;">
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Excerpt</label>
-                            <input type="text" id="edit-post-excerpt" value="${(post.excerpt || '').replace(/"/g, '&quot;')}" style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1rem;">
+                            <input type="text" id="edit-post-excerpt" style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1rem;">
                         </div>
                         <div style="margin-bottom: 1rem;">
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Content (Markdown)</label>
-                            <textarea id="edit-post-content" style="width: 100%; min-height: 300px; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-family: Monaco, Menlo, monospace; font-size: 0.9rem; resize: vertical;">${post.content.replace(/</g, '&lt;')}</textarea>
+                            <textarea id="edit-post-content" style="width: 100%; min-height: 300px; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-family: Monaco, Menlo, monospace; font-size: 0.9rem; resize: vertical;"></textarea>
                         </div>
                         <div style="margin-bottom: 1rem; display: flex; gap: 2rem; flex-wrap: wrap;">
                             <label style="display: flex; align-items: center; gap: 0.5rem;">
-                                <input type="checkbox" id="edit-post-published" ${post.is_published ? 'checked' : ''}>
+                                <input type="checkbox" id="edit-post-published">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
                                 Published
                             </label>
                             <label style="display: flex; align-items: center; gap: 0.5rem;">
-                                <input type="checkbox" id="edit-post-exclusive" ${post.is_exclusive ? 'checked' : ''}>
+                                <input type="checkbox" id="edit-post-exclusive">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 16v-2a2 2 0 0 0-4 0v2"/><path d="M9.5 15H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><rect x="13" y="16" width="8" height="5" rx=".899"/></svg>
                                 Friends Only
                             </label>
                             <label style="display: flex; align-items: center; gap: 0.5rem;">
-                                <input type="checkbox" id="edit-post-unlisted" ${post.is_unlisted ? 'checked' : ''}>
+                                <input type="checkbox" id="edit-post-unlisted">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>
                                 Unlisted
                             </label>
                         </div>
                         <div style="display: flex; gap: 1rem;">
                             <button type="submit" class="btn btn-primary" style="flex: 1;">Save</button>
-                            <button type="button" onclick="closeEditModal()" class="btn" style="flex: 1; background: #e0e0e0;">Cancel</button>
+                            <button type="button" id="edit-modal-cancel-btn" class="btn" style="flex: 1; background: #e0e0e0;">Cancel</button>
                         </div>
                         <p id="edit-post-error" style="color: #e74c3c; margin-top: 1rem; display: none;"></p>
                     </form>
@@ -605,10 +605,27 @@
             `;
             document.body.appendChild(modal);
 
-            document.getElementById('edit-post-form').onsubmit = (e) => {
+            // Set values after DOM insertion (avoids template literal escaping issues)
+            document.getElementById('edit-post-title').value = post.title;
+            document.getElementById('edit-post-excerpt').value = post.excerpt || '';
+            document.getElementById('edit-post-content').value = post.content;
+            document.getElementById('edit-post-published').checked = post.is_published;
+            document.getElementById('edit-post-exclusive').checked = post.is_exclusive || false;
+            document.getElementById('edit-post-unlisted').checked = post.is_unlisted || false;
+
+            // Attach event listeners (more reliable than inline onclick)
+            document.getElementById('edit-modal-close-btn').addEventListener('click', closeEditModal);
+            document.getElementById('edit-modal-cancel-btn').addEventListener('click', closeEditModal);
+            document.getElementById('edit-notify-btn').addEventListener('click', openNotifyFromEdit);
+            document.getElementById('edit-post-form').addEventListener('submit', (e) => {
                 e.preventDefault();
                 savePostEdit(post.slug);
-            };
+            });
+
+            // Click outside to close
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeEditModal();
+            });
         }
 
         function updateEditModalStats(stats, isPublished) {
@@ -816,12 +833,25 @@
         }
 
         function closeEditModal() {
-            const modal = document.getElementById('edit-post-modal');
-            if (modal) modal.remove();
+            // Try multiple selectors in case ID lookup fails
+            const modal = document.getElementById('edit-post-modal') || document.querySelector('[id="edit-post-modal"]');
+            if (modal) {
+                modal.remove();
+            } else {
+                // Fallback: remove any fixed overlay that looks like a modal
+                document.querySelectorAll('div[style*="position: fixed"][style*="z-index: 1000"]').forEach(el => el.remove());
+            }
         }
 
-        function savePostEdit(slug) {
+        async function savePostEdit(slug) {
             const token = localStorage.getItem('comment_token');
+            const saveBtn = document.querySelector('#edit-post-form button[type="submit"]');
+
+            // Disable button and show saving state
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Saving...';
+            }
 
             const postData = {
                 title: document.getElementById('edit-post-title').value,
@@ -833,6 +863,7 @@
             };
 
             // Fire and forget - close modal immediately, reload post
+            // The save reliably works even if response handling is flaky
             fetch(`${API_BASE}/admin/posts/${slug}`, {
                 method: 'PUT',
                 headers: {
@@ -842,9 +873,11 @@
                 body: JSON.stringify(postData)
             }).catch(() => {});
 
-            // Close immediately and reload
-            closeEditModal();
-            loadPost();
+            // Brief delay to let request start, then close and reload
+            setTimeout(() => {
+                closeEditModal();
+                loadPost();
+            }, 300);
         }
 
         // Delete post

@@ -344,12 +344,18 @@ const wsScript = document.createElement('script');
 wsScript.src = '/js/websocket.js';
 document.head.appendChild(wsScript);
 
-// Load notification bell for all logged-in users
+// Load notification bell and messages for all logged-in users
 if (isUserLoggedIn()) {
     // Wait for WebSocket script to load first
     wsScript.onload = function() {
+        // Load notifications
         const notifScript = document.createElement('script');
         notifScript.src = '/js/notifications.js';
         document.head.appendChild(notifScript);
+
+        // Load messages
+        const messagesScript = document.createElement('script');
+        messagesScript.src = '/js/messages.js';
+        document.head.appendChild(messagesScript);
     };
 }

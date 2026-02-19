@@ -111,11 +111,29 @@
             background: var(--bg-tertiary, #1e1c21);
             border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
             border-radius: 8px;
+            gap: 1rem;
+        }
+
+        .post-item-thumb {
+            width: 60px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+            flex-shrink: 0;
+            background: var(--bg-secondary, #141316);
+        }
+
+        .post-item-info {
+            flex: 1;
+            min-width: 0;
         }
 
         .post-item-info h3 {
             margin: 0 0 0.25rem 0;
             font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .post-item-info .meta {
@@ -630,6 +648,16 @@
                         <div class="form-group">
                             <label for="post-excerpt">Excerpt (short description)</label>
                             <input type="text" id="post-excerpt" placeholder="A brief description of the post...">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="post-featured-image">Featured Image URL <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">— optional thumbnail</span></label>
+                            <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                                <input type="text" id="post-featured-image" placeholder="https://..." style="flex: 1;" oninput="updateFeaturedImagePreview()">
+                                <div id="featured-image-preview" style="flex-shrink: 0; min-width: 80px;">
+                                    <span style="color: var(--text-muted, #8a857c); font-size: 0.85rem;">No image set</span>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="form-group" style="margin-bottom: 0;">

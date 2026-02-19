@@ -71,8 +71,11 @@ function renderPosts() {
     const visiblePosts = allPosts.slice(0, postsVisible);
     const hasMore = allPosts.length > postsVisible;
 
-    container.innerHTML = visiblePosts.map(post => `
+    container.innerHTML = visiblePosts.map(post => {
+        const thumbnailUrl = post.featured_image_url || '';
+        return `
         <div class="post-item">
+            ${thumbnailUrl ? `<img class="post-item-thumb" src="${thumbnailUrl}" alt="">` : ''}
             <div class="post-item-info">
                 <h3>${escapeHtml(post.title)}</h3>
                 <div class="meta">
@@ -88,7 +91,7 @@ function renderPosts() {
                 <a href="/blog/post.html?slug=${post.slug}" target="_blank" class="btn" ${!post.is_published ? 'style="opacity: 0.5;"' : ''}>View</a>
             </div>
         </div>
-    `).join('') + (hasMore ? `
+    `}).join('') + (hasMore ? `
         <button class="btn" onclick="showMorePosts()" style="width: 100%; margin-top: 0.5rem; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed);">
             Show more (${allPosts.length - postsVisible} remaining)
         </button>
@@ -155,6 +158,7 @@ function showEditor(slug = null) {
         adminToggle.set('exclusive', false);
         adminToggle.set('unlisted', false);
         document.getElementById('preview-content').innerHTML = '';
+        updateFeaturedImagePreview();
     }
 }
 
@@ -179,10 +183,12 @@ async function loadPost(slug) {
             document.getElementById('post-slug').value = post.slug;
             document.getElementById('post-title').value = post.title;
             document.getElementById('post-excerpt').value = post.excerpt || '';
+            document.getElementById('post-featured-image').value = post.featured_image_url || '';
             document.getElementById('post-content').value = post.content;
             adminToggle.set('published', post.is_published);
             adminToggle.set('exclusive', post.is_exclusive || false);
             adminToggle.set('unlisted', post.is_unlisted || false);
+            updateFeaturedImagePreview();
             updatePreview();
         }
     } catch (error) {
@@ -203,6 +209,7 @@ async function savePost(event) {
         slug: document.getElementById('post-slug').value,
         title: document.getElementById('post-title').value,
         excerpt: document.getElementById('post-excerpt').value,
+        featured_image_url: document.getElementById('post-featured-image').value,
         content: document.getElementById('post-content').value,
         is_published: adminToggle.get('published'),
         is_exclusive: adminToggle.get('exclusive'),
@@ -263,6 +270,20 @@ async function deletePost() {
 
 function editPost(slug) {
     showEditor(slug);
+}
+
+// Featured image preview
+function updateFeaturedImagePreview() {
+    const input = document.getElementById('post-featured-image');
+    const preview = document.getElementById('featured-image-preview');
+    if (!input || !preview) return;
+
+    const url = input.value.trim();
+    if (url) {
+        preview.innerHTML = `<img src="${url}" alt="Featured image preview" style="max-width: 120px; max-height: 80px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-default, rgba(255,255,255,0.1));">`;
+    } else {
+        preview.innerHTML = '<span style="color: var(--text-muted, #8a857c); font-size: 0.85rem;">No image set</span>';
+    }
 }
 
 // Preview functionality

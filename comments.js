@@ -181,21 +181,16 @@ function renderComments(comments) {
         return;
     }
 
+    // Pre-populate userLikedComments from the liked_by_me field in comments
+    userLikedComments.clear();
+    function collectLikes(c) {
+        if (c.liked_by_me) userLikedComments.add(c.id);
+        if (c.replies) c.replies.forEach(collectLikes);
+    }
+    comments.forEach(collectLikes);
+
     const html = comments.map(comment => renderSingleComment(comment, user, false)).join('');
     container.innerHTML = html;
-
-    // Collect all comment IDs (including replies) for like status
-    const allIds = [];
-    function collectIds(c) {
-        allIds.push(c.id);
-        if (c.replies) c.replies.forEach(collectIds);
-    }
-    comments.forEach(collectIds);
-
-    // Load user's likes if logged in
-    if (user) {
-        loadUserLikes(allIds);
-    }
 }
 
 // Show reply form

@@ -20,6 +20,15 @@ function isAdminLoggedIn() {
     return false;
 }
 
+function isUserLoggedIn() {
+    try {
+        const token = localStorage.getItem('comment_token');
+        const user = localStorage.getItem('comment_user');
+        return !!(token && user);
+    } catch (e) {}
+    return false;
+}
+
 // Cache for site owner profile
 let siteOwnerProfile = null;
 
@@ -335,8 +344,8 @@ const wsScript = document.createElement('script');
 wsScript.src = '/js/websocket.js';
 document.head.appendChild(wsScript);
 
-// Load notification bell for admin users
-if (isAdminLoggedIn()) {
+// Load notification bell for all logged-in users
+if (isUserLoggedIn()) {
     // Wait for WebSocket script to load first
     wsScript.onload = function() {
         const notifScript = document.createElement('script');

@@ -1,6 +1,6 @@
 /**
- * Admin Notification Bell Component
- * Shows notification bell in top-right corner for admin users
+ * Notification Bell Component
+ * Shows notification bell in top-right corner for all logged-in users
  */
 
 (function() {
@@ -9,15 +9,13 @@
     let notificationDropdownOpen = false;
 
     /**
-     * Check if admin is logged in
+     * Check if user is logged in
      */
-    function isAdminUser() {
+    function isUserLoggedIn() {
         try {
+            const token = localStorage.getItem('comment_token');
             const user = localStorage.getItem('comment_user');
-            if (user) {
-                const userData = JSON.parse(user);
-                return userData.is_admin === true;
-            }
+            return !!(token && user);
         } catch (e) {}
         return false;
     }
@@ -56,8 +54,8 @@
      * Initialize the notification component
      */
     function initNotifications() {
-        // Only show for admin users
-        if (!isAdminUser()) return;
+        // Only show for logged-in users
+        if (!isUserLoggedIn()) return;
 
         // Create and inject the notification bell
         createNotificationBell();

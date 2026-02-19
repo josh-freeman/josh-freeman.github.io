@@ -173,7 +173,7 @@ function renderInvites() {
                     </div>
                 </div>
                 <div class="post-item-actions">
-                    ${!invite.used && !expired ? `<button class="btn" onclick="sendInviteReminder(${invite.id}, '${escapeHtml(invite.email)}')" style="background: var(--info, #7da8c9); color: var(--bg-primary, #0c0b0d);">Remind</button>` : ''}
+                    ${!invite.used && !expired ? `<button class="btn" onclick="sendInviteReminder(${invite.id}, '${escapeHtml(invite.email)}', ${invite.reminder_count || 0})" style="background: var(--info, #7da8c9); color: var(--bg-primary, #0c0b0d);">${(invite.reminder_count || 0) > 0 ? `Remind (${invite.reminder_count})` : 'Remind'}</button>` : ''}
                     ${!invite.used && !expired ? `<button class="btn" onclick="copyInviteLinkById('${invite.token}')">Copy Link</button>` : ''}
                     <button class="btn" onclick="deleteInvite(${invite.id})" style="background: var(--error, #d4726a); color: var(--bg-primary, #0c0b0d);">Delete</button>
                 </div>
@@ -228,7 +228,15 @@ async function cleanupInvites() {
 }
 
 // Send reminder email for pending invite
-async function sendInviteReminder(inviteId, email) {
+async function sendInviteReminder(inviteId, email, reminderCount = 0) {
+    // Show confirmation if already reminded
+    if (reminderCount > 0) {
+        const timesWord = reminderCount === 1 ? 'time' : 'times';
+        if (!confirm(`This invite has already been reminded ${reminderCount} ${timesWord}. Send another reminder to ${email}?`)) {
+            return;
+        }
+    }
+
     const token = localStorage.getItem('comment_token');
 
     try {
@@ -239,6 +247,7 @@ async function sendInviteReminder(inviteId, email) {
 
         if (response.ok) {
             showToast(`Reminder sent to ${email}`, 'success');
+            loadInvites(); // Refresh to update reminder count
         } else {
             const error = await response.json();
             showToast(error.detail || 'Failed to send reminder', 'error');

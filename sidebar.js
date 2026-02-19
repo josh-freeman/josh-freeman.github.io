@@ -35,7 +35,7 @@ async function fetchSiteOwnerProfile() {
 
 function loadNavbarDiv() {
     const adminLink = isAdminLoggedIn()
-        ? '<submenu><a href="https://joshfreeman.me/admin.html">Admin Console</a></submenu>'
+        ? '<submenu><a href="/admin.html">Admin Console</a></submenu>'
         : '';
 
     const editProfileBtn = isAdminLoggedIn()

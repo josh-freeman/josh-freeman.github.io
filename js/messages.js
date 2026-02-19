@@ -126,8 +126,8 @@
                 </div>
                 <div id="messages-input-area" class="messages-input-area" style="display: none;">
                     <input type="text" id="message-input" class="message-input" placeholder="Write a message..." maxlength="2000" />
-                    <button id="send-message-btn" class="send-message-btn" onclick="window.MessagesComponent.sendMessage(event)">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <button id="send-message-btn" class="send-message-btn" type="button">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/>
                             <path d="m21.854 2.147-10.94 10.939"/>
                         </svg>
@@ -144,15 +144,26 @@
             document.body.appendChild(container);
         }
 
-        // Handle enter key in input
+        // Handle enter key and send button
         setTimeout(() => {
             const input = document.getElementById('message-input');
+            const sendBtn = document.getElementById('send-message-btn');
+
             if (input) {
                 input.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
-                        window.MessagesComponent.sendMessage(e);
+                        sendMessage(e);
                     }
+                });
+            }
+
+            if (sendBtn) {
+                // Use both click and touchend for mobile reliability
+                sendBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    sendMessage(e);
                 });
             }
         }, 100);

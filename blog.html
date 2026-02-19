@@ -108,6 +108,11 @@
                         if (post.is_exclusive) badges.push('<span class="exclusive-badge">Friends</span>');
                         const badgeHtml = badges.length ? ' ' + badges.join(' ') : '';
 
+                        // Only show date for published posts
+                        const dateHtml = post.is_published
+                            ? `<time datetime="${post.created_at.split('T')[0]}">${formatDate(post.created_at)}</time>`
+                            : '';
+
                         return `
                         <article class="post-preview ${post.thumbnail_url ? 'has-thumbnail' : ''} ${!post.is_published ? 'is-draft' : ''}">
                             ${isAdmin ? `<a href="/admin.html#edit/${post.slug}" class="post-edit-btn">Edit</a>` : ''}
@@ -119,7 +124,7 @@
                             <div class="post-content">
                                 <a href="/blog/post.html?slug=${post.slug}">
                                     <h2>${escapeHtml(post.title)}${badgeHtml}</h2>
-                                    <time datetime="${post.created_at.split('T')[0]}">${formatDate(post.created_at)}</time>
+                                    ${dateHtml}
                                     <p>${escapeHtml(post.excerpt || '')}</p>
                                     <span class="read-more">Read more &rarr;</span>
                                 </a>

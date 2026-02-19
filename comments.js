@@ -196,6 +196,21 @@ const HEART_FILLED = `<svg class="comment-heart-icon active" width="16" height="
                 color: var(--text-muted, #8a857c);
                 font-style: italic;
             }
+
+            /* Highlighted comment (when navigating from email link) */
+            .comment.highlight {
+                animation: comment-highlight 3s ease-out;
+            }
+            @keyframes comment-highlight {
+                0% {
+                    background: var(--accent-primary-glow, rgba(229, 165, 75, 0.3));
+                    box-shadow: 0 0 0 4px var(--accent-primary-glow, rgba(229, 165, 75, 0.2));
+                }
+                100% {
+                    background: transparent;
+                    box-shadow: none;
+                }
+            }
         `;
         document.head.appendChild(style);
     }
@@ -237,7 +252,7 @@ function renderSingleComment(comment, user, isReply = false) {
     const canReply = user && !isReply; // Only top-level comments can have replies
 
     return `
-        <div class="comment" data-id="${comment.id}">
+        <div class="comment" id="comment-${comment.id}" data-id="${comment.id}">
             <div class="comment-header">
                 <a href="/profile.html?id=${comment.author_id}" class="comment-author">${escapeHtml(comment.author_name)}</a>
                 <span class="comment-date">${formatDate(comment.created_at)}</span>
@@ -535,6 +550,7 @@ async function loadComments() {
         if (response.ok) {
             const comments = await response.json();
             renderComments(comments);
+            highlightLinkedComment();
         } else {
             document.getElementById('comments-container').innerHTML =
                 '<p class="no-comments">No comments yet. Be the first to comment!</p>';
@@ -1132,15 +1148,33 @@ function selectMention(user) {
 window.initCommentsWithData = function(comments) {
     renderComments(comments);
     updateCommentForm();
+    highlightLinkedComment();
 };
+
+// Scroll to and highlight a comment if linked via hash (e.g., #comment-123)
+function highlightLinkedComment() {
+    const hash = window.location.hash;
+    if (hash && hash.startsWith('#comment-')) {
+        const commentEl = document.querySelector(hash);
+        if (commentEl) {
+            // Scroll to the comment with some offset
+            setTimeout(() => {
+                commentEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Add highlight animation
+                commentEl.classList.add('highlight');
+            }, 100);
+        }
+    }
+}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     // Check if comments were pre-loaded (e.g., from /posts/{slug}/full endpoint)
     if (window.PRELOADED_COMMENTS) {
         renderComments(window.PRELOADED_COMMENTS);
+        highlightLinkedComment();
     } else {
-        loadComments();
+        loadComments(); // This calls highlightLinkedComment after rendering
     }
     updateCommentForm();
 });

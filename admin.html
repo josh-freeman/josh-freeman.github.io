@@ -767,8 +767,12 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
                         <h3 style="margin: 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">Invite History</h3>
                         <div style="display: flex; gap: 1rem; align-items: center;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem;">
-                                <input type="checkbox" id="filter-inactive-invites" onchange="filterInvites()">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem;" onclick="toggleCustomCheckbox('filter-inactive-invites', filterInvites)">
+                                <input type="checkbox" id="filter-inactive-invites" style="display: none;">
+                                <span class="custom-checkbox" data-for="filter-inactive-invites">
+                                    <svg class="unchecked" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                                    <svg class="checked" style="display:none;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary, #e5a54b)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>
+                                </span>
                                 <span>Show used/expired</span>
                             </label>
                             <button id="cleanup-invites-btn" class="btn" onclick="cleanupInvites()" style="display: none; background: #fee2e2; color: #dc2626; font-size: 0.85rem; padding: 0.4rem 0.8rem;">
@@ -797,8 +801,12 @@
                     </div>
 
                     <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" id="filter-orphaned" onchange="filterImages()">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;" onclick="toggleCustomCheckbox('filter-orphaned', filterImages)">
+                            <input type="checkbox" id="filter-orphaned" style="display: none;">
+                            <span class="custom-checkbox" data-for="filter-orphaned">
+                                <svg class="unchecked" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                                <svg class="checked" style="display:none;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary, #e5a54b)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>
+                            </span>
                             <span>Show only unused images</span>
                         </label>
                     </div>
@@ -832,6 +840,30 @@
     <script>
         // Create toggle manager for post editor
         const adminToggle = createToggleManager('admin-toggle', 'post');
+
+        // Custom checkbox toggle function
+        function toggleCustomCheckbox(inputId, callback) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            input.checked = !input.checked;
+            updateCustomCheckboxVisual(inputId);
+            if (callback) callback();
+        }
+
+        function updateCustomCheckboxVisual(inputId) {
+            const input = document.getElementById(inputId);
+            const container = document.querySelector(`.custom-checkbox[data-for="${inputId}"]`);
+            if (!input || !container) return;
+            const unchecked = container.querySelector('.unchecked');
+            const checked = container.querySelector('.checked');
+            if (input.checked) {
+                unchecked.style.display = 'none';
+                checked.style.display = 'block';
+            } else {
+                unchecked.style.display = 'block';
+                checked.style.display = 'none';
+            }
+        }
     </script>
 </body>
 </html>

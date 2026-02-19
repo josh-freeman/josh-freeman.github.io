@@ -213,8 +213,12 @@ function showReplyForm(parentId, parentAuthorName) {
 
     // Admin can notify the parent comment author
     const notifyOption = isAdmin ? `
-        <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary, #c2bdb4); cursor: pointer;">
-            <input type="checkbox" id="reply-notify-${parentId}" style="accent-color: var(--accent-primary, #e5a54b);">
+        <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary, #c2bdb4); cursor: pointer;" onclick="toggleReplyNotify(${parentId})">
+            <input type="checkbox" id="reply-notify-${parentId}" style="display: none;">
+            <span class="custom-checkbox-reply">
+                <svg class="unchecked" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                <svg class="checked" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary, #e5a54b)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>
+            </span>
             <span>Email notify <strong>${escapeHtml(parentAuthorName || 'author')}</strong></span>
         </label>
     ` : '';
@@ -237,6 +241,22 @@ function showReplyForm(parentId, parentAuthorName) {
 function hideReplyForm(parentId) {
     const container = document.getElementById(`reply-form-${parentId}`);
     if (container) container.innerHTML = '';
+}
+
+// Toggle reply notify checkbox
+function toggleReplyNotify(parentId) {
+    const input = document.getElementById(`reply-notify-${parentId}`);
+    if (!input) return;
+    input.checked = !input.checked;
+    const label = input.closest('label');
+    if (label) {
+        const unchecked = label.querySelector('.unchecked');
+        const checked = label.querySelector('.checked');
+        if (unchecked && checked) {
+            unchecked.style.display = input.checked ? 'none' : '';
+            checked.style.display = input.checked ? '' : 'none';
+        }
+    }
 }
 
 // Submit reply (with loading guard per parent)

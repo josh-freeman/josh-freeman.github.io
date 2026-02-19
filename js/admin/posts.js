@@ -373,10 +373,15 @@ function renderNotifyModal(postTitle) {
         if (user.viewed) statusBadges.push('<span style="background: rgba(126, 184, 168, 0.2); color: var(--success, #7eb8a8); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">viewed</span>');
         if (user.notified) statusBadges.push('<span style="background: rgba(125, 168, 201, 0.2); color: var(--info, #7da8c9); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">notified</span>');
 
+        const isChecked = !user.viewed && !user.notified;
         userListHtml += `
-            <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; cursor: pointer;">
-                <input type="checkbox" name="notify-user" value="${user.id}" ${!user.viewed && !user.notified ? 'checked' : ''}>
-                <span style="flex: 1;">${escapeHtml(user.name)}</span>
+            <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; cursor: pointer;" onclick="toggleNotifyUserCheckbox(this)">
+                <input type="checkbox" name="notify-user" value="${user.id}" ${isChecked ? 'checked' : ''} style="display: none;">
+                <span class="custom-checkbox-notify">
+                    <svg class="unchecked" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${isChecked ? 'display:none' : ''}"><circle cx="12" cy="12" r="10"/></svg>
+                    <svg class="checked" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary, #e5a54b)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${isChecked ? '' : 'display:none'}"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>
+                </span>
+                <span style="flex: 1; color: var(--text-primary, #f5f2ed);">${escapeHtml(user.name)}</span>
                 ${statusBadges.join(' ')}
             </label>
         `;
@@ -441,9 +446,38 @@ function renderNotifyModal(postTitle) {
     `;
 }
 
+function toggleNotifyUserCheckbox(label) {
+    const input = label.querySelector('input[type="checkbox"]');
+    const unchecked = label.querySelector('.unchecked');
+    const checked = label.querySelector('.checked');
+    if (input) {
+        input.checked = !input.checked;
+        if (unchecked && checked) {
+            unchecked.style.display = input.checked ? 'none' : '';
+            checked.style.display = input.checked ? '' : 'none';
+        }
+    }
+}
+
+function updateNotifyUserCheckboxVisuals() {
+    const checkboxes = document.querySelectorAll('input[name="notify-user"]');
+    checkboxes.forEach(cb => {
+        const label = cb.closest('label');
+        if (label) {
+            const unchecked = label.querySelector('.unchecked');
+            const checked = label.querySelector('.checked');
+            if (unchecked && checked) {
+                unchecked.style.display = cb.checked ? 'none' : '';
+                checked.style.display = cb.checked ? '' : 'none';
+            }
+        }
+    });
+}
+
 function selectAllNotifyUsers(select) {
     const checkboxes = document.querySelectorAll('input[name="notify-user"]');
     checkboxes.forEach(cb => cb.checked = select);
+    updateNotifyUserCheckboxVisuals();
 }
 
 async function sendSmartNotify() {

@@ -477,6 +477,19 @@
     color: var(--text-secondary, #c2bdb4);
     transition: all 0.2s ease;
     position: relative;
+    /* Override button base styles */
+    padding: 0;
+    overflow: visible;
+}
+
+.notification-bell svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+}
+
+.notification-bell::before {
+    display: none;
 }
 
 .notification-bell:hover {

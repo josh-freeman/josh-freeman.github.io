@@ -779,6 +779,32 @@
     background: var(--bg-tertiary, #1e1c21);
 }
 
+#messages-panel-title {
+    flex: 1;
+}
+
+.messages-delete-btn {
+    background: none;
+    border: none;
+    padding: 0.35rem;
+    margin: -0.25rem;
+    margin-left: auto;
+    cursor: pointer;
+    color: var(--text-muted, #8a857c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.messages-delete-btn:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
 .messages-content {
     flex: 1;
     overflow-y: auto;

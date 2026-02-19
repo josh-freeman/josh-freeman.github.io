@@ -1,7 +1,8 @@
 // Sidebar Navigation Component
-// Set API_BASE on window if not already set (api.js may also set this)
+// Set API_BASE - auto-detect local dev
 if (typeof window.API_BASE === 'undefined') {
-    window.API_BASE = 'https://api.joshfreeman.me';
+    const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    window.API_BASE = isLocalDev ? 'http://localhost:8080' : 'https://api.joshfreeman.me';
 }
 
 function isAdminLoggedIn() {

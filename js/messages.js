@@ -511,10 +511,16 @@
     }
 
     /**
-     * Format timestamp
+     * Format timestamp (backend sends UTC without 'Z', so we add it)
      */
     function formatTime(dateString) {
-        const date = new Date(dateString);
+        // Ensure the date is parsed as UTC by appending 'Z' if missing
+        let isoString = dateString;
+        if (!dateString.endsWith('Z') && !dateString.includes('+')) {
+            isoString = dateString + 'Z';
+        }
+
+        const date = new Date(isoString);
         const now = new Date();
         const diff = now - date;
 

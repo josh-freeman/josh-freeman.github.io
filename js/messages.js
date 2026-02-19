@@ -268,7 +268,10 @@
 
             content.innerHTML = data.conversations.map(conv => `
                 <div class="conversation-item ${conv.unread_count > 0 ? 'has-unread' : ''}"
-                     onclick="window.MessagesComponent.openConversation('${conv.user_id}', '${escapeHtml(conv.user_name)}')">
+                     data-user-id="${conv.user_id}"
+                     data-user-name="${escapeAttr(conv.user_name)}"
+                     role="button"
+                     tabindex="0">
                     <div class="conversation-avatar">
                         ${conv.user_profile_picture
                             ? `<img src="${conv.user_profile_picture}" alt="" />`
@@ -285,6 +288,9 @@
                     }
                 </div>
             `).join('');
+
+            // Attach click handlers via event delegation
+            attachConversationListeners();
         } catch (e) {
             content.innerHTML = '<div class="messages-error">Failed to load messages</div>';
         }
@@ -516,6 +522,51 @@
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    /**
+     * Escape for HTML attributes
+     */
+    function escapeAttr(text) {
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    /**
+     * Attach click listeners to conversation items (event delegation)
+     */
+    function attachConversationListeners() {
+        const content = document.getElementById('messages-content');
+        if (!content) return;
+
+        content.addEventListener('click', handleConversationClick);
+        content.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                handleConversationClick(e);
+            }
+        });
+    }
+
+    /**
+     * Handle click on conversation item
+     */
+    function handleConversationClick(e) {
+        const item = e.target.closest('.conversation-item');
+        if (!item) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const userId = item.dataset.userId;
+        const userName = item.dataset.userName;
+
+        if (userId && userName) {
+            openConversation(userId, userName);
+        }
     }
 
     // Initialize when DOM is ready

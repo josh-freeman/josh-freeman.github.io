@@ -856,7 +856,7 @@
 
                         <div class="form-group">
                             <label for="post-slug">Slug (URL path) <span id="slug-auto-badge" style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">— auto-generated</span></label>
-                            <input type="text" id="post-slug" pattern="[-a-z0-9]+" placeholder="my-post-title" required oninput="markSlugManual()">
+                            <input type="text" id="post-slug" pattern="[a-z0-9]+([a-z0-9-]*[a-z0-9])?" placeholder="my-post-title" required oninput="markSlugManual()">
                         </div>
 
                         <div class="form-group">
@@ -1050,7 +1050,7 @@
                         <div id="images-stats" style="font-size: 0.9rem; color: var(--text-muted);"></div>
                     </div>
 
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center; flex-wrap: wrap;">
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;" onclick="toggleCustomCheckbox('filter-orphaned', filterImages)">
                             <input type="checkbox" id="filter-orphaned" style="display: none;">
                             <span class="custom-checkbox" data-for="filter-orphaned">
@@ -1059,6 +1059,9 @@
                             </span>
                             <span>Show only unused images</span>
                         </label>
+                        <button class="btn" onclick="deleteAllUnusedImages()" style="margin-left: auto; background: var(--error, #d4726a); color: white; font-size: 0.85rem; padding: 0.4rem 0.8rem;">
+                            Delete all unused
+                        </button>
                     </div>
 
                     <div id="images-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem;">

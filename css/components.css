@@ -805,6 +805,88 @@
     background: rgba(239, 68, 68, 0.1);
 }
 
+.messages-compose-btn {
+    background: none;
+    border: none;
+    padding: 0.35rem;
+    margin: -0.25rem;
+    margin-left: auto;
+    cursor: pointer;
+    color: var(--text-muted, #8a857c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.messages-compose-btn:hover {
+    color: var(--accent-primary, #e5a54b);
+    background: rgba(229, 165, 75, 0.1);
+}
+
+/* User Search */
+.messages-search-container {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    height: 100%;
+}
+
+.user-search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--bg-secondary, #151418);
+    border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
+    border-radius: 8px;
+    color: var(--text-primary, #f5f2ed);
+    font-size: 0.875rem;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.user-search-input:focus {
+    border-color: var(--accent-primary, #e5a54b);
+}
+
+.user-search-results {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.user-search-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    -webkit-tap-highlight-color: rgba(229, 165, 75, 0.2);
+    touch-action: manipulation;
+}
+
+.user-search-item:hover,
+.user-search-item:focus {
+    background: var(--bg-tertiary, #1e1c21);
+    outline: none;
+}
+
+.user-search-name {
+    font-size: 0.9rem;
+    color: var(--text-primary, #f5f2ed);
+}
+
+.search-hint {
+    padding: 1rem;
+    text-align: center;
+    color: var(--text-muted, #8a857c);
+    font-size: 0.85rem;
+}
+
 .messages-content {
     flex: 1;
     overflow-y: auto;

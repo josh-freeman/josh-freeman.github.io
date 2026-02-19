@@ -114,12 +114,18 @@
             </button>
             <div id="messages-panel" class="messages-panel" style="display: none;">
                 <div class="messages-panel-header">
-                    <button id="messages-back-btn" class="messages-back-btn" style="display: none;" onclick="window.MessagesComponent.showConversationList(event)">
+                    <button id="messages-back-btn" class="messages-back-btn" style="display: none;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m15 18-6-6 6-6"/>
                         </svg>
                     </button>
                     <span id="messages-panel-title">Messages</span>
+                    <button id="messages-compose-btn" class="messages-compose-btn" style="display: none;" title="New conversation">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9"/>
+                            <path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>
+                        </svg>
+                    </button>
                     <button id="messages-delete-btn" class="messages-delete-btn" style="display: none;" title="Delete conversation">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 6h18"/>
@@ -182,6 +188,24 @@
                     e.preventDefault();
                     e.stopPropagation();
                     deleteConversation();
+                });
+            }
+
+            const composeBtn = document.getElementById('messages-compose-btn');
+            if (composeBtn) {
+                composeBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    showUserSearch();
+                });
+            }
+
+            const backBtn = document.getElementById('messages-back-btn');
+            if (backBtn) {
+                backBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    showConversationList();
                 });
             }
         }, 100);
@@ -265,11 +289,13 @@
         const inputArea = document.getElementById('messages-input-area');
         const backBtn = document.getElementById('messages-back-btn');
         const deleteBtn = document.getElementById('messages-delete-btn');
+        const composeBtn = document.getElementById('messages-compose-btn');
         const title = document.getElementById('messages-panel-title');
 
         inputArea.style.display = 'none';
         backBtn.style.display = 'none';
         deleteBtn.style.display = 'none';
+        composeBtn.style.display = isAdmin ? 'flex' : 'none';
         title.textContent = 'Messages';
         content.innerHTML = '<div class="messages-loading">Loading...</div>';
 
@@ -394,11 +420,13 @@
         const inputArea = document.getElementById('messages-input-area');
         const backBtn = document.getElementById('messages-back-btn');
         const deleteBtn = document.getElementById('messages-delete-btn');
+        const composeBtn = document.getElementById('messages-compose-btn');
         const title = document.getElementById('messages-panel-title');
 
         title.textContent = userName;
         backBtn.style.display = isAdmin ? 'flex' : 'none';
         deleteBtn.style.display = isAdmin ? 'flex' : 'none';
+        composeBtn.style.display = 'none';
         inputArea.style.display = 'flex';
         content.innerHTML = '<div class="messages-loading">Loading...</div>';
 
@@ -550,6 +578,102 @@
         } catch (e) {
             console.error('Failed to delete conversation:', e);
             alert('Failed to delete conversation');
+        }
+    }
+
+    /**
+     * Show user search UI (admin only)
+     */
+    function showUserSearch() {
+        if (!isAdmin) return;
+
+        const content = document.getElementById('messages-content');
+        const inputArea = document.getElementById('messages-input-area');
+        const backBtn = document.getElementById('messages-back-btn');
+        const deleteBtn = document.getElementById('messages-delete-btn');
+        const composeBtn = document.getElementById('messages-compose-btn');
+        const title = document.getElementById('messages-panel-title');
+
+        title.textContent = 'New Message';
+        backBtn.style.display = 'flex';
+        deleteBtn.style.display = 'none';
+        composeBtn.style.display = 'none';
+        inputArea.style.display = 'none';
+
+        content.innerHTML = `
+            <div class="messages-search-container">
+                <input type="text"
+                       id="user-search-input"
+                       class="user-search-input"
+                       placeholder="Search users..."
+                       autocomplete="off" />
+                <div id="user-search-results" class="user-search-results"></div>
+            </div>
+        `;
+
+        // Focus and attach search listener
+        setTimeout(() => {
+            const searchInput = document.getElementById('user-search-input');
+            if (searchInput) {
+                searchInput.focus();
+                let debounceTimer;
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => searchUsers(this.value), 300);
+                });
+            }
+        }, 100);
+    }
+
+    /**
+     * Search users by name
+     */
+    async function searchUsers(query) {
+        const resultsContainer = document.getElementById('user-search-results');
+        if (!resultsContainer) return;
+
+        if (!query.trim()) {
+            resultsContainer.innerHTML = '<div class="search-hint">Type to search users</div>';
+            return;
+        }
+
+        resultsContainer.innerHTML = '<div class="messages-loading">Searching...</div>';
+
+        try {
+            const data = await fetchWithAuth(`/users/search?q=${encodeURIComponent(query)}`);
+
+            if (data.length === 0) {
+                resultsContainer.innerHTML = '<div class="search-hint">No users found</div>';
+                return;
+            }
+
+            resultsContainer.innerHTML = data.map(user => `
+                <div class="user-search-item"
+                     data-user-id="${user.id}"
+                     data-user-name="${escapeAttr(user.name)}"
+                     role="button"
+                     tabindex="0">
+                    <div class="conversation-avatar">
+                        <span>${user.name.charAt(0).toUpperCase()}</span>
+                    </div>
+                    <div class="user-search-name">${escapeHtml(user.name)}</div>
+                </div>
+            `).join('');
+
+            // Attach click handlers
+            resultsContainer.querySelectorAll('.user-search-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const userId = this.dataset.userId;
+                    const userName = this.dataset.userName;
+                    if (userId && userName) {
+                        openConversation(userId, userName);
+                    }
+                });
+            });
+        } catch (e) {
+            console.error('Search failed:', e);
+            resultsContainer.innerHTML = '<div class="messages-error">Search failed</div>';
         }
     }
 

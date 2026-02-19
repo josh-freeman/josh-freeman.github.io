@@ -66,7 +66,6 @@
             ws = new WebSocket(url);
 
             ws.onopen = function() {
-                console.log('[WS] Connected');
                 isConnecting = false;
                 reconnectAttempts = 0;
 
@@ -89,7 +88,6 @@
             };
 
             ws.onclose = function(event) {
-                console.log('[WS] Disconnected:', event.code, event.reason);
                 isConnecting = false;
                 stopPingTimer();
                 emitEvent('disconnected', { code: event.code, reason: event.reason });
@@ -97,7 +95,6 @@
             };
 
             ws.onerror = function(error) {
-                console.error('[WS] Error:', error);
                 isConnecting = false;
             };
 
@@ -123,7 +120,7 @@
                 break;
 
             case 'subscribed':
-                console.log('[WS] Subscribed to post:', data.post_slug);
+                // Successfully subscribed to post
                 break;
 
             case 'pong':
@@ -155,7 +152,8 @@
                 break;
 
             default:
-                console.log('[WS] Unknown message type:', type, data);
+                // Unknown message type, ignore
+                break;
         }
     }
 
@@ -179,13 +177,11 @@
         }
 
         if (reconnectAttempts >= WS_MAX_RECONNECT_ATTEMPTS) {
-            console.log('[WS] Max reconnection attempts reached');
             return;
         }
 
         reconnectAttempts++;
         const delay = WS_RECONNECT_INTERVAL * Math.min(reconnectAttempts, 5);
-        console.log(`[WS] Reconnecting in ${delay}ms (attempt ${reconnectAttempts})`);
 
         reconnectTimer = setTimeout(connect, delay);
     }

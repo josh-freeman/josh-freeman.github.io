@@ -561,13 +561,13 @@
                         </div>
                         <div style="margin-bottom: 1rem;">
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary, #f5f2ed);">Content (Markdown)</label>
-                            <div class="md-editor-tabs">
-                                <button type="button" class="md-editor-tab active" onclick="showEditTab('write')">Write</button>
-                                <button type="button" class="md-editor-tab" onclick="showEditTab('preview')">Preview</button>
+                            <div class="md-editor-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <button type="button" class="md-editor-tab active" onclick="showEditTab('write')" style="padding: 0.5rem 1rem; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 6px; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed); cursor: pointer;">Write</button>
+                                <button type="button" class="md-editor-tab" onclick="showEditTab('preview')" style="padding: 0.5rem 1rem; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 6px; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed); cursor: pointer;">Preview</button>
                             </div>
                             <div class="md-editor-content">
-                                <textarea id="edit-post-content" style="width: 100%; min-height: 300px; padding: 0.75rem; font-family: Monaco, Menlo, monospace; font-size: 0.9rem; resize: vertical;"></textarea>
-                                <div id="edit-preview-content" class="md-editor-preview blog-content"></div>
+                                <textarea id="edit-post-content" style="width: 100%; min-height: 300px; padding: 0.75rem; font-family: Monaco, Menlo, monospace; font-size: 0.9rem; resize: vertical; background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px;"></textarea>
+                                <div id="edit-preview-content" class="md-editor-preview blog-content" style="background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; padding: 0.75rem; min-height: 300px;"></div>
                             </div>
                         </div>
                         <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -594,8 +594,8 @@
                             </button>
                         </div>
                         <div style="display: flex; gap: 1rem;">
-                            <button type="button" onclick="handleEditSave()" class="btn btn-primary" style="flex: 1;">Save</button>
-                            <button type="button" onclick="confirmCloseEditModal()" class="btn" style="flex: 1; background: #e0e0e0;">Cancel</button>
+                            <button type="button" onclick="handleEditSave()" class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); border: none;">Save</button>
+                            <button type="button" onclick="confirmCloseEditModal()" class="btn" style="flex: 1; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">Cancel</button>
                         </div>
                         <p id="edit-post-error" style="color: #e74c3c; margin-top: 1rem; display: none;"></p>
                     </form>
@@ -1038,15 +1038,19 @@
             if (!tabs.length || !textarea || !preview) return;
 
             tabs.forEach((t, i) => {
-                t.classList.toggle('active', (tab === 'write' && i === 0) || (tab === 'preview' && i === 1));
+                const isActive = (tab === 'write' && i === 0) || (tab === 'preview' && i === 1);
+                t.classList.toggle('active', isActive);
+                // Update active tab styling
+                t.style.background = isActive ? 'var(--accent-primary, #e5a54b)' : 'var(--bg-tertiary, #1e1c21)';
+                t.style.color = isActive ? 'var(--bg-primary, #0c0b0d)' : 'var(--text-primary, #f5f2ed)';
             });
 
             if (tab === 'write') {
                 textarea.style.display = 'block';
-                preview.classList.remove('active');
+                preview.style.display = 'none';
             } else {
                 textarea.style.display = 'none';
-                preview.classList.add('active');
+                preview.style.display = 'block';
                 // Render markdown preview
                 const content = textarea.value;
                 preview.innerHTML = marked.parse(content);

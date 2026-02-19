@@ -1347,6 +1347,7 @@
         let cropperInstance = null;
         let currentAspect = 'square'; // 'square' or 'wide'
         let targetThumbnailType = 'square'; // Which thumbnail we're setting
+        let currentImageFile = null; // Store original file for GIF processing
 
         function openThumbnailCropper(type = 'square') {
             targetThumbnailType = type;
@@ -1380,6 +1381,7 @@
             resetBtn.style.display = 'none';
             aspectTabs.style.display = 'none';
             fileInput.value = '';
+            currentImageFile = null;
 
             if (cropperInstance) {
                 cropperInstance.destroy();
@@ -1446,6 +1448,9 @@
                 return;
             }
 
+            // Store original file for GIF processing
+            currentImageFile = file;
+
             const reader = new FileReader();
             reader.onload = (e) => initCropper(e.target.result, file.type);
             reader.readAsDataURL(file);
@@ -1495,45 +1500,78 @@
             const status = document.getElementById('cropper-status');
             const image = document.getElementById('cropper-image');
             const mimeType = image.dataset.mimeType || 'image/jpeg';
+            const isGif = mimeType === 'image/gif';
+            const isSquare = currentAspect === 'square';
 
             saveBtn.disabled = true;
             status.style.display = 'flex';
 
             try {
-                // Get cropped canvas with appropriate dimensions
-                const isSquare = currentAspect === 'square';
-                const canvas = cropperInstance.getCroppedCanvas({
-                    width: isSquare ? 400 : 600,
-                    height: isSquare ? 400 : 400,
-                    imageSmoothingEnabled: true,
-                    imageSmoothingQuality: 'high',
-                });
-
-                // Convert to blob
-                const blob = await new Promise(resolve => {
-                    const outputType = mimeType === 'image/gif' ? 'image/gif' : 'image/jpeg';
-                    canvas.toBlob(resolve, outputType, 0.9);
-                });
-
-                // Upload to R2
-                const formData = new FormData();
-                const ext = mimeType === 'image/gif' ? 'gif' : 'jpg';
-                const prefix = isSquare ? 'thumb-sq' : 'thumb-wide';
-                formData.append('file', blob, `${prefix}-${Date.now()}.${ext}`);
-
                 const token = localStorage.getItem('comment_token');
-                const response = await fetch(`${API_BASE}/admin/upload-image`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` },
-                    body: formData
-                });
+                let result;
 
-                if (!response.ok) {
-                    const err = await response.json();
-                    throw new Error(err.detail || 'Upload failed');
+                if (isGif && currentImageFile) {
+                    // For GIFs, use backend cropping to preserve animation
+                    const cropData = cropperInstance.getData();
+                    const imageData = cropperInstance.getImageData();
+
+                    // Convert crop coordinates to percentages
+                    const xPercent = (cropData.x / imageData.naturalWidth) * 100;
+                    const yPercent = (cropData.y / imageData.naturalHeight) * 100;
+                    const widthPercent = (cropData.width / imageData.naturalWidth) * 100;
+                    const heightPercent = (cropData.height / imageData.naturalHeight) * 100;
+
+                    const formData = new FormData();
+                    formData.append('file', currentImageFile);
+                    formData.append('x', xPercent);
+                    formData.append('y', yPercent);
+                    formData.append('width', widthPercent);
+                    formData.append('height', heightPercent);
+                    formData.append('output_width', isSquare ? 400 : 600);
+                    formData.append('output_height', isSquare ? 400 : 400);
+
+                    const response = await fetch(`${API_BASE}/admin/crop-gif`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` },
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.detail || 'GIF crop failed');
+                    }
+
+                    result = await response.json();
+                } else {
+                    // For non-GIFs, use canvas-based cropping
+                    const canvas = cropperInstance.getCroppedCanvas({
+                        width: isSquare ? 400 : 600,
+                        height: isSquare ? 400 : 400,
+                        imageSmoothingEnabled: true,
+                        imageSmoothingQuality: 'high',
+                    });
+
+                    const blob = await new Promise(resolve => {
+                        canvas.toBlob(resolve, 'image/jpeg', 0.9);
+                    });
+
+                    const formData = new FormData();
+                    const prefix = isSquare ? 'thumb-sq' : 'thumb-wide';
+                    formData.append('file', blob, `${prefix}-${Date.now()}.jpg`);
+
+                    const response = await fetch(`${API_BASE}/admin/upload-image`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` },
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.detail || 'Upload failed');
+                    }
+
+                    result = await response.json();
                 }
-
-                const result = await response.json();
 
                 // Set the appropriate thumbnail URL
                 if (targetThumbnailType === 'square') {

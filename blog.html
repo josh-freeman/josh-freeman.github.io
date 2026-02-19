@@ -113,6 +113,11 @@
                             ? `<time datetime="${post.created_at.split('T')[0]}">${formatDate(post.created_at)}</time>`
                             : '';
 
+                        // Comment count
+                        const commentHtml = post.comment_count > 0
+                            ? `<span class="comment-count">${post.comment_count} comment${post.comment_count !== 1 ? 's' : ''}</span>`
+                            : '';
+
                         return `
                         <article class="post-preview ${post.thumbnail_url ? 'has-thumbnail' : ''} ${!post.is_published ? 'is-draft' : ''}">
                             ${isAdmin ? `<a href="/admin.html#edit/${post.slug}" class="post-edit-btn">Edit</a>` : ''}
@@ -124,7 +129,7 @@
                             <div class="post-content">
                                 <a href="/blog/post.html?slug=${post.slug}">
                                     <h2>${escapeHtml(post.title)}${badgeHtml}</h2>
-                                    ${dateHtml}
+                                    <div class="post-meta-line">${dateHtml}${dateHtml && commentHtml ? '<span class="meta-separator"></span>' : ''}${commentHtml}</div>
                                     <p>${escapeHtml(post.excerpt || '')}</p>
                                     <span class="read-more">Read more &rarr;</span>
                                 </a>

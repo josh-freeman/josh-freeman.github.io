@@ -91,13 +91,19 @@
     color: var(--accent-primary);
 }
 
+.post-meta-line {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+}
+
 .post-preview time {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
     font-size: var(--text-sm);
     color: var(--text-muted);
-    margin-bottom: var(--space-2);
     font-family: var(--font-ui);
 }
 
@@ -107,6 +113,20 @@
     height: 4px;
     background: var(--accent-primary);
     border-radius: var(--radius-full);
+}
+
+.meta-separator {
+    width: 3px;
+    height: 3px;
+    background: var(--text-muted);
+    border-radius: var(--radius-full);
+    opacity: 0.5;
+}
+
+.comment-count {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    font-family: var(--font-ui);
 }
 
 .post-preview p {

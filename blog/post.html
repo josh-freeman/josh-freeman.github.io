@@ -1650,7 +1650,7 @@
                 if (token && depth < maxReactionDepth) {
                     reactToReaction(reactionId);
                 } else if (!token) {
-                    alert('Please log in to react');
+                    showFriendsOnlyModal('react');
                 } else {
                     alert('Maximum reaction depth reached');
                 }
@@ -1686,7 +1686,7 @@
 
             const token = localStorage.getItem('comment_token');
             if (!token) {
-                alert('Please log in to react');
+                showFriendsOnlyModal('react');
                 guard.end();
                 return;
             }
@@ -1707,7 +1707,7 @@
                     userReactionId = data.reaction_id;
                     loadReactionTree(); // Refresh the tree (this also updates the top count)
                 } else if (response.status === 401) {
-                    alert('Please log in to react');
+                    showFriendsOnlyModal('react');
                 } else if (response.status === 400) {
                     // Already reacted at top level
                     const err = await response.json();
@@ -1728,7 +1728,7 @@
 
             const token = localStorage.getItem('comment_token');
             if (!token) {
-                alert('Please log in to react');
+                showFriendsOnlyModal('react');
                 guard.end();
                 return;
             }

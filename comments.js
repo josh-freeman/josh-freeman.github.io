@@ -273,7 +273,7 @@ async function submitReply(parentId) {
     const slug = getPostSlug();
     const token = localStorage.getItem('comment_token');
     if (!token) {
-        alert('Please log in to reply');
+        showFriendsOnlyModal('reply');
         guard.end();
         return;
     }
@@ -343,7 +343,7 @@ async function toggleCommentLike(commentId) {
 
     const token = localStorage.getItem('comment_token');
     if (!token) {
-        alert('Please log in to like comments');
+        showFriendsOnlyModal('like');
         guard.end();
         return;
     }
@@ -368,7 +368,7 @@ async function toggleCommentLike(commentId) {
                 userLikedComments.delete(commentId);
             }
         } else if (response.status === 401) {
-            alert('Please log in to like comments');
+            showFriendsOnlyModal('like');
         }
     } catch (error) {
         console.log('Could not update like');

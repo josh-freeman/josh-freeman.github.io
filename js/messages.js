@@ -236,6 +236,10 @@
             messagesPanelOpen = false;
             currentConversation = null;
         } else {
+            // Close notification dropdown if open
+            if (window.closeNotificationDropdown) {
+                window.closeNotificationDropdown();
+            }
             panel.style.display = 'flex';
             messagesPanelOpen = true;
 
@@ -245,6 +249,18 @@
                 // Non-admin goes directly to chat with admin
                 openAdminChat();
             }
+        }
+    }
+
+    /**
+     * Close the messages panel (called externally)
+     */
+    function closePanel() {
+        const panel = document.getElementById('messages-panel');
+        if (panel && messagesPanelOpen) {
+            panel.style.display = 'none';
+            messagesPanelOpen = false;
+            currentConversation = null;
         }
     }
 
@@ -736,6 +752,7 @@
     // Export functions for global access
     window.MessagesComponent = {
         togglePanel,
+        closePanel,
         showConversationList,
         openConversation,
         sendMessage

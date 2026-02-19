@@ -151,10 +151,25 @@
         notificationDropdownOpen = !notificationDropdownOpen;
 
         if (notificationDropdownOpen) {
+            // Close messages panel if open
+            if (window.MessagesComponent && window.MessagesComponent.closePanel) {
+                window.MessagesComponent.closePanel();
+            }
             dropdown.style.display = 'block';
             fetchNotifications();
         } else {
             dropdown.style.display = 'none';
+        }
+    };
+
+    /**
+     * Close the notification dropdown (called externally)
+     */
+    window.closeNotificationDropdown = function() {
+        const dropdown = document.getElementById('notification-dropdown');
+        if (dropdown && notificationDropdownOpen) {
+            dropdown.style.display = 'none';
+            notificationDropdownOpen = false;
         }
     };
 

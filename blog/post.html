@@ -518,10 +518,17 @@
             // Fetch stats in background
             fetch(`${API_BASE}/admin/posts/${post.slug}/stats`, {
                 headers: { 'Authorization': `Bearer ${token}` }
-            }).then(r => r.ok ? r.json() : null).then(stats => {
+            }).then(r => {
+                if (!r.ok) throw new Error('Failed to load stats');
+                return r.json();
+            }).then(stats => {
                 editPostStats = stats;
                 if (stats) updateEditModalStats(stats, post.is_published);
-            }).catch(() => {});
+            }).catch(err => {
+                console.error('Failed to load post stats:', err);
+                const statsEl = document.getElementById('edit-view-stats');
+                if (statsEl) statsEl.innerHTML = '<span style="color: var(--error, #d4726a);">Failed to load stats</span>';
+            });
 
             modal.innerHTML = `
                 <div class="edit-modal-content" style="background: var(--bg-elevated, #262329); color: var(--text-primary, #f5f2ed); padding: 2rem; border-radius: 12px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));" onclick="event.stopPropagation()">
@@ -536,7 +543,7 @@
                             <div id="edit-view-stats" style="display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
                                 <span>Loading stats...</span>
                             </div>
-                            <button id="edit-notify-btn" style="display: none; background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500;">
+                            <button id="edit-notify-btn" onclick="openNotifyFromEdit()" style="display: none; background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500;">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.3rem;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                                 Notify Users
                             </button>
@@ -765,7 +772,10 @@
         }
 
         function openNotifyFromEdit() {
-            if (!editPostStats) return;
+            if (!editPostStats) {
+                alert('Stats not loaded yet. Please wait a moment and try again.');
+                return;
+            }
             const slug = getPostSlug();
             const postTitle = document.getElementById('edit-post-title')?.value || currentPost?.title || 'this post';
             showNotifyModal(slug, postTitle, editPostStats);

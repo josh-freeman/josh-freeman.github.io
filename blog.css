@@ -72,17 +72,22 @@
     text-decoration: none;
 }
 
-.post-preview h2 {
+.post-preview .post-content h2 {
     font-size: var(--text-xl);
     font-family: var(--font-display);
     margin-top: 0;
     margin-bottom: var(--space-1);
+    padding-left: 0;
     color: var(--text-primary);
     transition: color var(--transition-fast);
     line-height: var(--leading-snug);
 }
 
-.post-preview:hover h2 {
+.post-preview .post-content h2::before {
+    display: none;
+}
+
+.post-preview:hover .post-content h2 {
     color: var(--accent-primary);
 }
 
@@ -677,11 +682,7 @@ a.comment-author:hover {
         padding-left: var(--space-4);
     }
 
-    .post-preview h2 {
+    .post-preview .post-content h2 {
         font-size: var(--text-xl);
-    }
-
-    .post-preview a {
-        padding: var(--space-4);
     }
 }

@@ -129,6 +129,7 @@ function showTab(tab) {
         document.getElementById('tab-invites').style.fontWeight = '600';
         loadInvites();
         loadInviteTemplate();
+        loadInviteReminderTemplate();
     } else if (tab === 'users') {
         document.getElementById('users-view').style.display = 'block';
         document.getElementById('tab-users').style.fontWeight = '600';

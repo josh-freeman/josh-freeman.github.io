@@ -173,6 +173,7 @@ function renderInvites() {
                     </div>
                 </div>
                 <div class="post-item-actions">
+                    ${!invite.used && !expired ? `<button class="btn" onclick="sendInviteReminder(${invite.id}, '${escapeHtml(invite.email)}')" style="background: var(--info, #7da8c9); color: var(--bg-primary, #0c0b0d);">Remind</button>` : ''}
                     ${!invite.used && !expired ? `<button class="btn" onclick="copyInviteLinkById('${invite.token}')">Copy Link</button>` : ''}
                     <button class="btn" onclick="deleteInvite(${invite.id})" style="background: var(--error, #d4726a); color: var(--bg-primary, #0c0b0d);">Delete</button>
                 </div>
@@ -224,6 +225,27 @@ async function cleanupInvites() {
 
     showToast(`Deleted ${deleted} invite(s)`, 'success');
     loadInvites();
+}
+
+// Send reminder email for pending invite
+async function sendInviteReminder(inviteId, email) {
+    const token = localStorage.getItem('comment_token');
+
+    try {
+        const response = await fetch(`${API_BASE}/admin/invites/${inviteId}/remind`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            showToast(`Reminder sent to ${email}`, 'success');
+        } else {
+            const error = await response.json();
+            showToast(error.detail || 'Failed to send reminder', 'error');
+        }
+    } catch (error) {
+        showToast('Failed to send reminder', 'error');
+    }
 }
 
 // Delete single invite
@@ -299,4 +321,83 @@ function resetInviteTemplate() {
     document.getElementById('invite-tpl-from-email').value = defaultInviteTemplate.from_email;
     document.getElementById('invite-tpl-subject').value = defaultInviteTemplate.subject;
     document.getElementById('invite-tpl-body').value = defaultInviteTemplate.body;
+}
+
+// Default invite reminder email template
+const defaultInviteReminderTemplate = {
+    from_name: "Josh Freeman",
+    from_email: "josh@joshfreeman.me",
+    subject: "Reminder: Your invitation to joshfreeman.me",
+    body: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #1f2937;">Hey {name}!</h2>
+    <p style="color: #4b5563; line-height: 1.6;">
+        Just a friendly reminder — you have a pending invitation to join my blog! I'd love to have you as part of the community.
+    </p>
+    <p style="color: #4b5563; line-height: 1.6;">
+        As a friend, you'll get access to exclusive posts and be able to join the conversation with comments.
+    </p>
+    <p style="margin: 24px 0;">
+        <a href="{url}" style="background: linear-gradient(135deg, #e5a54b, #c48a3a); color: #0c0b0d; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500;">
+            Accept Invitation
+        </a>
+    </p>
+    <p style="color: #6b7280; font-size: 14px;">
+        This invite expires in {expires}. If the button doesn't work, copy this link:<br>
+        <a href="{url}" style="color: #c48a3a;">{url}</a>
+    </p>
+    <p style="color: #4b5563; margin-top: 24px;">— Josh</p>
+</div>`
+};
+
+// Invite reminder email template management
+async function loadInviteReminderTemplate() {
+    const token = localStorage.getItem('comment_token');
+    try {
+        const response = await fetch(`${API_BASE}/admin/settings/email-templates/invite_reminder`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const tpl = await response.json();
+            document.getElementById('invite-reminder-tpl-from-name').value = tpl.from_name || defaultInviteReminderTemplate.from_name;
+            document.getElementById('invite-reminder-tpl-from-email').value = tpl.from_email || defaultInviteReminderTemplate.from_email;
+            document.getElementById('invite-reminder-tpl-subject').value = tpl.subject || defaultInviteReminderTemplate.subject;
+            document.getElementById('invite-reminder-tpl-body').value = tpl.body || defaultInviteReminderTemplate.body;
+        } else {
+            resetInviteReminderTemplate();
+        }
+    } catch (error) {
+        resetInviteReminderTemplate();
+    }
+}
+
+async function saveInviteReminderTemplate() {
+    const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.templateSave : { start: () => true, end: () => {} };
+    if (!guard.start()) return;
+
+    const token = localStorage.getItem('comment_token');
+    const data = {
+        from_name: document.getElementById('invite-reminder-tpl-from-name').value,
+        from_email: document.getElementById('invite-reminder-tpl-from-email').value,
+        subject: document.getElementById('invite-reminder-tpl-subject').value,
+        body: document.getElementById('invite-reminder-tpl-body').value
+    };
+    try {
+        const response = await fetch(`${API_BASE}/admin/settings/email-templates/invite_reminder`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify(data)
+        });
+        showToast(response.ok ? 'Reminder template saved' : 'Failed to save template', response.ok ? 'success' : 'error');
+    } catch (error) {
+        showToast('Failed to save template', 'error');
+    } finally {
+        guard.end();
+    }
+}
+
+function resetInviteReminderTemplate() {
+    document.getElementById('invite-reminder-tpl-from-name').value = defaultInviteReminderTemplate.from_name;
+    document.getElementById('invite-reminder-tpl-from-email').value = defaultInviteReminderTemplate.from_email;
+    document.getElementById('invite-reminder-tpl-subject').value = defaultInviteReminderTemplate.subject;
+    document.getElementById('invite-reminder-tpl-body').value = defaultInviteReminderTemplate.body;
 }

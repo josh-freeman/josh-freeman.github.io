@@ -1142,6 +1142,47 @@
                         </div>
                     </details>
 
+                    <!-- Invite Reminder Email Template -->
+                    <details style="margin-bottom: 1.5rem; background: var(--bg-tertiary, #1e1c21); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px;">
+                        <summary style="padding: 1rem; cursor: pointer; font-weight: 600;">Reminder Email Template</summary>
+                        <div style="padding: 0 1.5rem 1.5rem 1.5rem;">
+                            <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+                                Sent when you click "Remind" on an active invite. Placeholders: <code>{name}</code>, <code>{url}</code>, <code>{expires}</code>
+                            </p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>From Name</label>
+                                    <input type="text" id="invite-reminder-tpl-from-name" placeholder="Josh Freeman">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>From Email</label>
+                                    <input type="email" id="invite-reminder-tpl-from-email" placeholder="josh@joshfreeman.me">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <input type="text" id="invite-reminder-tpl-subject">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0.5rem;">
+                                <label>Body (HTML)</label>
+                                <div class="html-editor-tabs">
+                                    <button type="button" class="html-editor-tab active" onclick="showTemplateTab('invite-reminder', 'write')">Write</button>
+                                    <button type="button" class="html-editor-tab" onclick="showTemplateTab('invite-reminder', 'preview')">Preview</button>
+                                </div>
+                                <div class="html-editor-content">
+                                    <textarea id="invite-reminder-tpl-body" style="min-height: 150px; font-family: monospace; font-size: 0.85rem;"></textarea>
+                                    <div id="invite-reminder-tpl-preview" class="html-editor-preview">
+                                        <iframe id="invite-reminder-tpl-iframe" sandbox="allow-same-origin"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-primary" onclick="saveInviteReminderTemplate()">Save Template</button>
+                                <button class="btn" onclick="resetInviteReminderTemplate()">Reset to Default</button>
+                            </div>
+                        </div>
+                    </details>
+
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
                         <h3 style="margin: 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">Invite History</h3>
                         <div style="display: flex; gap: 1rem; align-items: center;">

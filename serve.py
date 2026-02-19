@@ -27,6 +27,12 @@ if __name__ == "__main__":
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print(f"\n🚀 Dev server running at http://localhost:{PORT}")
         print(f"📁 Serving: {DIRECTORY}")
+        print("\n📝 To use with local API:")
+        print("   1. Run API: cd ../joshfreeman-blog-api && DEBUG=true uvicorn main:app --port 8080 --reload")
+        print("   2. In browser console: localStorage.setItem('DEV_API', 'true')")
+        print("   3. Refresh the page")
+        print("\n   To switch back to production API:")
+        print("   localStorage.removeItem('DEV_API')")
         print("\nPress Ctrl+C to stop\n")
         try:
             httpd.serve_forever()

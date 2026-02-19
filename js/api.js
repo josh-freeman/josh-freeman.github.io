@@ -13,6 +13,9 @@ if (typeof window.API_BASE === 'undefined') {
     }
 }
 
+// Global alias for scripts that use API_BASE without window prefix
+var API_BASE = window.API_BASE;
+
 // Also set for comments.js compatibility
 window.COMMENTS_API_BASE = window.API_BASE;
 

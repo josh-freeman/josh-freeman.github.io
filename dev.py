@@ -44,10 +44,17 @@ def main():
     # Start API
     print("🚀 Starting API at http://localhost:8080")
     api_venv = os.path.join(API_DIR, ".venv", "bin", "uvicorn")
+    api_env = {
+        **os.environ,
+        "DEBUG": "true",
+        # Google OAuth (optional for local dev)
+        "GOOGLE_CLIENT_ID": os.environ.get("GOOGLE_CLIENT_ID", ""),
+        "GOOGLE_CLIENT_SECRET": os.environ.get("GOOGLE_CLIENT_SECRET", ""),
+    }
     api_proc = subprocess.Popen(
         [api_venv, "main:app", "--port", "8080", "--reload"],
         cwd=API_DIR,
-        env={**os.environ, "DEBUG": "true"}
+        env=api_env
     )
     processes.append(api_proc)
 

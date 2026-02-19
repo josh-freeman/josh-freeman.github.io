@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signing in... | Josh Freeman</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0c0b0d;
+            --bg-secondary: #151418;
+            --text-primary: #f5f2ed;
+            --text-secondary: #c4bfb6;
+            --text-muted: #8a857c;
+            --accent-primary: #e5a54b;
+            --accent-primary-glow: rgba(229, 165, 75, 0.15);
+            --error: #d4726a;
+            --font-display: 'Fraunces', Georgia, serif;
+            --font-ui: 'DM Sans', -apple-system, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-ui);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Subtle animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 600px;
+            height: 600px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, var(--accent-primary-glow) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .container {
+            text-align: center;
+            z-index: 1;
+            padding: 2rem;
+        }
+
+        .icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+
+        /* Animated ring */
+        .icon svg {
+            width: 100%;
+            height: 100%;
+            animation: spin 1.5s linear infinite;
+        }
+
+        .icon svg circle {
+            fill: none;
+            stroke: var(--accent-primary);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 150;
+            stroke-dashoffset: 50;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success checkmark */
+        .icon.success svg {
+            animation: none;
+        }
+
+        .icon.success svg circle {
+            stroke: var(--accent-primary);
+            stroke-dasharray: 157;
+            stroke-dashoffset: 0;
+            animation: circle-fill 0.4s ease-out forwards;
+        }
+
+        .icon.success .checkmark {
+            stroke-dasharray: 50;
+            stroke-dashoffset: 50;
+            animation: checkmark-draw 0.3s 0.2s ease-out forwards;
+        }
+
+        @keyframes circle-fill {
+            from { stroke-dashoffset: 157; }
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes checkmark-draw {
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* Error X */
+        .icon.error svg circle {
+            stroke: var(--error);
+            animation: none;
+            stroke-dasharray: 157;
+            stroke-dashoffset: 0;
+        }
+
+        .icon.error .x-mark {
+            stroke: var(--error);
+            stroke-dasharray: 20;
+            stroke-dashoffset: 20;
+            animation: checkmark-draw 0.3s 0.1s ease-out forwards;
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            animation: fadeIn 0.4s ease-out 0.1s forwards;
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            opacity: 0;
+            animation: fadeIn 0.4s ease-out 0.2s forwards;
+        }
+
+        .error-message {
+            color: var(--error);
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(212, 114, 106, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(212, 114, 106, 0.2);
+        }
+
+        .error-message a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        .error-message a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon" id="icon">
+            <svg viewBox="0 0 50 50">
+                <circle cx="25" cy="25" r="23"/>
+                <polyline class="checkmark hidden" points="16,26 22,32 34,20" fill="none" stroke="var(--accent-primary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <g class="x-mark hidden">
+                    <line x1="18" y1="18" x2="32" y2="32" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="32" y1="18" x2="18" y2="32" stroke-width="3" stroke-linecap="round"/>
+                </g>
+            </svg>
+        </div>
+        <h1 id="title">Signing you in...</h1>
+        <p id="subtitle">Just a moment</p>
+        <div id="error-container" class="hidden"></div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+        const userId = params.get('user_id');
+        const email = params.get('email');
+        const name = params.get('name');
+        const isAdmin = params.get('is_admin') === 'true';
+        const error = params.get('error');
+
+        const icon = document.getElementById('icon');
+        const title = document.getElementById('title');
+        const subtitle = document.getElementById('subtitle');
+        const errorContainer = document.getElementById('error-container');
+
+        function showSuccess() {
+            icon.classList.add('success');
+            icon.querySelector('.checkmark').classList.remove('hidden');
+            title.textContent = 'Welcome back!';
+            subtitle.textContent = `Signed in as ${name || email}`;
+        }
+
+        function showError(message) {
+            icon.classList.add('error');
+            icon.querySelector('.x-mark').classList.remove('hidden');
+            title.textContent = 'Sign in failed';
+            subtitle.textContent = '';
+            errorContainer.classList.remove('hidden');
+            errorContainer.innerHTML = `<p class="error-message">${message}<br><br><a href="/blog.html">Return to blog</a></p>`;
+        }
+
+        const errorMessages = {
+            'google_denied': 'You cancelled the sign in.',
+            'google_failed': 'Something went wrong with Google sign in. Please try again.',
+            'invalid_state': 'Session expired. Please try again.',
+            'no_email': 'Could not get email from Google.',
+            'not_approved': 'Your account is pending approval.',
+            'no_invite': 'No invite found for this email. Ask Josh for an invite!',
+            'email_mismatch': 'This invite is for a different email address.'
+        };
+
+        if (error) {
+            showError(errorMessages[error] || 'An unexpected error occurred.');
+        } else if (token && email) {
+            // Store auth data
+            localStorage.setItem('comment_token', token);
+            localStorage.setItem('comment_user', JSON.stringify({
+                id: userId,
+                email: email,
+                name: name,
+                is_admin: isAdmin
+            }));
+
+            showSuccess();
+
+            // Redirect after brief delay
+            setTimeout(() => {
+                // Go back to previous page or default to blog
+                const returnTo = localStorage.getItem('auth_return_to') || '/blog.html';
+                localStorage.removeItem('auth_return_to');
+                window.location.href = returnTo;
+            }, 1200);
+        } else {
+            showError('Invalid callback. Missing authentication data.');
+        }
+    </script>
+</body>
+</html>

@@ -770,8 +770,8 @@
                             <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem;" onclick="toggleCustomCheckbox('filter-inactive-invites', filterInvites)">
                                 <input type="checkbox" id="filter-inactive-invites" style="display: none;">
                                 <span class="custom-checkbox" data-for="filter-inactive-invites">
-                                    <svg class="unchecked" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
-                                    <svg class="checked" style="display:none;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary, #e5a54b)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>
+                                    <svg class="unchecked" width="20" height="20" viewBox="0 0 24 24" style="color: var(--text-muted, #8a857c);"><use href="/resources/icons.svg#checkbox-empty"></use></svg>
+                                    <svg class="checked" width="20" height="20" viewBox="0 0 24 24" style="display:none; color: var(--accent-primary, #e5a54b);"><use href="/resources/icons.svg#checkbox-checked"></use></svg>
                                 </span>
                                 <span>Show used/expired</span>
                             </label>
@@ -804,8 +804,8 @@
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;" onclick="toggleCustomCheckbox('filter-orphaned', filterImages)">
                             <input type="checkbox" id="filter-orphaned" style="display: none;">
                             <span class="custom-checkbox" data-for="filter-orphaned">
-                                <svg class="unchecked" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
-                                <svg class="checked" style="display:none;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary, #e5a54b)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>
+                                <svg class="unchecked" width="20" height="20" viewBox="0 0 24 24" style="color: var(--text-muted, #8a857c);"><use href="/resources/icons.svg#checkbox-empty"></use></svg>
+                                <svg class="checked" width="20" height="20" viewBox="0 0 24 24" style="display:none; color: var(--accent-primary, #e5a54b);"><use href="/resources/icons.svg#checkbox-checked"></use></svg>
                             </span>
                             <span>Show only unused images</span>
                         </label>

@@ -342,10 +342,10 @@
                 openConversation(data.conversations[0].user_id, data.conversations[0].user_name);
             } else {
                 // No conversation yet - show empty state with input ready to go
-                content.innerHTML = `
+                content.innerHTML = getEphemeralHint() + `
                     <div class="messages-empty">
                         <p>Send a message to Josh</p>
-                        <p class="messages-empty-hint">Messages are ephemeral and disappear over time</p>
+                        <p class="messages-empty-hint">Start the conversation!</p>
                     </div>
                 `;
 
@@ -384,7 +384,7 @@
             const data = await fetchWithAuth(`/messages/${userId}`);
 
             if (data.messages.length === 0) {
-                content.innerHTML = `
+                content.innerHTML = getEphemeralHint() + `
                     <div class="messages-empty">
                         <p>No messages yet</p>
                         <p class="messages-empty-hint">Start the conversation!</p>
@@ -408,12 +408,29 @@
     }
 
     /**
+     * Get ephemeral hint HTML
+     */
+    function getEphemeralHint() {
+        return `
+            <div class="messages-ephemeral-hint" title="Oldest messages are automatically deleted when the limit is reached">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 22h14"/>
+                    <path d="M5 2h14"/>
+                    <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/>
+                    <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/>
+                </svg>
+                <span>Ephemeral (30 max)</span>
+            </div>
+        `;
+    }
+
+    /**
      * Render messages in the chat
      */
     function renderMessages(messages) {
         const content = document.getElementById('messages-content');
 
-        content.innerHTML = messages.map(msg => `
+        content.innerHTML = getEphemeralHint() + messages.map(msg => `
             <div class="message ${msg.is_mine ? 'message-mine' : 'message-theirs'}">
                 <div class="message-content">${escapeHtml(msg.content)}</div>
                 <div class="message-time">${formatTime(msg.created_at)}</div>

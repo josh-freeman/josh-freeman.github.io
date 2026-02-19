@@ -1,3 +1,7 @@
 # Personal Website
 
-Welcome! This is the source code for my personal website.
+## Dev
+
+```
+python3 dev.py
+```

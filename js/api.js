@@ -2,14 +2,14 @@
  * API utilities for joshfreeman.me
  */
 
-// API base URL - set on window to share with other scripts (sidebar.js, etc.)
-// For local dev: run `localStorage.setItem('DEV_API', 'true')` in console
-// Then run API locally: cd joshfreeman-blog-api && DEBUG=true uvicorn main:app --port 8080 --reload
+// API base URL - auto-detects local dev (localhost) vs production
+// Local dev: run API with `DEBUG=true uvicorn main:app --port 8080 --reload`
 if (typeof window.API_BASE === 'undefined') {
-    const useLocalApi = localStorage.getItem('DEV_API') === 'true';
-    window.API_BASE = useLocalApi ? 'http://localhost:8080' : 'https://api.joshfreeman.me';
-    if (useLocalApi) {
-        console.log('%c🛠 DEV MODE: Using local API at http://localhost:8080', 'background: #e5a54b; color: #0c0b0d; padding: 4px 8px; border-radius: 4px;');
+    const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    window.API_BASE = isLocalDev ? 'http://localhost:8080' : 'https://api.joshfreeman.me';
+    if (isLocalDev) {
+        console.log('%c🛠 LOCAL DEV: Using API at http://localhost:8080', 'background: #e5a54b; color: #0c0b0d; padding: 4px 8px; border-radius: 4px;');
+        console.log('%c   Run: cd joshfreeman-blog-api && DEBUG=true uvicorn main:app --port 8080 --reload', 'color: #8a857c;');
     }
 }
 

@@ -10,6 +10,7 @@
     let messagesPanelOpen = false;
     let currentConversation = null;  // public_id of user we're chatting with
     let isAdmin = false;
+    let adminPublicId = null;  // Cache admin's public_id for non-admin users
 
     /**
      * Check if user is logged in
@@ -279,26 +280,51 @@
     }
 
     /**
+     * Fetch admin's public_id from site-owner endpoint
+     */
+    async function fetchAdminPublicId() {
+        if (adminPublicId) return adminPublicId;
+
+        try {
+            const response = await fetch(`${window.API_BASE}/users/site-owner`);
+            if (response.ok) {
+                const data = await response.json();
+                adminPublicId = data.public_id;
+                return adminPublicId;
+            }
+        } catch (e) {
+            console.error('Failed to fetch admin public_id:', e);
+        }
+        return null;
+    }
+
+    /**
      * Open admin chat (for non-admin users)
      */
     async function openAdminChat() {
         const content = document.getElementById('messages-content');
         const title = document.getElementById('messages-panel-title');
+        const inputArea = document.getElementById('messages-input-area');
 
         title.textContent = 'Chat with Josh';
         content.innerHTML = '<div class="messages-loading">Loading...</div>';
 
         try {
-            // Fetch conversations to get admin's public_id
+            // Fetch admin's public_id first
+            const adminId = await fetchAdminPublicId();
+            if (!adminId) {
+                content.innerHTML = '<div class="messages-error">Could not connect to chat</div>';
+                return;
+            }
+
+            // Check if we have existing messages with admin
             const data = await fetchWithAuth('/messages');
 
             if (data.conversations.length > 0) {
                 // Open existing conversation
                 openConversation(data.conversations[0].user_id, data.conversations[0].user_name);
             } else {
-                // No conversation yet - show empty state with input
-                // We need to get admin's public_id somehow... let's fetch it from profile or use a special endpoint
-                // For now, show a "start conversation" state
+                // No conversation yet - show empty state with input ready to go
                 content.innerHTML = `
                     <div class="messages-empty">
                         <p>Send a message to Josh</p>
@@ -306,14 +332,15 @@
                     </div>
                 `;
 
-                // Show input area - we'll need the admin's ID
-                // Let's try to get it from the first post's admin
-                const inputArea = document.getElementById('messages-input-area');
+                // Set currentConversation to admin's actual public_id
+                currentConversation = adminId;
                 inputArea.style.display = 'flex';
 
-                // We'll set currentConversation when we send the first message
-                // For now, mark it as pending
-                currentConversation = '__admin__';
+                // Focus input
+                setTimeout(() => {
+                    const input = document.getElementById('message-input');
+                    if (input) input.focus();
+                }, 100);
             }
         } catch (e) {
             content.innerHTML = '<div class="messages-error">Failed to load chat</div>';
@@ -409,33 +436,30 @@
         if (event) event.preventDefault();
 
         const input = document.getElementById('message-input');
-        const content = input.value.trim();
+        const messageContent = input.value.trim();
 
-        if (!content || !currentConversation) return;
+        if (!messageContent || !currentConversation) return;
 
-        // If currentConversation is '__admin__', we need to find admin's ID first
-        let recipientId = currentConversation;
-        if (recipientId === '__admin__') {
-            // This shouldn't happen normally, but handle it
-            console.error('Admin ID not resolved');
-            return;
-        }
+        const recipientId = currentConversation;
+        const sendBtn = document.getElementById('send-message-btn');
 
         input.value = '';
         input.disabled = true;
+        if (sendBtn) sendBtn.disabled = true;
 
         try {
             const msg = await fetchWithAuth(`/messages/${recipientId}`, {
                 method: 'POST',
-                body: JSON.stringify({ content })
+                body: JSON.stringify({ content: messageContent })
             });
 
             appendMessage(msg);
         } catch (e) {
             console.error('Failed to send message:', e);
-            input.value = content;  // Restore the message
+            input.value = messageContent;  // Restore the message
         } finally {
             input.disabled = false;
+            if (sendBtn) sendBtn.disabled = false;
             input.focus();
         }
     }

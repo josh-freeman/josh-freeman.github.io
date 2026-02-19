@@ -72,7 +72,8 @@ function renderPosts() {
     const hasMore = allPosts.length > postsVisible;
 
     container.innerHTML = visiblePosts.map(post => {
-        const thumbnailUrl = post.featured_image_url || '';
+        // Prefer wide thumbnail for admin list, fallback to featured_image_url for legacy posts
+        const thumbnailUrl = post.thumbnail_wide_url || post.featured_image_url || '';
         return `
         <div class="post-item">
             ${thumbnailUrl ? `<img class="post-item-thumb" src="${thumbnailUrl}" alt="">` : ''}
@@ -154,6 +155,10 @@ function showEditor(slug = null) {
         loadPost(slug);
     } else {
         document.getElementById('post-form').reset();
+        // Explicitly clear thumbnail fields
+        document.getElementById('post-featured-image').value = '';
+        document.getElementById('post-thumbnail-square').value = '';
+        document.getElementById('post-thumbnail-wide').value = '';
         adminToggle.set('published', false);
         adminToggle.set('exclusive', false);
         adminToggle.set('unlisted', false);
@@ -184,6 +189,8 @@ async function loadPost(slug) {
             document.getElementById('post-title').value = post.title;
             document.getElementById('post-excerpt').value = post.excerpt || '';
             document.getElementById('post-featured-image').value = post.featured_image_url || '';
+            document.getElementById('post-thumbnail-square').value = post.thumbnail_square_url || '';
+            document.getElementById('post-thumbnail-wide').value = post.thumbnail_wide_url || '';
             document.getElementById('post-content').value = post.content;
             adminToggle.set('published', post.is_published);
             adminToggle.set('exclusive', post.is_exclusive || false);
@@ -207,13 +214,16 @@ async function savePost(event) {
     errorEl.style.display = 'none';
 
     const featuredImageUrl = document.getElementById('post-featured-image').value;
-    console.log('Saving post with featured_image_url:', featuredImageUrl);
+    const thumbnailSquareUrl = document.getElementById('post-thumbnail-square').value;
+    const thumbnailWideUrl = document.getElementById('post-thumbnail-wide').value;
 
     const postData = {
         slug: document.getElementById('post-slug').value,
         title: document.getElementById('post-title').value,
         excerpt: document.getElementById('post-excerpt').value,
         featured_image_url: featuredImageUrl,
+        thumbnail_square_url: thumbnailSquareUrl,
+        thumbnail_wide_url: thumbnailWideUrl,
         content: document.getElementById('post-content').value,
         is_published: adminToggle.get('published'),
         is_exclusive: adminToggle.get('exclusive'),

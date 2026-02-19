@@ -172,17 +172,42 @@
             color: var(--bg-primary, #0c0b0d);
         }
 
-        /* Thumbnail selector */
+        /* Dual thumbnail selectors */
+        .thumbnails-container {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .thumbnail-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .thumbnail-box-label {
+            font-size: 0.8rem;
+            color: var(--text-muted, #8a857c);
+        }
+
         .thumbnail-selector {
             position: relative;
-            width: 200px;
-            height: 134px;
             background: var(--bg-tertiary, #1e1c21);
             border: 2px dashed var(--border-default, rgba(255, 255, 255, 0.15));
             border-radius: 8px;
             cursor: pointer;
             overflow: hidden;
             transition: all 0.2s ease;
+        }
+
+        .thumbnail-selector.square {
+            width: 120px;
+            height: 120px;
+        }
+
+        .thumbnail-selector.wide {
+            width: 180px;
+            height: 120px;
         }
 
         .thumbnail-selector:hover {
@@ -201,9 +226,11 @@
             align-items: center;
             justify-content: center;
             height: 100%;
-            gap: 0.5rem;
+            gap: 0.25rem;
             color: var(--text-muted, #8a857c);
-            font-size: 0.85rem;
+            font-size: 0.75rem;
+            padding: 0.5rem;
+            text-align: center;
         }
 
         .thumbnail-preview-empty svg {
@@ -218,10 +245,10 @@
 
         .thumbnail-remove {
             position: absolute;
-            top: 6px;
-            right: 6px;
-            width: 24px;
-            height: 24px;
+            top: 4px;
+            right: 4px;
+            width: 20px;
+            height: 20px;
             background: rgba(0, 0, 0, 0.7);
             border: none;
             border-radius: 50%;
@@ -240,6 +267,84 @@
 
         .thumbnail-remove:hover {
             background: #dc2626;
+        }
+
+        /* Cropper aspect ratio tabs */
+        .cropper-aspect-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cropper-aspect-tab {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: var(--bg-tertiary, #1e1c21);
+            border: 1px solid var(--border-default, rgba(255, 255, 255, 0.15));
+            border-radius: 6px;
+            color: var(--text-secondary, #c4bfb6);
+            cursor: pointer;
+            font-size: 0.85rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .cropper-aspect-tab:hover {
+            background: var(--bg-elevated, #262329);
+        }
+
+        .cropper-aspect-tab.active {
+            background: var(--accent-primary, #e5a54b);
+            color: var(--bg-primary, #0c0b0d);
+            border-color: var(--accent-primary, #e5a54b);
+        }
+
+        .cropper-aspect-tab .aspect-preview {
+            width: 24px;
+            height: 24px;
+            background: currentColor;
+            opacity: 0.3;
+            margin: 0 auto 0.25rem;
+            border-radius: 2px;
+        }
+
+        .cropper-aspect-tab.active .aspect-preview {
+            opacity: 0.5;
+        }
+
+        .cropper-aspect-tab .aspect-preview.square {
+            width: 24px;
+            height: 24px;
+        }
+
+        .cropper-aspect-tab .aspect-preview.wide {
+            width: 36px;
+            height: 24px;
+        }
+
+        .cropper-crop-status {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
+        }
+
+        .cropper-crop-status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8rem;
+            color: var(--text-muted, #8a857c);
+        }
+
+        .cropper-crop-status-item.done {
+            color: var(--success, #7eb8a8);
+        }
+
+        .cropper-crop-status-item svg {
+            width: 14px;
+            height: 14px;
         }
 
         /* Cropper modal */
@@ -865,20 +970,43 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Thumbnail <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">— 3:2 aspect ratio</span></label>
+                            <label>Thumbnails</label>
                             <input type="hidden" id="post-featured-image">
-                            <div id="thumbnail-selector" class="thumbnail-selector" onclick="openThumbnailCropper()">
-                                <div id="thumbnail-preview" class="thumbnail-preview-empty">
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                        <circle cx="9" cy="9" r="2"/>
-                                        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
-                                    </svg>
-                                    <span>Click to add thumbnail</span>
+                            <input type="hidden" id="post-thumbnail-square">
+                            <input type="hidden" id="post-thumbnail-wide">
+                            <div class="thumbnails-container">
+                                <div class="thumbnail-box">
+                                    <span class="thumbnail-box-label">Square (1:1) — Blog cards</span>
+                                    <div id="thumbnail-selector-square" class="thumbnail-selector square" onclick="openThumbnailCropper('square')">
+                                        <div id="thumbnail-preview-square" class="thumbnail-preview-empty">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                                <circle cx="9" cy="9" r="2"/>
+                                                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                                            </svg>
+                                            <span>Add</span>
+                                        </div>
+                                        <button type="button" id="thumbnail-remove-square" class="thumbnail-remove" onclick="event.stopPropagation(); removeThumbnail('square');" style="display: none;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                        </button>
+                                    </div>
                                 </div>
-                                <button type="button" id="thumbnail-remove-btn" class="thumbnail-remove" onclick="event.stopPropagation(); removeThumbnail();" style="display: none;">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                                </button>
+                                <div class="thumbnail-box">
+                                    <span class="thumbnail-box-label">Wide (3:2) — Admin preview</span>
+                                    <div id="thumbnail-selector-wide" class="thumbnail-selector wide" onclick="openThumbnailCropper('wide')">
+                                        <div id="thumbnail-preview-wide" class="thumbnail-preview-empty">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                                <circle cx="9" cy="9" r="2"/>
+                                                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                                            </svg>
+                                            <span>Add</span>
+                                        </div>
+                                        <button type="button" id="thumbnail-remove-wide" class="thumbnail-remove" onclick="event.stopPropagation(); removeThumbnail('wide');" style="display: none;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -1140,6 +1268,16 @@
                     <input type="file" id="cropper-file-input" accept="image/*" style="display: none;">
                 </div>
                 <div id="cropper-container-wrapper" class="cropper-container-wrapper">
+                    <div class="cropper-aspect-tabs" id="cropper-aspect-tabs" style="display: none;">
+                        <button type="button" class="cropper-aspect-tab active" data-aspect="square" onclick="switchCropperAspect('square')">
+                            <div class="aspect-preview square"></div>
+                            <span>Square (1:1)</span>
+                        </button>
+                        <button type="button" class="cropper-aspect-tab" data-aspect="wide" onclick="switchCropperAspect('wide')">
+                            <div class="aspect-preview wide"></div>
+                            <span>Wide (3:2)</span>
+                        </button>
+                    </div>
                     <div class="cropper-image-container">
                         <img id="cropper-image" src="" alt="Crop preview">
                     </div>
@@ -1162,13 +1300,18 @@
     </div>
 
     <script>
-        // Thumbnail Cropper
+        // Dual Thumbnail Cropper
         let cropperInstance = null;
+        let currentAspect = 'square'; // 'square' or 'wide'
+        let targetThumbnailType = 'square'; // Which thumbnail we're setting
 
-        function openThumbnailCropper() {
+        function openThumbnailCropper(type = 'square') {
+            targetThumbnailType = type;
+            currentAspect = type;
             const modal = document.getElementById('thumbnail-cropper-modal');
             modal.style.display = 'flex';
             resetCropper();
+            updateAspectTabs();
         }
 
         function closeThumbnailCropper() {
@@ -1186,16 +1329,38 @@
             const saveBtn = document.getElementById('cropper-save-btn');
             const resetBtn = document.getElementById('cropper-reset-btn');
             const fileInput = document.getElementById('cropper-file-input');
+            const aspectTabs = document.getElementById('cropper-aspect-tabs');
 
             dropzone.style.display = 'block';
             wrapper.classList.remove('active');
             saveBtn.style.display = 'none';
             resetBtn.style.display = 'none';
+            aspectTabs.style.display = 'none';
             fileInput.value = '';
 
             if (cropperInstance) {
                 cropperInstance.destroy();
                 cropperInstance = null;
+            }
+        }
+
+        function updateAspectTabs() {
+            const tabs = document.querySelectorAll('.cropper-aspect-tab');
+            tabs.forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.aspect === currentAspect);
+            });
+        }
+
+        function switchCropperAspect(aspect) {
+            if (aspect === currentAspect) return;
+            currentAspect = aspect;
+            targetThumbnailType = aspect;
+            updateAspectTabs();
+
+            // Update cropper aspect ratio
+            if (cropperInstance) {
+                const ratio = aspect === 'square' ? 1 : 3 / 2;
+                cropperInstance.setAspectRatio(ratio);
             }
         }
 
@@ -1249,11 +1414,13 @@
             const image = document.getElementById('cropper-image');
             const saveBtn = document.getElementById('cropper-save-btn');
             const resetBtn = document.getElementById('cropper-reset-btn');
+            const aspectTabs = document.getElementById('cropper-aspect-tabs');
 
             dropzone.style.display = 'none';
             wrapper.classList.add('active');
             saveBtn.style.display = 'inline-block';
             resetBtn.style.display = 'inline-block';
+            aspectTabs.style.display = 'flex';
 
             image.src = imageSrc;
             image.dataset.mimeType = mimeType;
@@ -1262,8 +1429,9 @@
             image.onload = () => {
                 if (cropperInstance) cropperInstance.destroy();
 
+                const ratio = currentAspect === 'square' ? 1 : 3 / 2;
                 cropperInstance = new Cropper(image, {
-                    aspectRatio: 3 / 2,
+                    aspectRatio: ratio,
                     viewMode: 1,
                     autoCropArea: 1,
                     responsive: true,
@@ -1289,17 +1457,17 @@
             status.style.display = 'flex';
 
             try {
-                // Get cropped canvas
+                // Get cropped canvas with appropriate dimensions
+                const isSquare = currentAspect === 'square';
                 const canvas = cropperInstance.getCroppedCanvas({
-                    width: 600,  // Output width for quality
-                    height: 400, // 3:2 aspect ratio
+                    width: isSquare ? 400 : 600,
+                    height: isSquare ? 400 : 400,
                     imageSmoothingEnabled: true,
                     imageSmoothingQuality: 'high',
                 });
 
                 // Convert to blob
                 const blob = await new Promise(resolve => {
-                    // Use original mime type for GIFs to preserve them, otherwise use JPEG
                     const outputType = mimeType === 'image/gif' ? 'image/gif' : 'image/jpeg';
                     canvas.toBlob(resolve, outputType, 0.9);
                 });
@@ -1307,7 +1475,8 @@
                 // Upload to R2
                 const formData = new FormData();
                 const ext = mimeType === 'image/gif' ? 'gif' : 'jpg';
-                formData.append('file', blob, `thumbnail-${Date.now()}.${ext}`);
+                const prefix = isSquare ? 'thumb-sq' : 'thumb-wide';
+                formData.append('file', blob, `${prefix}-${Date.now()}.${ext}`);
 
                 const token = localStorage.getItem('comment_token');
                 const response = await fetch(`${API_BASE}/admin/upload-image`, {
@@ -1323,12 +1492,17 @@
 
                 const result = await response.json();
 
-                // Set the thumbnail URL
-                document.getElementById('post-featured-image').value = result.url;
-                updateThumbnailPreview(result.url);
+                // Set the appropriate thumbnail URL
+                if (targetThumbnailType === 'square') {
+                    document.getElementById('post-thumbnail-square').value = result.url;
+                    updateThumbnailPreview('square', result.url);
+                } else {
+                    document.getElementById('post-thumbnail-wide').value = result.url;
+                    updateThumbnailPreview('wide', result.url);
+                }
 
                 closeThumbnailCropper();
-                showToast('Thumbnail uploaded!', 'success');
+                showToast(`${isSquare ? 'Square' : 'Wide'} thumbnail uploaded!`, 'success');
 
             } catch (error) {
                 showToast(error.message || 'Failed to upload thumbnail', 'error');
@@ -1338,10 +1512,10 @@
             }
         }
 
-        function updateThumbnailPreview(url) {
-            const selector = document.getElementById('thumbnail-selector');
-            const preview = document.getElementById('thumbnail-preview');
-            const removeBtn = document.getElementById('thumbnail-remove-btn');
+        function updateThumbnailPreview(type, url) {
+            const selector = document.getElementById(`thumbnail-selector-${type}`);
+            const preview = document.getElementById(`thumbnail-preview-${type}`);
+            const removeBtn = document.getElementById(`thumbnail-remove-${type}`);
 
             if (url) {
                 preview.innerHTML = `<img src="${url}" alt="Thumbnail preview">`;
@@ -1350,12 +1524,12 @@
                 removeBtn.style.display = 'flex';
             } else {
                 preview.innerHTML = `
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
                         <circle cx="9" cy="9" r="2"/>
                         <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
                     </svg>
-                    <span>Click to add thumbnail</span>
+                    <span>Add</span>
                 `;
                 preview.className = 'thumbnail-preview-empty';
                 selector.classList.remove('has-image');
@@ -1363,15 +1537,22 @@
             }
         }
 
-        function removeThumbnail() {
-            document.getElementById('post-featured-image').value = '';
-            updateThumbnailPreview(null);
+        function removeThumbnail(type) {
+            if (type === 'square') {
+                document.getElementById('post-thumbnail-square').value = '';
+            } else {
+                document.getElementById('post-thumbnail-wide').value = '';
+            }
+            updateThumbnailPreview(type, null);
         }
 
-        // Override the old updateFeaturedImagePreview function
+        // Legacy function for compatibility
         function updateFeaturedImagePreview() {
-            const url = document.getElementById('post-featured-image').value;
-            updateThumbnailPreview(url);
+            // Update both thumbnails from their respective fields
+            const squareUrl = document.getElementById('post-thumbnail-square')?.value || '';
+            const wideUrl = document.getElementById('post-thumbnail-wide')?.value || '';
+            updateThumbnailPreview('square', squareUrl);
+            updateThumbnailPreview('wide', wideUrl);
         }
     </script>
 </body>

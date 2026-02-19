@@ -52,8 +52,36 @@
 
             <footer>
                 <a href="https://telegram.me/josh_freeman" target="_blank" rel="noopener" class="btn telegram">Telegram</a>
-                <button class="btn email">E-mail</button>
+                <button class="btn email" id="email-btn" onclick="copyEmail()">
+                    <span id="email-text">E-mail</span>
+                </button>
             </footer>
+            <script>
+                function copyEmail() {
+                    const btn = document.getElementById('email-btn');
+                    const text = document.getElementById('email-text');
+                    // Decode obfuscated email
+                    const parts = ['me', 'joshfreeman', 'me'];
+                    const email = parts[0] + '@' + parts[1] + '.' + parts[2];
+
+                    navigator.clipboard.writeText(email).then(() => {
+                        text.textContent = 'Copied!';
+                        btn.style.background = 'var(--success)';
+                        btn.style.borderColor = 'var(--success)';
+                        setTimeout(() => {
+                            text.textContent = 'E-mail';
+                            btn.style.background = '';
+                            btn.style.borderColor = '';
+                        }, 2000);
+                    }).catch(() => {
+                        // Fallback: show email
+                        text.textContent = email;
+                        setTimeout(() => {
+                            text.textContent = 'E-mail';
+                        }, 4000);
+                    });
+                }
+            </script>
         </div>
     </div>
 

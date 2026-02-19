@@ -50,22 +50,23 @@
         }
 
         .note-card {
-            background: #fafafa;
-            border: 1px solid #e0e0e0;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
             border-radius: 12px;
             padding: 1.5rem;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
         }
 
         .note-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border-color: var(--accent-primary);
         }
 
         .note-card h2 {
             font-size: 1.25rem;
             margin-bottom: 0.5rem;
-            color: var(--text-color);
+            color: var(--text-primary);
         }
 
         .note-card p {

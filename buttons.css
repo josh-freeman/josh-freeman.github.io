@@ -151,13 +151,14 @@ button:disabled,
 }
 
 /* ========================================
-   Email Button with Tooltip
+   Email Button (Click to Copy)
    ======================================== */
 .email {
     background: var(--bg-tertiary);
     color: var(--text-primary);
     border: 1px solid var(--border-default);
     position: relative;
+    min-width: 90px;
 }
 
 .email:hover {
@@ -165,63 +166,15 @@ button:disabled,
     color: var(--bg-primary);
     border-color: var(--accent-primary);
     transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(229, 165, 75, 0.3);
 }
 
 .email:active {
     transform: translateY(0);
 }
 
-/* Tooltip styling */
-.email:hover::after,
-.email:focus::after {
-    content: "me{at}joshfreeman{dot}me";
-    position: absolute;
-    bottom: calc(100% + 12px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--bg-elevated);
-    color: var(--text-primary);
-    padding: var(--space-2) var(--space-4);
-    border-radius: var(--radius-md);
-    font-size: var(--text-sm);
-    font-weight: 500;
-    white-space: nowrap;
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--border-default);
-    z-index: var(--z-dropdown);
-    animation: fadeIn 0.2s ease-out;
-}
-
-.email:hover::before,
-.email:focus::before {
-    content: "";
-    position: absolute;
-    bottom: calc(100% + 4px);
-    left: 50%;
-    transform: translateX(-50%);
-    border: 6px solid transparent;
-    border-top-color: var(--border-default);
-    z-index: var(--z-dropdown);
-}
-
-/* Mobile tooltip positioning */
+/* Mobile full width buttons */
 @media (max-width: 768px) {
-    .email:focus::after,
-    .email:active::after {
-        bottom: auto;
-        top: calc(100% + 12px);
-        font-size: var(--text-xs);
-    }
-
-    .email:focus::before,
-    .email:active::before {
-        bottom: auto;
-        top: calc(100% + 4px);
-        border-top-color: transparent;
-        border-bottom-color: var(--border-default);
-    }
-
-    /* Full width buttons on mobile */
     footer button,
     footer .btn {
         width: 100%;

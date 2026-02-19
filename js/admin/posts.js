@@ -204,12 +204,16 @@ async function savePost(event) {
 
     const token = localStorage.getItem('comment_token');
     const errorEl = document.getElementById('editor-error');
+    errorEl.style.display = 'none';
+
+    const featuredImageUrl = document.getElementById('post-featured-image').value;
+    console.log('Saving post with featured_image_url:', featuredImageUrl);
 
     const postData = {
         slug: document.getElementById('post-slug').value,
         title: document.getElementById('post-title').value,
         excerpt: document.getElementById('post-excerpt').value,
-        featured_image_url: document.getElementById('post-featured-image').value,
+        featured_image_url: featuredImageUrl,
         content: document.getElementById('post-content').value,
         is_published: adminToggle.get('published'),
         is_exclusive: adminToggle.get('exclusive'),
@@ -232,6 +236,7 @@ async function savePost(event) {
         });
 
         if (response.status >= 200 && response.status < 300) {
+            showToast(currentSlug ? 'Post updated' : 'Post created', 'success');
             hideEditor();
         } else {
             const error = await response.json().catch(() => ({}));

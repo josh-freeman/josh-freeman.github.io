@@ -29,13 +29,13 @@
 .posts-list {
     display: flex;
     flex-direction: column;
-    gap: var(--space-5);
+    gap: var(--space-4);
 }
 
 .post-preview {
     background: var(--bg-secondary);
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     transition: all var(--transition-base);
     position: relative;
     overflow: hidden;
@@ -49,32 +49,33 @@
     top: 0;
     bottom: 0;
     width: 3px;
-    background: linear-gradient(180deg, var(--accent-primary), transparent);
+    background: var(--accent-primary);
     opacity: 0;
     transition: opacity var(--transition-base);
 }
 
 .post-preview:hover {
     border-color: var(--border-default);
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .post-preview:hover::before {
     opacity: 1;
 }
 
-.post-preview a {
+/* Content link - the main clickable area */
+.post-preview .post-content > a {
     display: block;
-    padding: var(--space-5);
+    padding: var(--space-4);
     color: inherit;
     text-decoration: none;
 }
 
 .post-preview h2 {
-    font-size: var(--text-2xl);
+    font-size: var(--text-xl);
     font-family: var(--font-display);
-    margin-bottom: var(--space-2);
+    margin-bottom: var(--space-1);
     color: var(--text-primary);
     transition: color var(--transition-fast);
     line-height: var(--leading-snug);
@@ -90,7 +91,7 @@
     gap: var(--space-2);
     font-size: var(--text-sm);
     color: var(--text-muted);
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-2);
     font-family: var(--font-ui);
 }
 
@@ -103,7 +104,7 @@
 }
 
 .post-preview p {
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     line-height: var(--leading-relaxed);
     color: var(--text-secondary);
     margin-bottom: 0;
@@ -111,7 +112,7 @@
 
 .post-preview .read-more {
     display: inline-block;
-    margin-top: var(--space-4);
+    margin-top: var(--space-3);
     font-size: var(--text-sm);
     font-family: var(--font-ui);
     font-weight: 500;
@@ -123,26 +124,20 @@
     transform: translateX(4px);
 }
 
-/* Post thumbnails - Horizontal layout */
+/* ----------------------------------------
+   Post Cards with Thumbnails
+   ---------------------------------------- */
 .post-preview.has-thumbnail {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    gap: 0;
-    padding: 0;
-}
-
-.post-preview.has-thumbnail > a:not(.post-edit-btn) {
-    display: none; /* Hide any stray anchor elements */
+    align-items: stretch;
 }
 
 .post-thumbnail {
-    flex: 0 0 180px;
-    width: 180px;
-    height: 120px;
+    flex: 0 0 160px;
+    width: 160px;
     overflow: hidden;
     background: var(--bg-tertiary);
-    border-radius: var(--radius-xl) 0 0 var(--radius-xl);
 }
 
 .post-thumbnail img {
@@ -159,51 +154,48 @@
 .post-preview.has-thumbnail > .post-content {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
 }
 
-.post-preview.has-thumbnail > .post-content > a {
-    display: block;
-    padding: var(--space-4);
+.post-preview.has-thumbnail .post-content > a {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-3) var(--space-4);
 }
 
-.post-preview.has-thumbnail .post-content h2 {
+.post-preview.has-thumbnail h2 {
     font-size: var(--text-lg);
-    margin-bottom: var(--space-1);
-    line-height: var(--leading-snug);
 }
 
-.post-preview.has-thumbnail .post-content time {
-    margin-bottom: var(--space-2);
-}
-
-.post-preview.has-thumbnail .post-content p {
+.post-preview.has-thumbnail p {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    margin-bottom: var(--space-2);
-    font-size: var(--text-sm);
+    flex: 1;
 }
 
-.post-preview.has-thumbnail .post-content .read-more {
-    margin-top: var(--space-2);
+.post-preview.has-thumbnail .read-more {
+    margin-top: auto;
+    padding-top: var(--space-2);
 }
 
-@media (max-width: 600px) {
+/* Mobile: stack thumbnail on top */
+@media (max-width: 540px) {
     .post-preview.has-thumbnail {
         flex-direction: column;
-        align-items: stretch;
     }
 
     .post-thumbnail {
         flex: 0 0 auto;
         width: 100%;
         height: auto;
-        aspect-ratio: 3 / 2;
-        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        aspect-ratio: 2 / 1;
     }
 
-    .post-preview.has-thumbnail > .post-content > a {
+    .post-preview.has-thumbnail .post-content > a {
         padding: var(--space-4);
     }
 }

@@ -60,9 +60,9 @@
                 function copyEmail() {
                     const btn = document.getElementById('email-btn');
                     const text = document.getElementById('email-text');
-                    // Decode obfuscated email
-                    const parts = ['me', 'joshfreeman', 'me'];
-                    const email = parts[0] + '@' + parts[1] + '.' + parts[2];
+                    // Decode from char codes (not pattern-matchable)
+                    const c = [109,101,64,106,111,115,104,102,114,101,101,109,97,110,46,109,101];
+                    const email = String.fromCharCode.apply(null, c);
 
                     navigator.clipboard.writeText(email).then(() => {
                         text.textContent = 'Copied!';
@@ -74,7 +74,6 @@
                             btn.style.borderColor = '';
                         }, 2000);
                     }).catch(() => {
-                        // Fallback: show email
                         text.textContent = email;
                         setTimeout(() => {
                             text.textContent = 'E-mail';

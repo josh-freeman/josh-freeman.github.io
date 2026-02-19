@@ -1219,8 +1219,8 @@
     <script src="/js/admin/images.js"></script>
 
     <script>
-        // Create toggle manager for post editor
-        const adminToggle = createToggleManager('admin-toggle', 'post');
+        // Create toggle manager for post editor (var instead of const for global scope access from inline onclick)
+        var adminToggle = createToggleManager('admin-toggle', 'post');
 
         // Custom checkbox toggle function
         function toggleCustomCheckbox(inputId, callback) {

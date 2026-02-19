@@ -38,7 +38,7 @@ function loadNavbarDiv() {
         : '';
 
     const editProfileBtn = isAdminLoggedIn()
-        ? '<button onclick="openProfileEditModal()" style="position:absolute; bottom:10px; right:10px; background:#6366f1; border:2px solid #1e1e2e; border-radius:50%; width:30px; height:30px; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;" title="Edit Profile"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>'
+        ? '<button onclick="openProfileEditModal()" style="position:absolute; bottom:10px; right:10px; background:var(--accent-primary, #e5a54b); border:2px solid var(--bg-primary, #0c0b0d); border-radius:50%; width:30px; height:30px; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;" title="Edit Profile"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bg-primary, #0c0b0d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>'
         : '';
 
     const navbarHTML = `
@@ -162,32 +162,32 @@ function showProfileEditModal(profile) {
     modal.onclick = function(e) { if (e.target === this) this.remove(); };
 
     modal.innerHTML = `
-        <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto;" onclick="event.stopPropagation()">
+        <div style="background: var(--bg-elevated, #262329); color: var(--text-primary, #f5f2ed); padding: 2rem; border-radius: 12px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));" onclick="event.stopPropagation()">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h3 style="margin: 0;">Edit Profile</h3>
-                <button onclick="document.getElementById('profile-edit-modal').remove()" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: #999;">&times;</button>
+                <h3 style="margin: 0; color: var(--text-primary, #f5f2ed);">Edit Profile</h3>
+                <button onclick="document.getElementById('profile-edit-modal').remove()" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: var(--text-muted, #8a857c);">&times;</button>
             </div>
 
             <div style="margin-bottom: 1.5rem; text-align: center;">
                 <div style="position: relative; display: inline-block; cursor: pointer;" onclick="document.getElementById('profile-pic-input').click()">
-                    <img id="profile-preview" src="${profile.profile_picture_url || '/resources/profile.png'}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #e0e0e0;">
-                    <div style="position: absolute; bottom: 0; right: 0; background: #6366f1; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 3px solid white;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                    <img id="profile-preview" src="${profile.profile_picture_url || '/resources/profile.png'}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--border-default, rgba(255, 255, 255, 0.1));">
+                    <div style="position: absolute; bottom: 0; right: 0; background: var(--accent-primary, #e5a54b); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 3px solid var(--bg-elevated, #262329);">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bg-primary, #0c0b0d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
                     </div>
                 </div>
                 <input type="file" id="profile-pic-input" accept="image/*" style="display: none;">
                 <input type="hidden" id="profile-pic-url" value="${profile.profile_picture_url || ''}">
-                <p id="upload-status" style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">Click to upload a new photo</p>
+                <p id="upload-status" style="font-size: 0.85rem; color: var(--text-muted, #8a857c); margin-top: 0.5rem;">Click to upload a new photo</p>
             </div>
 
             <div style="margin-bottom: 1.5rem;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Bio</label>
-                <textarea id="profile-bio" rows="4" placeholder="Tell visitors about yourself..." style="width: 100%; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem; resize: vertical; box-sizing: border-box;"></textarea>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary, #f5f2ed);">Bio</label>
+                <textarea id="profile-bio" rows="4" placeholder="Tell visitors about yourself..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; font-size: 0.9rem; resize: vertical; box-sizing: border-box; background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed);"></textarea>
             </div>
 
             <div style="display: flex; gap: 1rem;">
-                <button onclick="saveProfile()" style="flex: 1; padding: 0.75rem; background: #6366f1; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem;">Save</button>
-                <button onclick="document.getElementById('profile-edit-modal').remove()" style="flex: 1; padding: 0.75rem; background: #e0e0e0; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem;">Cancel</button>
+                <button onclick="saveProfile()" style="flex: 1; padding: 0.75rem; background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 500;">Save</button>
+                <button onclick="document.getElementById('profile-edit-modal').remove()" style="flex: 1; padding: 0.75rem; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; cursor: pointer; font-size: 1rem;">Cancel</button>
             </div>
         </div>
     `;
@@ -219,7 +219,7 @@ function showProfileEditModal(profile) {
         const urlInput = document.getElementById('profile-pic-url');
 
         statusEl.textContent = 'Uploading...';
-        statusEl.style.color = '#6366f1';
+        statusEl.style.color = 'var(--accent-primary, #e5a54b)';
 
         try {
             const token = localStorage.getItem('comment_token');

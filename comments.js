@@ -936,8 +936,20 @@ function selectMention(user) {
     hideMentionDropdown();
 }
 
+// Allow pre-loading comments from batched API
+// Parent page can set window.PRELOADED_COMMENTS before DOMContentLoaded
+window.initCommentsWithData = function(comments) {
+    renderComments(comments);
+    updateCommentForm();
+};
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    loadComments();
+    // Check if comments were pre-loaded (e.g., from /posts/{slug}/full endpoint)
+    if (window.PRELOADED_COMMENTS) {
+        renderComments(window.PRELOADED_COMMENTS);
+    } else {
+        loadComments();
+    }
     updateCommentForm();
 });

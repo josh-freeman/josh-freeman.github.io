@@ -214,10 +214,13 @@
                 // Include auth token if logged in (for exclusive posts)
                 const token = localStorage.getItem('comment_token');
                 const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-                const response = await fetch(`${API_BASE}/posts/${slug}`, { headers, credentials: 'include' });
+
+                // Use batched endpoint to reduce API calls (post + comments + reactions in one request)
+                const response = await fetch(`${API_BASE}/posts/${slug}/full`, { headers, credentials: 'include' });
 
                 if (response.ok) {
-                    const post = await response.json();
+                    const data = await response.json();
+                    const post = data.post;
                     currentPost = post;  // Store for sharing
 
                     // Update page metadata
@@ -237,6 +240,12 @@
 
                     // Style blockquotes based on content
                     styleBlockquotes();
+
+                    // Initialize comments with pre-loaded data (prevents extra API call)
+                    window.PRELOADED_COMMENTS = data.comments;
+
+                    // Initialize reactions with pre-loaded data
+                    initReactionsWithData(data.reactions);
 
                     // Record view (fire and forget)
                     fetch(`${API_BASE}/posts/${slug}/view`, {
@@ -1250,8 +1259,25 @@
         let userReactionId = null;
         let maxReactionDepth = 3;
         let currentUser = null;
+        let reactionsPreloaded = false;
+
+        // Initialize reactions with pre-loaded data from batched endpoint
+        function initReactionsWithData(reactionsData) {
+            reactionsPreloaded = true;
+            const userStr = localStorage.getItem('comment_user');
+            if (userStr) currentUser = JSON.parse(userStr);
+
+            userReacted = reactionsData.user_reacted;
+            userReactionId = reactionsData.reaction_id;
+            maxReactionDepth = reactionsData.max_depth;
+            updateReactionUI(reactionsData.count, reactionsData.user_reacted);
+            renderReactionTree(reactionsData.tree);
+        }
 
         async function loadReactions() {
+            // Skip if already loaded via batched endpoint
+            if (reactionsPreloaded) return;
+
             const slug = getPostSlug();
             if (!slug) return;
 

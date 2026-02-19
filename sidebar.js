@@ -4,6 +4,10 @@ if (typeof window.API_BASE === 'undefined') {
     const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     window.API_BASE = isLocalDev ? 'http://localhost:8080' : 'https://api.joshfreeman.me';
 }
+// Also set COMMENTS_API_BASE for comments.js compatibility
+if (typeof window.COMMENTS_API_BASE === 'undefined') {
+    window.COMMENTS_API_BASE = window.API_BASE;
+}
 
 function isAdminLoggedIn() {
     try {

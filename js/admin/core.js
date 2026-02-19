@@ -185,13 +185,14 @@ function showTemplateTab(templateType, tab) {
         preview.classList.add('active');
 
         const html = textarea.value;
+        const baseUrl = window.location.origin;
         const sampleData = templateType === 'invite' ? {
             name: 'John Doe',
-            url: 'https://joshfreeman.me/register.html?token=SAMPLE_TOKEN',
+            url: `${baseUrl}/register.html?token=SAMPLE_TOKEN`,
             expires: '7 days'
         } : {
             name: 'John Doe',
-            url: 'https://joshfreeman.me/blog/post.html?slug=sample-post',
+            url: `${baseUrl}/blog/post.html?slug=sample-post`,
             title: 'My Awesome Blog Post',
             excerpt: 'This is a sample excerpt that shows what the post preview will look like...'
         };

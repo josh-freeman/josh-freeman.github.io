@@ -4,7 +4,8 @@
 // Use window.COMMENTS_API_BASE to avoid conflicts with page scripts
 // Pages can define COMMENTS_API_BASE before this script loads to override
 if (typeof window.COMMENTS_API_BASE === 'undefined') {
-    window.COMMENTS_API_BASE = 'https://api.joshfreeman.me';
+    const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    window.COMMENTS_API_BASE = isLocalDev ? 'http://localhost:8080' : 'https://api.joshfreeman.me';
 }
 
 // SVG heart icons

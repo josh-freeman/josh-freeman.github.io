@@ -32,10 +32,14 @@ def main():
     signal.signal(signal.SIGINT, cleanup)
     signal.signal(signal.SIGTERM, cleanup)
 
-    # Start API
+    # Start API (using its venv)
     print("🚀 Starting API at http://localhost:8080")
+    api_venv = os.path.join(API_DIR, ".venv", "bin", "uvicorn")
+    if not os.path.exists(api_venv):
+        print(f"❌ API venv not found. Run: cd {API_DIR} && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt")
+        sys.exit(1)
     api_proc = subprocess.Popen(
-        ["uvicorn", "main:app", "--port", "8080", "--reload"],
+        [api_venv, "main:app", "--port", "8080", "--reload"],
         cwd=API_DIR,
         env={**os.environ, "DEBUG": "true"}
     )

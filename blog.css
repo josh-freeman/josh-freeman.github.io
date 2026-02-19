@@ -75,6 +75,7 @@
 .post-preview h2 {
     font-size: var(--text-xl);
     font-family: var(--font-display);
+    margin-top: 0;
     margin-bottom: var(--space-1);
     color: var(--text-primary);
     transition: color var(--transition-fast);

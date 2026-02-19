@@ -446,6 +446,32 @@
     border: 1px solid var(--border-default);
 }
 
+.draft-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--text-xs) !important;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--warning), #d4a04a) !important;
+    color: var(--bg-primary) !important;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-md);
+    vertical-align: middle;
+    margin-left: var(--space-2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Draft post styling - subtle visual distinction */
+.post-preview.is-draft {
+    opacity: 0.85;
+    border-style: dashed;
+}
+
+.post-preview.is-draft::before {
+    background: var(--warning);
+}
+
 /* ========================================
    Comments Section
    ======================================== */

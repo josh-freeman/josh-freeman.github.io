@@ -8,6 +8,21 @@ if (typeof window.COMMENTS_API_BASE === 'undefined') {
     window.COMMENTS_API_BASE = isLocalDev ? 'http://localhost:8080' : 'https://api.joshfreeman.me';
 }
 
+// Parse markdown content - uses marked if available, otherwise escapes HTML
+function parseCommentMarkdown(content) {
+    if (typeof marked !== 'undefined') {
+        // Configure marked for safe rendering
+        marked.setOptions({
+            breaks: true, // Convert \n to <br>
+            gfm: true,    // GitHub flavored markdown
+        });
+        // Parse and sanitize - wrap in a div to constrain styles
+        return `<div class="comment-markdown">${marked.parse(content)}</div>`;
+    }
+    // Fallback: escape HTML and convert newlines to <br>
+    return escapeHtml(content).replace(/\n/g, '<br>');
+}
+
 // SVG heart icons
 const HEART_SVG_PATH = 'M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z';
 const HEART_OUTLINE = `<svg class="comment-heart-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="${HEART_SVG_PATH}"/></svg>`;
@@ -99,6 +114,88 @@ const HEART_FILLED = `<svg class="comment-heart-icon active" width="16" height="
                 border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
                 color: var(--text-primary, #f5f2ed);
             }
+
+            /* Comment markdown styles */
+            .comment-markdown {
+                line-height: 1.6;
+            }
+            .comment-markdown p {
+                margin: 0 0 0.5rem 0;
+            }
+            .comment-markdown p:last-child {
+                margin-bottom: 0;
+            }
+            .comment-markdown a {
+                color: var(--accent-primary, #e5a54b);
+            }
+            .comment-markdown code {
+                background: var(--bg-tertiary, #1e1c21);
+                padding: 0.15rem 0.35rem;
+                border-radius: 4px;
+                font-size: 0.9em;
+            }
+            .comment-markdown pre {
+                background: var(--bg-tertiary, #1e1c21);
+                padding: 0.75rem;
+                border-radius: 6px;
+                overflow-x: auto;
+                margin: 0.5rem 0;
+            }
+            .comment-markdown pre code {
+                padding: 0;
+                background: none;
+            }
+            .comment-markdown blockquote {
+                border-left: 3px solid var(--accent-primary, #e5a54b);
+                margin: 0.5rem 0;
+                padding-left: 1rem;
+                color: var(--text-secondary, #c2bdb4);
+            }
+            .comment-markdown ul, .comment-markdown ol {
+                margin: 0.5rem 0;
+                padding-left: 1.5rem;
+            }
+            .comment-markdown img {
+                max-width: 100%;
+                border-radius: 6px;
+            }
+
+            /* Write/Preview tabs for comment forms */
+            .comment-editor-tabs {
+                display: flex;
+                gap: 0;
+                margin-bottom: 0.5rem;
+                border-bottom: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
+            }
+            .comment-editor-tab {
+                padding: 0.4rem 0.75rem;
+                background: none;
+                border: none;
+                color: var(--text-muted, #8a857c);
+                cursor: pointer;
+                font-size: 0.85rem;
+                border-bottom: 2px solid transparent;
+                margin-bottom: -1px;
+            }
+            .comment-editor-tab:hover {
+                color: var(--text-secondary, #c2bdb4);
+            }
+            .comment-editor-tab.active {
+                color: var(--accent-primary, #e5a54b);
+                border-bottom-color: var(--accent-primary, #e5a54b);
+            }
+            .comment-preview {
+                min-height: 60px;
+                padding: 0.75rem;
+                border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
+                border-radius: 6px;
+                background: var(--bg-secondary, #151418);
+                color: var(--text-primary, #f5f2ed);
+            }
+            .comment-preview-empty {
+                color: var(--text-muted, #8a857c);
+                font-style: italic;
+            }
         `;
         document.head.appendChild(style);
     }
@@ -152,7 +249,7 @@ function renderSingleComment(comment, user, isReply = false) {
                 ` : ''}
             </div>
             <div class="comment-body">
-                <p>${escapeHtml(comment.content)}</p>
+                ${parseCommentMarkdown(comment.content)}
             </div>
             <div class="comment-footer">
                 <button onclick="toggleCommentLike(${comment.id})" class="like-btn" id="like-btn-${comment.id}">
@@ -221,7 +318,14 @@ function showReplyForm(parentId, parentAuthorName) {
 
     container.innerHTML = `
         <div class="reply-form">
-            <textarea id="reply-content-${parentId}" placeholder="Write a reply..."></textarea>
+            <div class="comment-editor-tabs">
+                <button type="button" class="comment-editor-tab active" onclick="showCommentTab('write', 'reply-${parentId}')">Write</button>
+                <button type="button" class="comment-editor-tab" onclick="showCommentTab('preview', 'reply-${parentId}')">Preview</button>
+            </div>
+            <div id="comment-write-reply-${parentId}">
+                <textarea id="reply-content-${parentId}" placeholder="Write a reply... (supports markdown)"></textarea>
+            </div>
+            <div id="comment-preview-reply-${parentId}" class="comment-preview" style="display: none;"></div>
             ${notifyOption}
             <div class="reply-form-actions">
                 <button class="submit-reply" onclick="submitReply(${parentId})">Reply</button>
@@ -237,6 +341,38 @@ function showReplyForm(parentId, parentAuthorName) {
 function hideReplyForm(parentId) {
     const container = document.getElementById(`reply-form-${parentId}`);
     if (container) container.innerHTML = '';
+}
+
+// Switch between write/preview tabs for comment forms
+function showCommentTab(tab, formId) {
+    const writeArea = document.getElementById(`comment-write-${formId}`);
+    const previewArea = document.getElementById(`comment-preview-${formId}`);
+    const tabs = writeArea ? writeArea.closest('form, .reply-form').querySelectorAll('.comment-editor-tab') : [];
+
+    if (!writeArea || !previewArea) return;
+
+    // Update tab states
+    tabs.forEach((t, i) => {
+        t.classList.toggle('active', (tab === 'write' && i === 0) || (tab === 'preview' && i === 1));
+    });
+
+    if (tab === 'write') {
+        writeArea.style.display = 'block';
+        previewArea.style.display = 'none';
+    } else {
+        writeArea.style.display = 'none';
+        previewArea.style.display = 'block';
+
+        // Get content from the textarea
+        const textarea = writeArea.querySelector('textarea');
+        const content = textarea ? textarea.value.trim() : '';
+
+        if (content) {
+            previewArea.innerHTML = parseCommentMarkdown(content);
+        } else {
+            previewArea.innerHTML = '<span class="comment-preview-empty">Nothing to preview</span>';
+        }
+    }
 }
 
 // Toggle reply notify checkbox
@@ -435,11 +571,18 @@ function updateCommentForm() {
                     Commenting as <strong>${escapeHtml(user.name)}</strong>
                     (<a href="#" onclick="logout(); return false;">logout</a>${adminLink})
                 </p>
-                <textarea
-                    id="comment-content"
-                    placeholder="Write a comment... (use @ to mention users)"
-                    required
-                ></textarea>
+                <div class="comment-editor-tabs">
+                    <button type="button" class="comment-editor-tab active" onclick="showCommentTab('write', 'main')">Write</button>
+                    <button type="button" class="comment-editor-tab" onclick="showCommentTab('preview', 'main')">Preview</button>
+                </div>
+                <div id="comment-write-main">
+                    <textarea
+                        id="comment-content"
+                        placeholder="Write a comment... (supports markdown, use @ to mention users)"
+                        required
+                    ></textarea>
+                </div>
+                <div id="comment-preview-main" class="comment-preview" style="display: none;"></div>
                 <div id="mention-dropdown" class="mention-dropdown" style="display: none;"></div>
                 <button type="submit" class="btn btn-primary">Post Comment</button>
             </form>
@@ -661,10 +804,17 @@ function editComment(commentId, currentContent) {
         <div style="background: var(--bg-elevated, #262329); color: var(--text-primary, #f5f2ed); padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">
             <h3 style="margin-bottom: 1rem; color: var(--text-primary, #f5f2ed);">Edit Comment</h3>
             <form onsubmit="submitEdit(event, ${commentId})">
-                <textarea
-                    id="edit-content"
-                    style="width: 100%; min-height: 100px; padding: 0.75rem; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; font-size: 1rem; resize: vertical; background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed);"
-                >${currentContent}</textarea>
+                <div class="comment-editor-tabs">
+                    <button type="button" class="comment-editor-tab active" onclick="showCommentTab('write', 'edit')">Write</button>
+                    <button type="button" class="comment-editor-tab" onclick="showCommentTab('preview', 'edit')">Preview</button>
+                </div>
+                <div id="comment-write-edit">
+                    <textarea
+                        id="edit-content"
+                        style="width: 100%; min-height: 100px; padding: 0.75rem; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; font-size: 1rem; resize: vertical; background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed);"
+                    >${currentContent}</textarea>
+                </div>
+                <div id="comment-preview-edit" class="comment-preview" style="display: none;"></div>
                 <div style="display: flex; gap: 1rem; margin-top: 1rem;">
                     <button type="submit" class="btn btn-primary" style="flex: 1;">Save</button>
                     <button type="button" onclick="closeEditModal()" class="btn" style="flex: 1;">Cancel</button>

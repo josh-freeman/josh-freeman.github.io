@@ -284,10 +284,32 @@ function renderSingleComment(comment, user, isReply = false) {
     `;
 }
 
+// Count total comments including replies
+function countAllComments(comments) {
+    let count = 0;
+    function countRecursive(list) {
+        for (const c of list) {
+            count++;
+            if (c.replies && c.replies.length > 0) {
+                countRecursive(c.replies);
+            }
+        }
+    }
+    countRecursive(comments || []);
+    return count;
+}
+
 // Render comments
 function renderComments(comments) {
     const container = document.getElementById('comments-container');
     const user = getUser();
+
+    // Update the comments header with count
+    const header = document.querySelector('.comments-section h2');
+    if (header) {
+        const totalCount = countAllComments(comments);
+        header.textContent = totalCount > 0 ? `Comments (${totalCount})` : 'Comments';
+    }
 
     if (!comments || comments.length === 0) {
         container.innerHTML = '<p class="no-comments">No comments yet. Be the first to comment!</p>';

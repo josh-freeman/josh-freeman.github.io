@@ -272,17 +272,11 @@ function editPost(slug) {
     showEditor(slug);
 }
 
-// Featured image preview
+// Featured image preview - delegates to updateThumbnailPreview in admin.html
 function updateFeaturedImagePreview() {
-    const input = document.getElementById('post-featured-image');
-    const preview = document.getElementById('featured-image-preview');
-    if (!input || !preview) return;
-
-    const url = input.value.trim();
-    if (url) {
-        preview.innerHTML = `<img src="${url}" alt="Featured image preview" style="max-width: 120px; max-height: 80px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-default, rgba(255,255,255,0.1));">`;
-    } else {
-        preview.innerHTML = '<span style="color: var(--text-muted, #8a857c); font-size: 0.85rem;">No image set</span>';
+    const url = document.getElementById('post-featured-image')?.value || '';
+    if (typeof updateThumbnailPreview === 'function') {
+        updateThumbnailPreview(url);
     }
 }
 

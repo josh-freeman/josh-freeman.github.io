@@ -26,6 +26,9 @@
 
     <!-- Marked.js for markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Cropper.js for thumbnail cropping -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
     <style>
         .admin-container {
@@ -167,6 +170,217 @@
         .badge-exclusive {
             background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a));
             color: var(--bg-primary, #0c0b0d);
+        }
+
+        /* Thumbnail selector */
+        .thumbnail-selector {
+            position: relative;
+            width: 200px;
+            height: 134px;
+            background: var(--bg-tertiary, #1e1c21);
+            border: 2px dashed var(--border-default, rgba(255, 255, 255, 0.15));
+            border-radius: 8px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .thumbnail-selector:hover {
+            border-color: var(--accent-primary, #e5a54b);
+            background: var(--bg-elevated, #262329);
+        }
+
+        .thumbnail-selector.has-image {
+            border-style: solid;
+            border-color: var(--border-default, rgba(255, 255, 255, 0.15));
+        }
+
+        .thumbnail-preview-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 0.5rem;
+            color: var(--text-muted, #8a857c);
+            font-size: 0.85rem;
+        }
+
+        .thumbnail-preview-empty svg {
+            opacity: 0.5;
+        }
+
+        .thumbnail-selector img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .thumbnail-remove {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 24px;
+            height: 24px;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .thumbnail-selector:hover .thumbnail-remove {
+            opacity: 1;
+        }
+
+        .thumbnail-remove:hover {
+            background: #dc2626;
+        }
+
+        /* Cropper modal */
+        .cropper-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(4px);
+        }
+
+        .cropper-modal {
+            background: var(--bg-elevated, #262329);
+            border-radius: 12px;
+            border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
+            max-width: 700px;
+            width: 95%;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cropper-modal-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cropper-modal-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--text-primary, #f5f2ed);
+        }
+
+        .cropper-modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted, #8a857c);
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        .cropper-modal-close:hover {
+            color: var(--text-primary, #f5f2ed);
+        }
+
+        .cropper-modal-body {
+            padding: 1.25rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .cropper-dropzone {
+            border: 2px dashed var(--border-default, rgba(255, 255, 255, 0.2));
+            border-radius: 8px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cropper-dropzone:hover,
+        .cropper-dropzone.dragover {
+            border-color: var(--accent-primary, #e5a54b);
+            background: rgba(229, 165, 75, 0.05);
+        }
+
+        .cropper-dropzone svg {
+            color: var(--text-muted, #8a857c);
+            margin-bottom: 1rem;
+        }
+
+        .cropper-dropzone p {
+            color: var(--text-secondary, #c2bdb4);
+            margin: 0 0 0.5rem;
+        }
+
+        .cropper-dropzone small {
+            color: var(--text-muted, #8a857c);
+            font-size: 0.85rem;
+        }
+
+        .cropper-container-wrapper {
+            display: none;
+        }
+
+        .cropper-container-wrapper.active {
+            display: block;
+        }
+
+        .cropper-image-container {
+            max-height: 400px;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .cropper-image-container img {
+            display: block;
+            max-width: 100%;
+        }
+
+        .cropper-modal-footer {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cropper-modal-footer .btn-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .cropper-uploading {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted, #8a857c);
+            font-size: 0.9rem;
+        }
+
+        .cropper-uploading .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-default);
+            border-top-color: var(--accent-primary, #e5a54b);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         .editor-container {
@@ -651,12 +865,20 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="post-featured-image">Featured Image URL <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">— optional thumbnail</span></label>
-                            <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
-                                <input type="text" id="post-featured-image" placeholder="https://..." style="flex: 1;" oninput="updateFeaturedImagePreview()">
-                                <div id="featured-image-preview" style="flex-shrink: 0; min-width: 80px;">
-                                    <span style="color: var(--text-muted, #8a857c); font-size: 0.85rem;">No image set</span>
+                            <label>Thumbnail <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">— 3:2 aspect ratio</span></label>
+                            <input type="hidden" id="post-featured-image">
+                            <div id="thumbnail-selector" class="thumbnail-selector" onclick="openThumbnailCropper()">
+                                <div id="thumbnail-preview" class="thumbnail-preview-empty">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                        <circle cx="9" cy="9" r="2"/>
+                                        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                                    </svg>
+                                    <span>Click to add thumbnail</span>
                                 </div>
+                                <button type="button" id="thumbnail-remove-btn" class="thumbnail-remove" onclick="event.stopPropagation(); removeThumbnail();" style="display: none;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                </button>
                             </div>
                         </div>
 
@@ -891,6 +1113,262 @@
                 unchecked.style.display = 'block';
                 checked.style.display = 'none';
             }
+        }
+    </script>
+
+    <!-- Thumbnail Cropper Modal -->
+    <div id="thumbnail-cropper-modal" class="cropper-modal-overlay" style="display: none;">
+        <div class="cropper-modal">
+            <div class="cropper-modal-header">
+                <h3>Set Thumbnail</h3>
+                <button type="button" class="cropper-modal-close" onclick="closeThumbnailCropper()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="cropper-modal-body">
+                <div id="cropper-dropzone" class="cropper-dropzone">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    <p>Drop an image here or click to select</p>
+                    <small>Supports JPG, PNG, GIF, WebP (max 10MB)</small>
+                    <input type="file" id="cropper-file-input" accept="image/*" style="display: none;">
+                </div>
+                <div id="cropper-container-wrapper" class="cropper-container-wrapper">
+                    <div class="cropper-image-container">
+                        <img id="cropper-image" src="" alt="Crop preview">
+                    </div>
+                </div>
+            </div>
+            <div class="cropper-modal-footer">
+                <div id="cropper-status" class="cropper-uploading" style="display: none;">
+                    <div class="spinner"></div>
+                    <span>Uploading...</span>
+                </div>
+                <div class="btn-group" style="margin-left: auto;">
+                    <button type="button" class="btn" onclick="resetCropper()" id="cropper-reset-btn" style="display: none;">Choose Different</button>
+                    <button type="button" class="btn" onclick="closeThumbnailCropper()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCroppedThumbnail()" id="cropper-save-btn" style="display: none;">
+                        Save Thumbnail
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Thumbnail Cropper
+        let cropperInstance = null;
+
+        function openThumbnailCropper() {
+            const modal = document.getElementById('thumbnail-cropper-modal');
+            modal.style.display = 'flex';
+            resetCropper();
+        }
+
+        function closeThumbnailCropper() {
+            const modal = document.getElementById('thumbnail-cropper-modal');
+            modal.style.display = 'none';
+            if (cropperInstance) {
+                cropperInstance.destroy();
+                cropperInstance = null;
+            }
+        }
+
+        function resetCropper() {
+            const dropzone = document.getElementById('cropper-dropzone');
+            const wrapper = document.getElementById('cropper-container-wrapper');
+            const saveBtn = document.getElementById('cropper-save-btn');
+            const resetBtn = document.getElementById('cropper-reset-btn');
+            const fileInput = document.getElementById('cropper-file-input');
+
+            dropzone.style.display = 'block';
+            wrapper.classList.remove('active');
+            saveBtn.style.display = 'none';
+            resetBtn.style.display = 'none';
+            fileInput.value = '';
+
+            if (cropperInstance) {
+                cropperInstance.destroy();
+                cropperInstance = null;
+            }
+        }
+
+        // Dropzone events
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropzone = document.getElementById('cropper-dropzone');
+            const fileInput = document.getElementById('cropper-file-input');
+
+            dropzone.addEventListener('click', () => fileInput.click());
+
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            });
+
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.classList.remove('dragover');
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) handleImageSelect(files[0]);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) handleImageSelect(e.target.files[0]);
+            });
+        });
+
+        function handleImageSelect(file) {
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select an image file', 'error');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('Image must be under 10MB', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => initCropper(e.target.result, file.type);
+            reader.readAsDataURL(file);
+        }
+
+        function initCropper(imageSrc, mimeType) {
+            const dropzone = document.getElementById('cropper-dropzone');
+            const wrapper = document.getElementById('cropper-container-wrapper');
+            const image = document.getElementById('cropper-image');
+            const saveBtn = document.getElementById('cropper-save-btn');
+            const resetBtn = document.getElementById('cropper-reset-btn');
+
+            dropzone.style.display = 'none';
+            wrapper.classList.add('active');
+            saveBtn.style.display = 'inline-block';
+            resetBtn.style.display = 'inline-block';
+
+            image.src = imageSrc;
+            image.dataset.mimeType = mimeType;
+
+            // Wait for image to load before initializing cropper
+            image.onload = () => {
+                if (cropperInstance) cropperInstance.destroy();
+
+                cropperInstance = new Cropper(image, {
+                    aspectRatio: 3 / 2,
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    responsive: true,
+                    guides: true,
+                    center: true,
+                    highlight: true,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                });
+            };
+        }
+
+        async function saveCroppedThumbnail() {
+            if (!cropperInstance) return;
+
+            const saveBtn = document.getElementById('cropper-save-btn');
+            const status = document.getElementById('cropper-status');
+            const image = document.getElementById('cropper-image');
+            const mimeType = image.dataset.mimeType || 'image/jpeg';
+
+            saveBtn.disabled = true;
+            status.style.display = 'flex';
+
+            try {
+                // Get cropped canvas
+                const canvas = cropperInstance.getCroppedCanvas({
+                    width: 600,  // Output width for quality
+                    height: 400, // 3:2 aspect ratio
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high',
+                });
+
+                // Convert to blob
+                const blob = await new Promise(resolve => {
+                    // Use original mime type for GIFs to preserve them, otherwise use JPEG
+                    const outputType = mimeType === 'image/gif' ? 'image/gif' : 'image/jpeg';
+                    canvas.toBlob(resolve, outputType, 0.9);
+                });
+
+                // Upload to R2
+                const formData = new FormData();
+                const ext = mimeType === 'image/gif' ? 'gif' : 'jpg';
+                formData.append('file', blob, `thumbnail-${Date.now()}.${ext}`);
+
+                const token = localStorage.getItem('comment_token');
+                const response = await fetch(`${API_BASE}/admin/upload-image`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.detail || 'Upload failed');
+                }
+
+                const result = await response.json();
+
+                // Set the thumbnail URL
+                document.getElementById('post-featured-image').value = result.url;
+                updateThumbnailPreview(result.url);
+
+                closeThumbnailCropper();
+                showToast('Thumbnail uploaded!', 'success');
+
+            } catch (error) {
+                showToast(error.message || 'Failed to upload thumbnail', 'error');
+            } finally {
+                saveBtn.disabled = false;
+                status.style.display = 'none';
+            }
+        }
+
+        function updateThumbnailPreview(url) {
+            const selector = document.getElementById('thumbnail-selector');
+            const preview = document.getElementById('thumbnail-preview');
+            const removeBtn = document.getElementById('thumbnail-remove-btn');
+
+            if (url) {
+                preview.innerHTML = `<img src="${url}" alt="Thumbnail preview">`;
+                preview.className = '';
+                selector.classList.add('has-image');
+                removeBtn.style.display = 'flex';
+            } else {
+                preview.innerHTML = `
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="9" cy="9" r="2"/>
+                        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                    </svg>
+                    <span>Click to add thumbnail</span>
+                `;
+                preview.className = 'thumbnail-preview-empty';
+                selector.classList.remove('has-image');
+                removeBtn.style.display = 'none';
+            }
+        }
+
+        function removeThumbnail() {
+            document.getElementById('post-featured-image').value = '';
+            updateThumbnailPreview(null);
+        }
+
+        // Override the old updateFeaturedImagePreview function
+        function updateFeaturedImagePreview() {
+            const url = document.getElementById('post-featured-image').value;
+            updateThumbnailPreview(url);
         }
     </script>
 </body>

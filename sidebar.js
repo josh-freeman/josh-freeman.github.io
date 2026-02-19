@@ -329,3 +329,10 @@ function closeNav() {
     if (main) main.style.marginLeft = "0";
     if (btn) btn.onclick = openNav;
 }
+
+// Load notification bell for admin users
+if (isAdminLoggedIn()) {
+    const script = document.createElement('script');
+    script.src = '/js/notifications.js';
+    document.head.appendChild(script);
+}

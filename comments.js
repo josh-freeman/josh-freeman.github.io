@@ -1177,4 +1177,90 @@ document.addEventListener('DOMContentLoaded', () => {
         loadComments(); // This calls highlightLinkedComment after rendering
     }
     updateCommentForm();
+
+    // Setup WebSocket for real-time updates
+    setupWebSocketComments();
 });
+
+// Setup WebSocket for real-time comment updates
+function setupWebSocketComments() {
+    const slug = getPostSlug();
+    if (!slug) return;
+
+    // Wait for WebSocketClient to be available
+    if (!window.WebSocketClient) {
+        setTimeout(setupWebSocketComments, 100);
+        return;
+    }
+
+    // Subscribe to this post's comments
+    window.WebSocketClient.on('connected', () => {
+        window.WebSocketClient.subscribeToPost(slug);
+    });
+
+    // If already connected, subscribe now
+    if (window.WebSocketClient.isConnected()) {
+        window.WebSocketClient.subscribeToPost(slug);
+    }
+
+    // Handle new comments
+    window.WebSocketClient.on('new_comment', (data) => {
+        if (data.post_slug !== slug) return;
+
+        // Only add if this comment doesn't already exist (avoid duplicates from own submission)
+        if (document.getElementById(`comment-${data.comment.id}`)) return;
+
+        addCommentToDOM(data.comment);
+    });
+
+    // Handle deleted comments
+    window.WebSocketClient.on('comment_deleted', (data) => {
+        if (data.post_slug !== slug) return;
+
+        const commentEl = document.getElementById(`comment-${data.comment_id}`);
+        if (commentEl) {
+            commentEl.remove();
+
+            // Check if we need to show "no comments" message
+            const container = document.getElementById('comments-container');
+            if (container && container.querySelectorAll('.comment').length === 0) {
+                container.innerHTML = '<p class="no-comments">No comments yet. Be the first to comment!</p>';
+            }
+        }
+    });
+}
+
+// Add a new comment to the DOM in real-time
+function addCommentToDOM(comment) {
+    const container = document.getElementById('comments-container');
+    if (!container) return;
+
+    // Remove "no comments" message if present
+    const noComments = container.querySelector('.no-comments');
+    if (noComments) noComments.remove();
+
+    const user = getUser();
+
+    if (comment.parent_id) {
+        // This is a reply - add it to the parent's replies container
+        const parentComment = document.getElementById(`comment-${comment.parent_id}`);
+        if (parentComment) {
+            let repliesContainer = parentComment.querySelector('.comment-replies');
+            if (!repliesContainer) {
+                repliesContainer = document.createElement('div');
+                repliesContainer.className = 'comment-replies';
+                parentComment.appendChild(repliesContainer);
+            }
+            repliesContainer.insertAdjacentHTML('beforeend', renderSingleComment(comment, user, true));
+        }
+    } else {
+        // Top-level comment - add to the end
+        container.insertAdjacentHTML('beforeend', renderSingleComment(comment, user, false));
+    }
+
+    // Highlight the new comment briefly
+    const newCommentEl = document.getElementById(`comment-${comment.id}`);
+    if (newCommentEl) {
+        newCommentEl.classList.add('highlight');
+    }
+}

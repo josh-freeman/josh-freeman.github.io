@@ -7,7 +7,6 @@
     'use strict';
 
     let notificationDropdownOpen = false;
-    let pollInterval = null;
 
     /**
      * Check if admin is logged in
@@ -66,8 +65,21 @@
         // Fetch initial count
         fetchUnreadCount();
 
-        // Poll for new notifications every 60 seconds
-        pollInterval = setInterval(fetchUnreadCount, 60000);
+        // Listen for real-time updates via WebSocket
+        if (window.WebSocketClient) {
+            window.WebSocketClient.on('notification_update', function(data) {
+                updateBadge(data.unread_count);
+                // If dropdown is open, refresh the list
+                if (notificationDropdownOpen) {
+                    fetchNotifications();
+                }
+            });
+
+            window.WebSocketClient.on('notification', function(data) {
+                // New notification received, refresh the count
+                fetchUnreadCount();
+            });
+        }
 
         // Close dropdown when clicking outside
         document.addEventListener('click', handleOutsideClick);

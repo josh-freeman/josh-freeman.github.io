@@ -330,9 +330,17 @@ function closeNav() {
     if (btn) btn.onclick = openNav;
 }
 
+// Load WebSocket client for real-time updates (all users)
+const wsScript = document.createElement('script');
+wsScript.src = '/js/websocket.js';
+document.head.appendChild(wsScript);
+
 // Load notification bell for admin users
 if (isAdminLoggedIn()) {
-    const script = document.createElement('script');
-    script.src = '/js/notifications.js';
-    document.head.appendChild(script);
+    // Wait for WebSocket script to load first
+    wsScript.onload = function() {
+        const notifScript = document.createElement('script');
+        notifScript.src = '/js/notifications.js';
+        document.head.appendChild(notifScript);
+    };
 }

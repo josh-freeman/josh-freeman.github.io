@@ -10,11 +10,11 @@ const defaultInviteTemplate = {
     body: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
     <h2 style="color: #1f2937;">Hey {name}!</h2>
     <p style="color: #4b5563; line-height: 1.6;">
-        You've been invited to join my blog as a friend. This gives you access to exclusive posts and the ability to leave comments.
+        I'd love for you to join my blog — it's where I share updates with friends and family. You'll be able to see posts and leave comments.
     </p>
     <p style="margin: 24px 0;">
         <a href="{url}" style="background: linear-gradient(135deg, #e5a54b, #c48a3a); color: #0c0b0d; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500;">
-            Accept Invitation
+            Join
         </a>
     </p>
     <p style="color: #6b7280; font-size: 14px;">
@@ -331,14 +331,11 @@ const defaultInviteReminderTemplate = {
     body: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
     <h2 style="color: #1f2937;">Hey {name}!</h2>
     <p style="color: #4b5563; line-height: 1.6;">
-        Just a friendly reminder — you have a pending invitation to join my blog! I'd love to have you as part of the community.
-    </p>
-    <p style="color: #4b5563; line-height: 1.6;">
-        As a friend, you'll get access to exclusive posts and be able to join the conversation with comments.
+        Just a friendly nudge — you still have an invite waiting! I'd love for you to join.
     </p>
     <p style="margin: 24px 0;">
         <a href="{url}" style="background: linear-gradient(135deg, #e5a54b, #c48a3a); color: #0c0b0d; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500;">
-            Accept Invitation
+            Join
         </a>
     </p>
     <p style="color: #6b7280; font-size: 14px;">

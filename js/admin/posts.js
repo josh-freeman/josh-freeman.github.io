@@ -782,3 +782,85 @@ function resetPostTemplate() {
     document.getElementById('post-tpl-subject').value = defaultPostTemplate.subject;
     document.getElementById('post-tpl-body').value = defaultPostTemplate.body;
 }
+
+// Default reply notification template
+const defaultReplyTemplate = {
+    from_name: "Josh Freeman",
+    from_email: "josh@joshfreeman.me",
+    subject: "Josh replied to your comment",
+    body: `<div style="font-family: 'Georgia', 'Times New Roman', serif; max-width: 520px; margin: 0 auto; padding: 32px 24px; background: #0c0b0d; border-radius: 12px;">
+    <p style="color: #c2bdb4; line-height: 1.7; font-size: 16px; margin: 0 0 20px;">Hey {recipient_name},</p>
+    <p style="color: #c2bdb4; line-height: 1.7; font-size: 16px; margin: 0 0 24px;">
+        I replied to your comment on <strong style="color: #f5f2ed;">{post_title}</strong>.
+    </p>
+    <div style="border-left: 3px solid #8a857c; padding-left: 16px; margin-bottom: 20px;">
+        <p style="color: #8a857c; font-size: 14px; margin: 0 0 4px;">Your comment:</p>
+        <p style="color: #c2bdb4; font-size: 15px; margin: 0; font-style: italic;">"{original_comment}"</p>
+    </div>
+    <div style="border-left: 3px solid #e5a54b; padding-left: 16px; margin-bottom: 28px;">
+        <p style="color: #e5a54b; font-size: 14px; margin: 0 0 4px;">My reply:</p>
+        <p style="color: #f5f2ed; font-size: 15px; margin: 0;">"{reply_content}"</p>
+    </div>
+    <p style="margin: 0 0 32px;">
+        <a href="{post_url}" style="display: inline-block; background: #e5a54b; color: #0c0b0d; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
+            View Conversation →
+        </a>
+    </p>
+    <div style="border-top: 1px solid rgba(229, 165, 75, 0.2); padding-top: 20px;">
+        <p style="color: #8a857c; margin: 0; font-size: 13px;">— Josh</p>
+    </div>
+</div>`
+};
+
+// Reply notification template
+async function loadReplyTemplate() {
+    const token = localStorage.getItem('comment_token');
+    try {
+        const response = await fetch(`${API_BASE}/admin/settings/email-templates/reply`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const tpl = await response.json();
+            document.getElementById('reply-tpl-from-name').value = tpl.from_name || defaultReplyTemplate.from_name;
+            document.getElementById('reply-tpl-from-email').value = tpl.from_email || defaultReplyTemplate.from_email;
+            document.getElementById('reply-tpl-subject').value = tpl.subject || defaultReplyTemplate.subject;
+            document.getElementById('reply-tpl-body').value = tpl.body || defaultReplyTemplate.body;
+        } else {
+            resetReplyTemplate();
+        }
+    } catch (error) {
+        resetReplyTemplate();
+    }
+}
+
+async function saveReplyTemplate() {
+    const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.templateSave : { start: () => true, end: () => {} };
+    if (!guard.start()) return;
+
+    const token = localStorage.getItem('comment_token');
+    const data = {
+        from_name: document.getElementById('reply-tpl-from-name').value,
+        from_email: document.getElementById('reply-tpl-from-email').value,
+        subject: document.getElementById('reply-tpl-subject').value,
+        body: document.getElementById('reply-tpl-body').value
+    };
+    try {
+        const response = await fetch(`${API_BASE}/admin/settings/email-templates/reply`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify(data)
+        });
+        showToast(response.ok ? 'Reply template saved' : 'Failed to save template', response.ok ? 'success' : 'error');
+    } catch (error) {
+        showToast('Failed to save template', 'error');
+    } finally {
+        guard.end();
+    }
+}
+
+function resetReplyTemplate() {
+    document.getElementById('reply-tpl-from-name').value = defaultReplyTemplate.from_name;
+    document.getElementById('reply-tpl-from-email').value = defaultReplyTemplate.from_email;
+    document.getElementById('reply-tpl-subject').value = defaultReplyTemplate.subject;
+    document.getElementById('reply-tpl-body').value = defaultReplyTemplate.body;
+}

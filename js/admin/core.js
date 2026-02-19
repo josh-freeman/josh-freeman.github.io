@@ -123,6 +123,7 @@ function showTab(tab) {
         document.getElementById('tab-posts').style.fontWeight = '600';
         loadPosts();
         loadPostTemplate();
+        loadReplyTemplate();
     } else if (tab === 'invites') {
         document.getElementById('invites-view').style.display = 'block';
         document.getElementById('tab-invites').style.fontWeight = '600';

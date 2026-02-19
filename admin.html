@@ -563,6 +563,47 @@
                         </div>
                     </details>
 
+                    <!-- Comment Reply Notification Email Template -->
+                    <details style="margin-bottom: 1.5rem; background: var(--bg-tertiary, #1e1c21); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px;">
+                        <summary style="padding: 1rem; cursor: pointer; font-weight: 600;">Reply Notification Email Template</summary>
+                        <div style="padding: 0 1.5rem 1.5rem 1.5rem;">
+                            <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+                                Sent when you reply to a comment. Placeholders: <code>{recipient_name}</code>, <code>{replier_name}</code>, <code>{post_title}</code>, <code>{post_url}</code>, <code>{original_comment}</code>, <code>{reply_content}</code>
+                            </p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>From Name</label>
+                                    <input type="text" id="reply-tpl-from-name" placeholder="Josh Freeman">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>From Email</label>
+                                    <input type="email" id="reply-tpl-from-email" placeholder="josh@joshfreeman.me">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <input type="text" id="reply-tpl-subject" placeholder="Josh replied to your comment">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0.5rem;">
+                                <label>Body (HTML)</label>
+                                <div class="html-editor-tabs">
+                                    <button type="button" class="html-editor-tab active" onclick="showTemplateTab('reply', 'write')">Write</button>
+                                    <button type="button" class="html-editor-tab" onclick="showTemplateTab('reply', 'preview')">Preview</button>
+                                </div>
+                                <div class="html-editor-content">
+                                    <textarea id="reply-tpl-body" style="min-height: 150px; font-family: monospace; font-size: 0.85rem;"></textarea>
+                                    <div id="reply-tpl-preview" class="html-editor-preview">
+                                        <iframe id="reply-tpl-iframe" sandbox="allow-same-origin"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-primary" onclick="saveReplyTemplate()">Save Template</button>
+                                <button class="btn" onclick="resetReplyTemplate()">Reset to Default</button>
+                            </div>
+                        </div>
+                    </details>
+
                     <div id="post-list" class="post-list">
                         <p>Loading posts...</p>
                     </div>

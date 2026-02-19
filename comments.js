@@ -159,7 +159,7 @@ function renderSingleComment(comment, user, isReply = false) {
                     <span id="like-count-${comment.id}">${comment.like_count || 0}</span>
                 </button>
                 ${comment.like_count > 0 ? `<button onclick="showCommentLikers(${comment.id}, event)" class="see-who-btn">see who</button>` : ''}
-                ${canReply ? `<button class="reply-btn" onclick="showReplyForm(${comment.id})">reply</button>` : ''}
+                ${canReply ? `<button class="reply-btn" onclick="showReplyForm(${comment.id}, '${escapeHtml(comment.author_name).replace(/'/g, "\\'")}')">reply</button>` : ''}
             </div>
             <div id="reply-form-${comment.id}"></div>
             ${!isReply && comment.replies && comment.replies.length > 0 ? `
@@ -199,7 +199,7 @@ function renderComments(comments) {
 }
 
 // Show reply form
-function showReplyForm(parentId) {
+function showReplyForm(parentId, parentAuthorName) {
     const container = document.getElementById(`reply-form-${parentId}`);
     if (!container) return;
 
@@ -208,9 +208,21 @@ function showReplyForm(parentId) {
         if (el.id !== `reply-form-${parentId}`) el.innerHTML = '';
     });
 
+    const user = getUser();
+    const isAdmin = user && user.is_admin;
+
+    // Admin can notify the parent comment author
+    const notifyOption = isAdmin ? `
+        <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary, #c2bdb4); cursor: pointer;">
+            <input type="checkbox" id="reply-notify-${parentId}" style="accent-color: var(--accent-primary, #e5a54b);">
+            <span>Email notify <strong>${escapeHtml(parentAuthorName || 'author')}</strong></span>
+        </label>
+    ` : '';
+
     container.innerHTML = `
         <div class="reply-form">
             <textarea id="reply-content-${parentId}" placeholder="Write a reply..."></textarea>
+            ${notifyOption}
             <div class="reply-form-actions">
                 <button class="submit-reply" onclick="submitReply(${parentId})">Reply</button>
                 <button class="cancel-reply" onclick="hideReplyForm(${parentId})">Cancel</button>
@@ -251,6 +263,10 @@ async function submitReply(parentId) {
         return;
     }
 
+    // Check if admin wants to notify parent author
+    const notifyCheckbox = document.getElementById(`reply-notify-${parentId}`);
+    const notifyAuthor = notifyCheckbox ? notifyCheckbox.checked : false;
+
     try {
         const response = await fetch(`${window.COMMENTS_API_BASE}/comments`, {
             method: 'POST',
@@ -261,7 +277,8 @@ async function submitReply(parentId) {
             body: JSON.stringify({
                 post_slug: slug,
                 content: content,
-                parent_id: parentId
+                parent_id: parentId,
+                notify_parent_author: notifyAuthor
             })
         });
 

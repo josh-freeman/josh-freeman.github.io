@@ -630,6 +630,7 @@
             content.querySelectorAll('.user-search-item').forEach(item => {
                 item.addEventListener('click', function(e) {
                     e.preventDefault();
+                    e.stopPropagation();  // Prevent bubbling to outside-click handler
                     const userId = this.dataset.userId;
                     const userName = this.dataset.userName;
                     if (userId && userName) {

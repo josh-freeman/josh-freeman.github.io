@@ -392,7 +392,11 @@
         </div>
         <div class="header-right">
             <div class="toggle-container">
-                <span>Show visitors</span>
+                <span>Day</span>
+                <div class="toggle" id="day-toggle" onclick="toggleDayNight()"></div>
+            </div>
+            <div class="toggle-container">
+                <span>Visitors</span>
                 <div class="toggle" id="visitor-toggle" onclick="toggleVisitors()"></div>
             </div>
             <a href="/blog.html" class="nav-link">Back to blog</a>
@@ -434,6 +438,10 @@
             let friendsData = [];
             let visitorsData = [];
             let showVisitors = false;
+            let isDayMode = false;
+
+            const EARTH_NIGHT = 'https://unpkg.com/three-globe@2.27.0/example/img/earth-night.jpg';
+            const EARTH_DAY = 'https://unpkg.com/three-globe@2.27.0/example/img/earth-blue-marble.jpg';
 
             // Check auth
             function getAuthToken() {
@@ -495,6 +503,15 @@
                 showVisitors = !showVisitors;
                 document.getElementById('visitor-toggle').classList.toggle('active', showVisitors);
                 updateGlobePoints();
+            };
+
+            // Toggle day/night
+            window.toggleDayNight = function() {
+                isDayMode = !isDayMode;
+                document.getElementById('day-toggle').classList.toggle('active', isDayMode);
+                if (globe) {
+                    globe.globeImageUrl(isDayMode ? EARTH_DAY : EARTH_NIGHT);
+                }
             };
 
             // Update globe points

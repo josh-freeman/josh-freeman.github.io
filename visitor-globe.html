@@ -600,11 +600,22 @@
                     (document.getElementById('globe-container'));
 
                 // Auto-rotate
-                globe.controls().autoRotate = true;
-                globe.controls().autoRotateSpeed = 0.3;
-                globe.controls().enableZoom = true;
-                globe.controls().minDistance = 150;
-                globe.controls().maxDistance = 500;
+                const controls = globe.controls();
+                controls.autoRotate = true;
+                controls.autoRotateSpeed = 0.3;
+                controls.enableZoom = true;
+                controls.minDistance = 150;
+                controls.maxDistance = 500;
+
+                // Stop auto-rotate on user interaction
+                controls.addEventListener('start', () => {
+                    controls.autoRotate = false;
+                });
+
+                // Also stop on point click
+                globe.onPointClick(() => {
+                    controls.autoRotate = false;
+                });
 
                 // Point of view
                 globe.pointOfView({ lat: 20, lng: 0, altitude: 2.5 });

@@ -620,13 +620,9 @@
         }
 
         function initiateGoogleLogin() {
-            // Redirect to Google OAuth
-            const clientId = '63116806058-dr96l2tm5r9jq9iqni0c852bv3j21tgn.apps.googleusercontent.com';
-            const redirectUri = encodeURIComponent(window.location.origin + '/auth-callback.html');
-            const scope = encodeURIComponent('openid email profile');
-            const state = encodeURIComponent(window.location.pathname + window.location.search);
-
-            window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}&prompt=select_account`;
+            // Use backend's OAuth flow which handles subscription checks
+            localStorage.setItem('auth_return_to', '/blog.html');
+            window.location.href = `${window.API_BASE}/auth/google`;
         }
 
         // Check for success/cancel in URL

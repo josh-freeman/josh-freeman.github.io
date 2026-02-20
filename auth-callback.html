@@ -199,6 +199,7 @@
         const email = params.get('email');
         const name = params.get('name');
         const isAdmin = params.get('is_admin') === 'true';
+        const isApproved = params.get('is_approved') === 'true';
         const error = params.get('error');
 
         const icon = document.getElementById('icon');
@@ -241,7 +242,8 @@
                 id: userId,
                 email: email,
                 name: name,
-                is_admin: isAdmin
+                is_admin: isAdmin,
+                is_approved: isApproved
             }));
 
             showSuccess();

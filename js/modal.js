@@ -276,11 +276,11 @@ function showFriendsOnlyModal(feature = 'react') {
                 This is a small personal blog. If you'd like to join the conversation, there are two ways:
             </p>
             <div style="text-align: left; background: var(--bg-tertiary, #1e1c21); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
-                <p style="color: var(--text-primary, #f5f2ed); margin: 0 0 0.75rem 0; font-weight: 500;">
-                    <span style="color: var(--accent-primary);">Friends</span> — If we know each other personally, reach out and I'll add you. Free forever.
+                <p style="color: var(--text-primary, #f5f2ed); margin: 0 0 0.75rem 0;">
+                    <span style="color: var(--accent-primary);">Friends</span> — If we know each other, just reach out and I'll add you.
                 </p>
                 <p style="color: var(--text-primary, #f5f2ed); margin: 0;">
-                    <span style="color: var(--accent-primary);">Subscribers</span> — A small contribution (€5/mo) helps cover infrastructure costs.
+                    <span style="color: var(--accent-primary);">Subscribers</span> — €5/mo to help cover infra costs.
                 </p>
             </div>
             <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">

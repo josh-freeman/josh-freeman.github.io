@@ -637,7 +637,7 @@ function updateCommentForm() {
                 <a href="#" onclick="showLogin(); return false;">Log in</a> to leave a comment.
             </p>
             <p style="background: var(--bg-tertiary, #1e1c21); color: var(--text-secondary, #c4bfb6); padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.9rem; margin-top: 0.5rem; border-left: 4px solid var(--accent-primary, #e5a54b);">
-                <strong style="color: var(--text-accent, #e8c574);">Want to join the conversation?</strong> If we know each other, ask me for an invite (free!). Otherwise, <a href="/subscribe.html" style="color: var(--accent-primary, #e5a54b);">subscribe</a> to support the blog.
+                <strong style="color: var(--text-accent, #e8c574);">Want to join the conversation?</strong> If we know each other, ask me for an invite. Otherwise, <a href="/subscribe.html" style="color: var(--accent-primary, #e5a54b);">subscribe</a> (€5/mo) to help cover infra costs.
             </p>
         `;
     }

@@ -173,12 +173,15 @@
                     <p class="comments-loading">Loading comments...</p>
                 </div>
                 <div id="comment-form-container">
-                    <p class="comment-login-notice">
-                        <a href="#" id="login-link">Log in</a> to leave a comment.
-                    </p>
-                    <p style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.9rem; margin-top: 0.5rem; border-left: 4px solid #f59e0b;">
-                        <strong>Want to join the conversation?</strong> If we know each other, ask me for an invite. Otherwise, <a href="/subscribe.html" style="color: #92400e; font-weight: 500;">subscribe</a> (€5/mo) to help cover infra costs.
-                    </p>
+                    <div class="comment-login-notice">
+                        <p class="login-action">
+                            <a href="#" id="login-link">Log in</a> to leave a comment
+                        </p>
+                        <div class="login-divider">or</div>
+                        <p class="login-invite">
+                            <a href="/subscribe.html">Subscribe</a> to join the conversation, or reach out if we know each other!
+                        </p>
+                    </div>
                 </div>
             </section>
         </article>
@@ -258,7 +261,7 @@
                     document.getElementById('post-title').textContent = 'Post Not Found';
                     document.getElementById('post-content').innerHTML = `
                         <p>This post does not exist or has been removed. <a href="/blog.html">Back to blog</a></p>
-                        ${response.status === 401 && !localStorage.getItem('comment_token') ? '<p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1.5rem;">Think this post should exist? Try <a href="#" onclick="showLogin(); return false;">logging in</a>, or ask me (Josh :) for an invite if you don\'t have an account.</p>' : ''}
+                        ${response.status === 401 && !localStorage.getItem('comment_token') ? '<p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1.5rem;">Think this post should exist? Try <a href="#" onclick="showLogin(); return false;">logging in</a>, or <a href="/subscribe.html">subscribe</a> to access more content.</p>' : ''}
                     `;
                     // Hide reactions and comments
                     document.getElementById('reaction-container').style.display = 'none';

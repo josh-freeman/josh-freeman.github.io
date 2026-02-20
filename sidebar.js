@@ -31,13 +31,17 @@ function isUserLoggedIn() {
 
 function shouldShowSubscribeLink() {
     // Show subscribe link to logged-in users who are not approved (not friends)
-    // Friends already have full access
+    // and don't have an active subscription
+    // Friends and active subscribers already have full access
     try {
         const userStr = localStorage.getItem('comment_user');
         if (!userStr) return false;
         const user = JSON.parse(userStr);
         // Don't show if they're already a friend or admin
-        return !user.is_approved && !user.is_admin;
+        if (user.is_approved || user.is_admin) return false;
+        // Don't show if they have an active subscription
+        if (user.subscription_status === 'active') return false;
+        return true;
     } catch (e) {}
     return false;
 }

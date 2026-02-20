@@ -22,6 +22,27 @@ async function loadUsers() {
     }
 }
 
+function getUserBadge(user) {
+    if (user.is_admin) {
+        return { class: 'badge-published', label: 'Admin' };
+    }
+    if (user.is_approved) {
+        return { class: 'badge-friend', label: 'Friend' };
+    }
+    // Check for active or canceled-but-still-valid subscription
+    const hasActiveSubscription = user.subscription_status === 'active' ||
+        (user.subscription_status === 'canceled' && user.subscription_ends_at && new Date(user.subscription_ends_at) > new Date());
+    if (hasActiveSubscription) {
+        return { class: 'badge-subscriber', label: 'Subscriber' };
+    }
+    return { class: 'badge-draft', label: 'User' };
+}
+
+function isPayingSubscriber(user) {
+    return user.subscription_status === 'active' ||
+        (user.subscription_status === 'canceled' && user.subscription_ends_at && new Date(user.subscription_ends_at) > new Date());
+}
+
 function renderUsers() {
     const container = document.getElementById('users-list');
 
@@ -33,22 +54,25 @@ function renderUsers() {
     const visibleUsers = allUsers.slice(0, usersVisible);
     const hasMore = allUsers.length > usersVisible;
 
-    container.innerHTML = visibleUsers.map(user => `
+    container.innerHTML = visibleUsers.map(user => {
+        const badge = getUserBadge(user);
+        const isPaying = isPayingSubscriber(user);
+        return `
         <div class="post-item">
             <div class="post-item-info">
                 <h3>${escapeHtml(user.name)}</h3>
                 <div class="meta">
                     ${user.email}
-                    &middot; <span class="badge ${user.is_admin ? 'badge-published' : 'badge-draft'}">${user.is_admin ? 'Admin' : 'User'}</span>
+                    &middot; <span class="badge ${badge.class}">${badge.label}</span>
                     &middot; Joined: ${formatDate(user.created_at)}
                 </div>
             </div>
             <div class="post-item-actions">
                 <button class="btn" onclick="editUserName(${user.id}, '${escapeHtml(user.name).replace(/'/g, "\\'")}')">Rename</button>
-                ${!user.is_admin ? `<button class="btn" onclick="deleteUser(${user.id})" style="background: #e74c3c; color: white;">Delete</button>` : ''}
+                ${!user.is_admin ? `<button class="btn" onclick="deleteUser(${user.id}, ${isPaying})" style="background: #e74c3c; color: white;">Delete</button>` : ''}
             </div>
         </div>
-    `).join('') + (hasMore ? `
+    `}).join('') + (hasMore ? `
         <button class="btn" onclick="showMoreUsers()" style="width: 100%; margin-top: 0.5rem; background: #f3f4f6; color: #374151;">
             Show more (${allUsers.length - usersVisible} remaining)
         </button>
@@ -93,8 +117,14 @@ async function updateUserName(userId, newName) {
 }
 
 // Delete user
-async function deleteUser(userId) {
-    if (!confirm('Delete this user? This will also delete all their comments.')) return;
+async function deleteUser(userId, isPaying = false) {
+    let confirmMessage = 'Delete this user? This will also delete all their comments.';
+
+    if (isPaying) {
+        confirmMessage = '⚠️ This is a PAYING SUBSCRIBER!\n\nDeleting them will:\n• Remove their account and comments\n• NOT automatically cancel their Stripe subscription\n\nYou should cancel their subscription in Stripe first, or they may continue to be billed.\n\nAre you sure you want to delete this user?';
+    }
+
+    if (!confirm(confirmMessage)) return;
 
     const token = localStorage.getItem('comment_token');
 

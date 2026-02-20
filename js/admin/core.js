@@ -53,6 +53,8 @@ function showAdminPanel(user) {
     document.getElementById('admin-panel').style.display = 'block';
     document.getElementById('user-name').textContent = user.name;
     loadPosts();
+    loadOnlineUsers();
+    setupPresenceWebSocket();
 }
 
 async function handleLogin(event) {
@@ -235,6 +237,125 @@ function handleHashNavigation() {
             showEditor(slug);
         }
     }
+}
+
+// ========== ONLINE PRESENCE ==========
+
+let onlineUsers = [];
+let presenceWs = null;
+
+async function loadOnlineUsers() {
+    const token = localStorage.getItem('comment_token');
+    if (!token) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/admin/online-users`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            onlineUsers = data.online_users || [];
+            updateOnlineIndicator();
+        }
+    } catch (e) {
+        console.error('Failed to load online users:', e);
+    }
+}
+
+function updateOnlineIndicator() {
+    const indicator = document.getElementById('online-indicator');
+    const countEl = document.getElementById('online-count');
+    const listEl = document.getElementById('online-list');
+
+    // Filter out admin (self) from display
+    const nonAdminOnline = onlineUsers.filter(u => !u.is_admin);
+    const count = nonAdminOnline.length;
+
+    if (count > 0) {
+        indicator.style.display = 'block';
+        countEl.textContent = count;
+
+        listEl.innerHTML = nonAdminOnline.map(u => `
+            <div class="online-user">
+                <span class="online-user-dot"></span>
+                <span class="online-user-name">${escapeHtml(u.name)}</span>
+            </div>
+        `).join('');
+    } else {
+        indicator.style.display = 'block';
+        countEl.textContent = '0';
+        listEl.innerHTML = '<div class="online-empty">No users online</div>';
+    }
+}
+
+function toggleOnlineDropdown() {
+    const dropdown = document.getElementById('online-dropdown');
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    const indicator = document.getElementById('online-indicator');
+    const dropdown = document.getElementById('online-dropdown');
+    if (indicator && dropdown && !indicator.contains(e.target)) {
+        dropdown.style.display = 'none';
+    }
+});
+
+function setupPresenceWebSocket() {
+    const token = localStorage.getItem('comment_token');
+    if (!token) return;
+
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsHost = API_BASE.replace(/^https?:\/\//, '');
+    const wsUrl = `${wsProtocol}//${wsHost}/ws?token=${token}`;
+
+    try {
+        presenceWs = new WebSocket(wsUrl);
+
+        presenceWs.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type === 'presence') {
+                    handlePresenceUpdate(data);
+                }
+            } catch (e) {
+                console.error('WebSocket message error:', e);
+            }
+        };
+
+        presenceWs.onclose = () => {
+            // Reconnect after 5 seconds
+            setTimeout(setupPresenceWebSocket, 5000);
+        };
+
+        presenceWs.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+    } catch (e) {
+        console.error('WebSocket connection failed:', e);
+    }
+}
+
+function handlePresenceUpdate(data) {
+    const { user_id, user_name, status } = data;
+
+    if (status === 'online') {
+        // Add user if not already in list
+        if (!onlineUsers.find(u => u.id === user_id)) {
+            onlineUsers.push({ id: user_id, name: user_name, is_admin: false });
+            showToast(`${user_name} came online`, 'success');
+        }
+    } else if (status === 'offline') {
+        // Remove user from list
+        const idx = onlineUsers.findIndex(u => u.id === user_id);
+        if (idx !== -1) {
+            onlineUsers.splice(idx, 1);
+        }
+    }
+
+    updateOnlineIndicator();
 }
 
 // Initialize

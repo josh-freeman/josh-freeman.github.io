@@ -507,8 +507,24 @@
         async function initializePage() {
             currentUser = getCurrentUser();
 
-            // If logged in, check their status
+            // If logged in, refresh user data from API to ensure we have current status
             if (isUserLoggedIn()) {
+                const token = localStorage.getItem('comment_token');
+                try {
+                    // Refresh user data from API
+                    const response = await fetch(`${window.API_BASE}/auth/me`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (response.ok) {
+                        const userData = await response.json();
+                        // Update localStorage with fresh data
+                        localStorage.setItem('comment_user', JSON.stringify(userData));
+                        currentUser = userData;
+                    }
+                } catch (e) {
+                    console.error('Failed to refresh user data:', e);
+                }
+
                 // Check if user is already a friend (approved)
                 if (currentUser && currentUser.is_approved) {
                     showStatus('success', `
@@ -634,30 +650,94 @@
             window.location.href = `${window.API_BASE}/auth/google`;
         }
 
+        // Functions for password setup flow
+        async function continueToPasswordSetup() {
+            const emailInput = document.getElementById('setup-email');
+            const email = emailInput.value.trim();
+            const errorEl = document.getElementById('setup-error');
+            const btn = document.getElementById('setup-continue-btn');
+
+            if (!email) {
+                errorEl.textContent = 'Please enter your email';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            errorEl.style.display = 'none';
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner"></span> Checking...';
+
+            try {
+                const response = await fetch(`${window.API_BASE}/auth/get-setup-token`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    window.location.href = `/set-password.html?token=${data.token}`;
+                } else if (response.status === 404) {
+                    // No pending setup - maybe already set up or used Google
+                    errorEl.innerHTML = 'No pending setup found. You may have already set your password, or used a different email. Try <a href="/login.html">logging in</a>.';
+                    errorEl.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = 'Continue';
+                } else {
+                    const error = await response.json();
+                    errorEl.textContent = error.detail || 'Something went wrong';
+                    errorEl.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = 'Continue';
+                }
+            } catch (e) {
+                console.error('Setup error:', e);
+                errorEl.textContent = 'Connection error. Please try again.';
+                errorEl.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Continue';
+            }
+        }
+
         // Check for success/cancel in URL
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('success') === 'true') {
             // Clear the URL params
             window.history.replaceState({}, '', '/subscribe.html');
-            // Show success message with email check instructions
+            // Show success message with direct password setup
             setTimeout(() => {
                 const statusHtml = `
                     <div style="text-align: center; max-width: 420px; margin: 0 auto;">
                         <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎉</div>
                         <h3 style="margin: 0 0 1rem 0; color: var(--text-primary);">Welcome!</h3>
                         <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
-                            Your subscription is now active. Check your email for a link to set your password and complete your account setup.
+                            Your subscription is now active. Let's set up your password so you can log in.
                         </p>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: 8px;">
-                            📬 Don't see it? Check your spam folder. The email is from <strong>josh@joshfreeman.me</strong>
-                        </p>
-                        <div style="border-top: 1px solid var(--border-default); padding-top: 1.5rem; margin-top: 1rem;">
-                            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.75rem;">Already have a Google account with this email?</p>
+
+                        <div style="background: var(--bg-secondary); border: 1px solid var(--border-default); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                            <label style="display: block; text-align: left; color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                                Enter the email you used to subscribe:
+                            </label>
+                            <input type="email" id="setup-email" placeholder="your@email.com"
+                                style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-default); border-radius: 8px; background: var(--bg-primary); color: var(--text-primary); font-size: 1rem; margin-bottom: 0.75rem; box-sizing: border-box;"
+                                onkeydown="if(event.key === 'Enter') continueToPasswordSetup()">
+                            <p id="setup-error" style="color: var(--error); font-size: 0.85rem; margin: 0 0 0.75rem 0; display: none; text-align: left;"></p>
+                            <button id="setup-continue-btn" onclick="continueToPasswordSetup()" class="subscribe-btn primary" style="width: 100%;">
+                                Continue
+                            </button>
+                        </div>
+
+                        <div style="border-top: 1px solid var(--border-default); padding-top: 1.5rem;">
+                            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.75rem;">Have a Google account with this email?</p>
                             <button onclick="initiateGoogleLogin()" class="login-btn" style="margin: 0 auto;">
                                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" style="width: 18px; height: 18px;">
                                 <span>Sign in with Google instead</span>
                             </button>
                         </div>
+
+                        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 1.5rem;">
+                            We also sent a link to your email (check spam if you don't see it).
+                        </p>
                     </div>
                 `;
                 document.getElementById('status-section').innerHTML = statusHtml;

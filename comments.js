@@ -633,12 +633,15 @@ function updateCommentForm() {
         }
     } else {
         container.innerHTML = `
-            <p class="comment-login-notice">
-                <a href="#" onclick="showLogin(); return false;">Log in</a> to leave a comment.
-            </p>
-            <p style="background: var(--bg-tertiary, #1e1c21); color: var(--text-secondary, #c4bfb6); padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.9rem; margin-top: 0.5rem; border-left: 4px solid var(--accent-primary, #e5a54b);">
-                <strong style="color: var(--text-accent, #e8c574);">Want to join the conversation?</strong> If we know each other, ask me for an invite. Otherwise, <a href="/subscribe.html" style="color: var(--accent-primary, #e5a54b);">subscribe</a> (€5/mo) to help cover infra costs.
-            </p>
+            <div class="comment-login-notice">
+                <p class="login-action">
+                    <a href="#" onclick="showLogin(); return false;">Log in</a> to leave a comment
+                </p>
+                <div class="login-divider">or</div>
+                <p class="login-invite">
+                    <a href="/subscribe.html">Subscribe</a> to join the conversation, or reach out if we know each other!
+                </p>
+            </div>
         `;
     }
 }
@@ -669,7 +672,7 @@ function showLogin() {
                 <button onclick="closeLogin()" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: var(--text-muted, #8a857c); line-height: 1;">&times;</button>
             </div>
             <div style="background: var(--bg-tertiary, #1e1c21); color: var(--text-secondary, #c4bfb6); padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1.25rem; border-left: 4px solid var(--accent-primary, #e5a54b);">
-                <strong style="color: var(--text-accent, #e8c574);">No signup?</strong> Correct! This is invite-only. Ask me (Josh :) if you think I forgot to send you one!
+                <strong style="color: var(--text-accent, #e8c574);">New here?</strong> <a href="/subscribe.html" style="color: var(--accent-primary, #e5a54b);">Subscribe</a> to join the conversation, or reach out if we know each other!
             </div>
 
             <!-- Google Sign In Button -->

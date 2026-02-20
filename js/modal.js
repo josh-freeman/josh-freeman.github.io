@@ -273,15 +273,14 @@ function showFriendsOnlyModal(feature = 'react') {
             <div style="font-size: 2.5rem; margin-bottom: 1rem;">👋</div>
             <h3 style="margin: 0 0 1rem 0; color: var(--text-primary, #f5f2ed);">${title} are for members</h3>
             <p style="color: var(--text-secondary, #c4bfb6); margin-bottom: 1rem; line-height: 1.6;">
-                This is a small personal blog, and I keep it running on free tiers to avoid costs.
-                If you'd like to join the conversation, there are two ways:
+                This is a small personal blog. If you'd like to join the conversation, there are two ways:
             </p>
             <div style="text-align: left; background: var(--bg-tertiary, #1e1c21); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
                 <p style="color: var(--text-primary, #f5f2ed); margin: 0 0 0.75rem 0; font-weight: 500;">
                     <span style="color: var(--accent-primary);">Friends</span> — If we know each other personally, reach out and I'll add you. Free forever.
                 </p>
                 <p style="color: var(--text-primary, #f5f2ed); margin: 0;">
-                    <span style="color: var(--accent-primary);">Subscribers</span> — A small contribution (€5/mo) helps cover server costs for comments and profiles.
+                    <span style="color: var(--accent-primary);">Subscribers</span> — A small contribution (€5/mo) helps cover infrastructure costs.
                 </p>
             </div>
             <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">

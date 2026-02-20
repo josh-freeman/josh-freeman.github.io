@@ -498,58 +498,54 @@
         async function initializePage() {
             currentUser = getCurrentUser();
 
-            if (!isUserLoggedIn()) {
-                // Show login prompt
-                document.getElementById('login-prompt').style.display = 'block';
-                document.getElementById('pricing-section').style.display = 'none';
-                return;
-            }
-
-            // Check if user is already a friend (approved)
-            if (currentUser && currentUser.is_approved) {
-                showStatus('success', `
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>You're a friend! You have full access to everything, including exclusive content.</span>
-                `);
-                document.getElementById('login-prompt').style.display = 'none';
-                document.getElementById('pricing-section').style.display = 'none';
-                return;
-            }
-
-            // Check subscription status
-            subscriptionStatus = await checkSubscriptionStatus();
-
-            if (subscriptionStatus) {
-                if (subscriptionStatus.status === 'active') {
+            // If logged in, check their status
+            if (isUserLoggedIn()) {
+                // Check if user is already a friend (approved)
+                if (currentUser && currentUser.is_approved) {
                     showStatus('success', `
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                             <polyline points="22 4 12 14.01 9 11.01"/>
                         </svg>
-                        <span>You're subscribed! <a href="#" onclick="openBillingPortal(); return false;">Manage subscription</a></span>
+                        <span>You're a friend! You have full access to everything, including exclusive content.</span>
                     `);
                     document.getElementById('login-prompt').style.display = 'none';
                     document.getElementById('pricing-section').style.display = 'none';
                     return;
-                } else if (subscriptionStatus.status === 'canceled' && subscriptionStatus.ends_at) {
-                    const endsAt = new Date(subscriptionStatus.ends_at);
-                    if (endsAt > new Date()) {
-                        showStatus('warning', `
+                }
+
+                // Check subscription status
+                subscriptionStatus = await checkSubscriptionStatus();
+
+                if (subscriptionStatus) {
+                    if (subscriptionStatus.status === 'active') {
+                        showStatus('success', `
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <line x1="12" y1="8" x2="12" y2="12"/>
-                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
                             </svg>
-                            <span>Your subscription ends ${endsAt.toLocaleDateString()}. <a href="#" onclick="openBillingPortal(); return false;">Resubscribe</a></span>
+                            <span>You're subscribed! <a href="#" onclick="openBillingPortal(); return false;">Manage subscription</a></span>
                         `);
+                        document.getElementById('login-prompt').style.display = 'none';
+                        document.getElementById('pricing-section').style.display = 'none';
+                        return;
+                    } else if (subscriptionStatus.status === 'canceled' && subscriptionStatus.ends_at) {
+                        const endsAt = new Date(subscriptionStatus.ends_at);
+                        if (endsAt > new Date()) {
+                            showStatus('warning', `
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="8" x2="12" y2="12"/>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                </svg>
+                                <span>Your subscription ends ${endsAt.toLocaleDateString()}. <a href="#" onclick="openBillingPortal(); return false;">Resubscribe</a></span>
+                            `);
+                        }
                     }
                 }
             }
 
-            // Show pricing section
+            // Show pricing section (no login required to subscribe)
             document.getElementById('login-prompt').style.display = 'none';
             document.getElementById('pricing-section').style.display = 'grid';
         }
@@ -561,23 +557,17 @@
         }
 
         async function startCheckout(plan) {
-            const token = localStorage.getItem('comment_token');
-            if (!token) {
-                alert('Please log in first');
-                return;
-            }
-
             const btn = document.getElementById(`btn-${plan}`);
             const originalText = btn.textContent;
             btn.disabled = true;
             btn.innerHTML = '<span class="loading-spinner"></span> Redirecting...';
 
             try {
+                // No auth required - Stripe will collect email
                 const response = await fetch(`${window.API_BASE}/stripe/create-checkout-session`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         price_type: plan,
@@ -644,15 +634,23 @@
         if (urlParams.get('success') === 'true') {
             // Clear the URL params
             window.history.replaceState({}, '', '/subscribe.html');
-            // Show success message and refresh status
+            // Show success message with sign-in instructions
             setTimeout(() => {
-                showStatus('success', `
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>Welcome! Your subscription is now active. <a href="/blog.html">Go to blog</a></span>
-                `);
+                const statusHtml = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎉</div>
+                        <h3 style="margin: 0 0 1rem 0; color: var(--text-primary);">Welcome!</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+                            Your subscription is now active. Sign in with Google using the email you just paid with to access your account.
+                        </p>
+                        <button onclick="initiateGoogleLogin()" class="login-btn" style="margin: 0 auto;">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" style="width: 18px; height: 18px;">
+                            <span>Sign in with Google</span>
+                        </button>
+                    </div>
+                `;
+                document.getElementById('status-section').innerHTML = statusHtml;
+                document.getElementById('status-section').style.display = 'block';
                 document.getElementById('pricing-section').style.display = 'none';
             }, 100);
         } else if (urlParams.get('canceled') === 'true') {

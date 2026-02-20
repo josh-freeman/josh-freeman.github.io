@@ -29,6 +29,19 @@ function isUserLoggedIn() {
     return false;
 }
 
+function shouldShowSubscribeLink() {
+    // Show subscribe link to logged-in users who are not approved (not friends)
+    // Friends already have full access
+    try {
+        const userStr = localStorage.getItem('comment_user');
+        if (!userStr) return false;
+        const user = JSON.parse(userStr);
+        // Don't show if they're already a friend or admin
+        return !user.is_approved && !user.is_admin;
+    } catch (e) {}
+    return false;
+}
+
 // Cache for site owner profile
 let siteOwnerProfile = null;
 
@@ -49,6 +62,11 @@ async function fetchSiteOwnerProfile() {
 function loadNavbarDiv() {
     const adminLink = isAdminLoggedIn()
         ? '<submenu><a href="/admin.html">Admin Console</a></submenu>'
+        : '';
+
+    // Show subscribe link for logged-in non-friend users
+    const subscribeLink = shouldShowSubscribeLink()
+        ? '<submenu><a href="/subscribe.html" style="color: var(--accent-primary);">Subscribe</a></submenu>'
         : '';
 
     const editProfileBtn = isAdminLoggedIn()
@@ -97,6 +115,7 @@ function loadNavbarDiv() {
             </submenu>
 
             ${adminLink}
+            ${subscribeLink}
         </div>
 
         <button id="menubtn" class="openbtn" onclick="openNav()">

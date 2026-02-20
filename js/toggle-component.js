@@ -13,7 +13,7 @@ const TOGGLE_CONFIG = {
         activeLabel: 'Published',
         inactiveLabel: 'Draft'
     },
-    exclusive: {
+    friends_only: {
         activeLabel: 'Friends Only',
         inactiveLabel: 'Public'
     },
@@ -33,7 +33,7 @@ function createToggleManager(buttonPrefix, inputPrefix) {
     return {
         /**
          * Set the state of a toggle
-         * @param {string} name - Toggle name (published, exclusive, unlisted)
+         * @param {string} name - Toggle name (published, friends_only, unlisted)
          * @param {boolean} value - New state
          */
         set: function(name, value) {
@@ -126,7 +126,7 @@ const TOGGLE_ICONS = {
         off: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg>'
     },
     // Friends Only (user-lock) / Public (user)
-    exclusive: {
+    friends_only: {
         on: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 16v-2a2 2 0 0 0-4 0v2"/><path d="M9.5 15H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><rect x="13" y="16" width="8" height="5" rx=".899"/></svg>',
         off: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
     },
@@ -145,7 +145,7 @@ const TOGGLE_ICONS = {
 function createAllToggleButtons(buttonPrefix) {
     return `
         ${createToggleButton('published', buttonPrefix, TOGGLE_ICONS.published.on, TOGGLE_ICONS.published.off)}
-        ${createToggleButton('exclusive', buttonPrefix, TOGGLE_ICONS.exclusive.on, TOGGLE_ICONS.exclusive.off)}
+        ${createToggleButton('friends_only', buttonPrefix, TOGGLE_ICONS.friends_only.on, TOGGLE_ICONS.friends_only.off)}
         ${createToggleButton('unlisted', buttonPrefix, TOGGLE_ICONS.unlisted.on, TOGGLE_ICONS.unlisted.off)}
     `;
 }

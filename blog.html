@@ -105,7 +105,7 @@
                     container.innerHTML = posts.map(post => {
                         const badges = [];
                         if (!post.is_published) badges.push('<span class="draft-badge">Draft</span>');
-                        if (post.is_exclusive) badges.push('<span class="exclusive-badge">Friends</span>');
+                        if (post.is_friends_only) badges.push('<span class="exclusive-badge">Friends</span>');
                         const badgeHtml = badges.length ? ' ' + badges.join(' ') : '';
 
                         // Only show date for published posts

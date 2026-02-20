@@ -252,7 +252,7 @@ function escapeHtml(text) {
 }
 
 /**
- * Show a friendly modal explaining that a feature is for friends only
+ * Show a friendly modal explaining membership options
  * @param {string} feature - The feature being restricted ('react', 'comment', 'reply')
  */
 function showFriendsOnlyModal(feature = 'react') {
@@ -265,15 +265,33 @@ function showFriendsOnlyModal(feature = 'react') {
 
     const title = featureText[feature] || 'This feature';
 
+    // Check if user is logged in
+    const isLoggedIn = localStorage.getItem('comment_token') && localStorage.getItem('comment_user');
+
     const content = `
         <div style="text-align: center; padding: 0.5rem 0;">
             <div style="font-size: 2.5rem; margin-bottom: 1rem;">👋</div>
-            <h3 style="margin: 0 0 1rem 0; color: var(--text-primary, #f5f2ed);">${title} are for friends</h3>
-            <p style="color: var(--text-secondary, #c4bfb6); margin-bottom: 1.5rem; line-height: 1.6;">
-                This is a small personal blog, and interactions are reserved for people I know personally.
-                If we've crossed paths and you'd like access, feel free to reach out!
+            <h3 style="margin: 0 0 1rem 0; color: var(--text-primary, #f5f2ed);">${title} are for members</h3>
+            <p style="color: var(--text-secondary, #c4bfb6); margin-bottom: 1rem; line-height: 1.6;">
+                This is a small personal blog, and I keep it running on free tiers to avoid costs.
+                If you'd like to join the conversation, there are two ways:
             </p>
-            <button onclick="closeModal('friends-only-modal')" style="padding: 0.6rem 1.5rem; background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">Got it</button>
+            <div style="text-align: left; background: var(--bg-tertiary, #1e1c21); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
+                <p style="color: var(--text-primary, #f5f2ed); margin: 0 0 0.75rem 0; font-weight: 500;">
+                    <span style="color: var(--accent-primary);">Friends</span> — If we know each other personally, reach out and I'll add you. Free forever.
+                </p>
+                <p style="color: var(--text-primary, #f5f2ed); margin: 0;">
+                    <span style="color: var(--accent-primary);">Subscribers</span> — A small contribution (€5/mo) helps cover server costs for comments and profiles.
+                </p>
+            </div>
+            <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+                ${isLoggedIn ? `
+                    <a href="/subscribe.html" style="padding: 0.6rem 1.5rem; background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); border: none; border-radius: 8px; cursor: pointer; font-weight: 500; text-decoration: none;">Subscribe</a>
+                ` : `
+                    <a href="/subscribe.html" style="padding: 0.6rem 1.5rem; background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); border: none; border-radius: 8px; cursor: pointer; font-weight: 500; text-decoration: none;">Sign in to subscribe</a>
+                `}
+                <button onclick="closeModal('friends-only-modal')" style="padding: 0.6rem 1.5rem; background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; cursor: pointer;">Maybe later</button>
+            </div>
         </div>
     `;
 

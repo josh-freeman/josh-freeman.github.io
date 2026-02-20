@@ -83,7 +83,7 @@ function renderPosts() {
                     <span class="badge ${post.is_published ? 'badge-published' : 'badge-draft'}">
                         ${post.is_published ? 'Published' : 'Draft'}
                     </span>
-                    ${post.is_exclusive ? '<span class="badge badge-exclusive">Exclusive</span>' : ''}
+                    ${post.is_friends_only ? '<span class="badge badge-exclusive">Friends</span>' : ''}
                     &middot; /${post.slug} &middot; ${formatDate(post.created_at)}
                 </div>
             </div>
@@ -160,7 +160,7 @@ function showEditor(slug = null) {
         document.getElementById('post-thumbnail-square').value = '';
         document.getElementById('post-thumbnail-wide').value = '';
         adminToggle.set('published', false);
-        adminToggle.set('exclusive', false);
+        adminToggle.set('friends_only', false);
         adminToggle.set('unlisted', false);
         document.getElementById('preview-content').innerHTML = '';
         updateFeaturedImagePreview();
@@ -193,7 +193,7 @@ async function loadPost(slug) {
             document.getElementById('post-thumbnail-wide').value = post.thumbnail_wide_url || '';
             document.getElementById('post-content').value = post.content;
             adminToggle.set('published', post.is_published);
-            adminToggle.set('exclusive', post.is_exclusive || false);
+            adminToggle.set('friends_only', post.is_friends_only || false);
             adminToggle.set('unlisted', post.is_unlisted || false);
             updateFeaturedImagePreview();
             updatePreview();
@@ -226,7 +226,7 @@ async function savePost(event) {
         thumbnail_wide_url: thumbnailWideUrl,
         content: document.getElementById('post-content').value,
         is_published: adminToggle.get('published'),
-        is_exclusive: adminToggle.get('exclusive'),
+        is_friends_only: adminToggle.get('friends_only'),
         is_unlisted: adminToggle.get('unlisted')
     };
 

@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscribe - Joshua Freeman</title>
+    <meta name="description" content="Join the conversation. Subscribe to comment, receive notifications, and connect.">
+
+    <!-- Favicon -->
+    <link rel="icon" href="/resources/icon_blue.png" type="image/png">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Subscribe - Joshua Freeman">
+    <meta property="og:description" content="Join the conversation">
+    <meta property="og:image" content="https://joshfreeman.me/resources/big_icon.jpg">
+    <meta property="og:url" content="https://joshfreeman.me/subscribe.html">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/buttons.css">
+
+    <!-- Theme Script -->
+    <script src="/js/theme.js"></script>
+
+    <style>
+        .subscribe-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--space-8) var(--space-5);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .subscribe-header {
+            text-align: center;
+            margin-bottom: var(--space-10);
+        }
+
+        .subscribe-header h1 {
+            font-family: var(--font-display);
+            font-size: var(--text-4xl);
+            font-weight: 400;
+            color: var(--text-primary);
+            margin-bottom: var(--space-4);
+            letter-spacing: -0.02em;
+        }
+
+        .subscribe-header .tagline {
+            font-family: var(--font-body);
+            font-size: var(--text-lg);
+            color: var(--text-secondary);
+            font-style: italic;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: var(--leading-relaxed);
+        }
+
+        /* Benefits section */
+        .benefits-section {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-8);
+            margin-bottom: var(--space-10);
+            flex-wrap: wrap;
+        }
+
+        .benefit {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            color: var(--text-secondary);
+            font-family: var(--font-ui);
+            font-size: var(--text-sm);
+        }
+
+        .benefit svg {
+            color: var(--accent-primary);
+            flex-shrink: 0;
+        }
+
+        /* Pricing cards */
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-6);
+            max-width: 680px;
+            margin: 0 auto var(--space-10);
+        }
+
+        .pricing-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            position: relative;
+            transition: all var(--transition-base);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pricing-card:hover {
+            border-color: var(--border-strong);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .pricing-card.recommended {
+            border-color: var(--accent-primary);
+            background: linear-gradient(
+                135deg,
+                var(--bg-elevated) 0%,
+                rgba(229, 165, 75, 0.05) 100%
+            );
+        }
+
+        .pricing-card.recommended::before {
+            content: 'Best value';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            font-family: var(--font-ui);
+            font-size: var(--text-xs);
+            font-weight: 600;
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius-full);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .pricing-card h2 {
+            font-family: var(--font-display);
+            font-size: var(--text-xl);
+            font-weight: 400;
+            color: var(--text-primary);
+            margin-bottom: var(--space-2);
+        }
+
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: var(--space-2);
+            margin-bottom: var(--space-4);
+        }
+
+        .price {
+            font-family: var(--font-display);
+            font-size: var(--text-3xl);
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .price-period {
+            font-family: var(--font-ui);
+            font-size: var(--text-sm);
+            color: var(--text-muted);
+        }
+
+        .savings {
+            display: inline-block;
+            background: rgba(126, 184, 168, 0.15);
+            color: var(--success);
+            font-family: var(--font-ui);
+            font-size: var(--text-xs);
+            font-weight: 500;
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-4);
+        }
+
+        .pricing-card p {
+            font-family: var(--font-body);
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            line-height: var(--leading-relaxed);
+            margin-bottom: var(--space-6);
+            flex-grow: 1;
+        }
+
+        .subscribe-btn {
+            width: 100%;
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            font-family: var(--font-ui);
+            font-size: var(--text-base);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            border: none;
+        }
+
+        .subscribe-btn.primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-dim));
+            color: var(--bg-primary);
+        }
+
+        .subscribe-btn.primary:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .subscribe-btn.secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-default);
+        }
+
+        .subscribe-btn.secondary:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-strong);
+        }
+
+        .subscribe-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Status messages */
+        .status-section {
+            text-align: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .status-message {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-4) var(--space-6);
+            border-radius: var(--radius-lg);
+            font-family: var(--font-ui);
+            font-size: var(--text-sm);
+        }
+
+        .status-message.success {
+            background: rgba(126, 184, 168, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(126, 184, 168, 0.3);
+        }
+
+        .status-message.info {
+            background: rgba(125, 168, 201, 0.1);
+            color: var(--info);
+            border: 1px solid rgba(125, 168, 201, 0.3);
+        }
+
+        .status-message.warning {
+            background: rgba(229, 165, 75, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(229, 165, 75, 0.3);
+        }
+
+        .status-message a {
+            color: inherit;
+            text-decoration: underline;
+        }
+
+        /* Login prompt */
+        .login-prompt {
+            text-align: center;
+            padding: var(--space-8);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .login-prompt p {
+            font-family: var(--font-body);
+            color: var(--text-secondary);
+            margin-bottom: var(--space-5);
+        }
+
+        .login-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-3) var(--space-6);
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            font-family: var(--font-ui);
+            font-size: var(--text-sm);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            text-decoration: none;
+        }
+
+        .login-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent-primary);
+        }
+
+        .login-btn img {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Footer note */
+        .subscribe-footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-family: var(--font-ui);
+            font-size: var(--text-xs);
+            margin-top: var(--space-8);
+        }
+
+        .subscribe-footer a {
+            color: var(--text-secondary);
+            text-decoration: underline;
+        }
+
+        /* Manage subscription link */
+        .manage-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            color: var(--text-secondary);
+            font-family: var(--font-ui);
+            font-size: var(--text-sm);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .manage-link:hover {
+            color: var(--accent-primary);
+        }
+
+        /* Loading state */
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-default);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .subscribe-header h1 {
+                font-size: var(--text-3xl);
+            }
+
+            .benefits-section {
+                flex-direction: column;
+                align-items: center;
+                gap: var(--space-4);
+            }
+
+            .pricing-card {
+                padding: var(--space-6);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <!-- Sidebar -->
+        <sidebar>
+            <script src="sidebar.js"></script>
+        </sidebar>
+
+        <div class="subscribe-container">
+            <header class="subscribe-header">
+                <h1>Join the Conversation</h1>
+                <p class="tagline">I keep this blog running on free tiers, but your subscription helps cover server costs for comments and profiles. Plus you get to join the conversation!</p>
+            </header>
+
+            <!-- Status section - shown based on user state -->
+            <div id="status-section" class="status-section" style="display: none;"></div>
+
+            <!-- Benefits -->
+            <div class="benefits-section">
+                <div class="benefit">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <span>Comment on posts</span>
+                </div>
+                <div class="benefit">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                    </svg>
+                    <span>Email notifications</span>
+                </div>
+                <div class="benefit">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                    <span>Direct messages</span>
+                </div>
+            </div>
+
+            <!-- Login prompt (shown when not logged in) -->
+            <div id="login-prompt" class="login-prompt" style="display: none;">
+                <p>Sign in to subscribe and join the community.</p>
+                <button class="login-btn" onclick="initiateGoogleLogin()">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="">
+                    <span>Continue with Google</span>
+                </button>
+            </div>
+
+            <!-- Pricing cards (shown when logged in) -->
+            <div id="pricing-section" class="pricing-cards" style="display: none;">
+                <div class="pricing-card">
+                    <h2>Monthly</h2>
+                    <div class="price-row">
+                        <span class="price">&#8364;5</span>
+                        <span class="price-period">per month</span>
+                    </div>
+                    <p>Perfect for trying it out. Cancel anytime with no commitment.</p>
+                    <button class="subscribe-btn secondary" onclick="startCheckout('monthly')" id="btn-monthly">
+                        Subscribe Monthly
+                    </button>
+                </div>
+
+                <div class="pricing-card recommended">
+                    <h2>Yearly</h2>
+                    <div class="price-row">
+                        <span class="price">&#8364;50</span>
+                        <span class="price-period">per year</span>
+                    </div>
+                    <span class="savings">Save 17%</span>
+                    <p>The best value. Support the blog and get a full year of access.</p>
+                    <button class="subscribe-btn primary" onclick="startCheckout('yearly')" id="btn-yearly">
+                        Subscribe Yearly
+                    </button>
+                </div>
+            </div>
+
+            <footer class="subscribe-footer">
+                <p>Secure payment via Stripe. Cancel anytime from your <a href="#" onclick="openBillingPortal(); return false;">billing portal</a>.</p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="submenus.js"></script>
+    <script>
+        // User state
+        let currentUser = null;
+        let subscriptionStatus = null;
+
+        function isUserLoggedIn() {
+            try {
+                const token = localStorage.getItem('comment_token');
+                const user = localStorage.getItem('comment_user');
+                return !!(token && user);
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function getCurrentUser() {
+            try {
+                const userStr = localStorage.getItem('comment_user');
+                return userStr ? JSON.parse(userStr) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        async function checkSubscriptionStatus() {
+            const token = localStorage.getItem('comment_token');
+            if (!token) return null;
+
+            try {
+                const response = await fetch(`${window.API_BASE}/stripe/subscription-status`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    return await response.json();
+                }
+            } catch (e) {
+                console.error('Failed to check subscription status:', e);
+            }
+            return null;
+        }
+
+        async function initializePage() {
+            currentUser = getCurrentUser();
+
+            if (!isUserLoggedIn()) {
+                // Show login prompt
+                document.getElementById('login-prompt').style.display = 'block';
+                document.getElementById('pricing-section').style.display = 'none';
+                return;
+            }
+
+            // Check if user is already a friend (approved)
+            if (currentUser && currentUser.is_approved) {
+                showStatus('success', `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>You're a friend! You have full access to everything, including exclusive content.</span>
+                `);
+                document.getElementById('login-prompt').style.display = 'none';
+                document.getElementById('pricing-section').style.display = 'none';
+                return;
+            }
+
+            // Check subscription status
+            subscriptionStatus = await checkSubscriptionStatus();
+
+            if (subscriptionStatus) {
+                if (subscriptionStatus.status === 'active') {
+                    showStatus('success', `
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        <span>You're subscribed! <a href="#" onclick="openBillingPortal(); return false;">Manage subscription</a></span>
+                    `);
+                    document.getElementById('login-prompt').style.display = 'none';
+                    document.getElementById('pricing-section').style.display = 'none';
+                    return;
+                } else if (subscriptionStatus.status === 'canceled' && subscriptionStatus.ends_at) {
+                    const endsAt = new Date(subscriptionStatus.ends_at);
+                    if (endsAt > new Date()) {
+                        showStatus('warning', `
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            <span>Your subscription ends ${endsAt.toLocaleDateString()}. <a href="#" onclick="openBillingPortal(); return false;">Resubscribe</a></span>
+                        `);
+                    }
+                }
+            }
+
+            // Show pricing section
+            document.getElementById('login-prompt').style.display = 'none';
+            document.getElementById('pricing-section').style.display = 'grid';
+        }
+
+        function showStatus(type, html) {
+            const section = document.getElementById('status-section');
+            section.innerHTML = `<div class="status-message ${type}">${html}</div>`;
+            section.style.display = 'block';
+        }
+
+        async function startCheckout(plan) {
+            const token = localStorage.getItem('comment_token');
+            if (!token) {
+                alert('Please log in first');
+                return;
+            }
+
+            const btn = document.getElementById(`btn-${plan}`);
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner"></span> Redirecting...';
+
+            try {
+                const response = await fetch(`${window.API_BASE}/stripe/create-checkout-session`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        price_type: plan,
+                        success_url: window.location.origin + '/subscribe.html?success=true',
+                        cancel_url: window.location.origin + '/subscribe.html?canceled=true'
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to create checkout session');
+                }
+
+                const data = await response.json();
+                // Redirect to Stripe Checkout
+                window.location.href = data.checkout_url;
+            } catch (e) {
+                console.error('Checkout error:', e);
+                alert('Failed to start checkout: ' + e.message);
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        }
+
+        async function openBillingPortal() {
+            const token = localStorage.getItem('comment_token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${window.API_BASE}/stripe/create-portal-session`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        return_url: window.location.href
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    window.location.href = data.portal_url;
+                } else {
+                    alert('Could not open billing portal. You may not have an active subscription.');
+                }
+            } catch (e) {
+                console.error('Portal error:', e);
+            }
+        }
+
+        function initiateGoogleLogin() {
+            // Redirect to Google OAuth
+            const clientId = '63116806058-dr96l2tm5r9jq9iqni0c852bv3j21tgn.apps.googleusercontent.com';
+            const redirectUri = encodeURIComponent(window.location.origin + '/auth-callback.html');
+            const scope = encodeURIComponent('openid email profile');
+            const state = encodeURIComponent(window.location.pathname + window.location.search);
+
+            window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}&prompt=select_account`;
+        }
+
+        // Check for success/cancel in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success') === 'true') {
+            // Clear the URL params
+            window.history.replaceState({}, '', '/subscribe.html');
+            // Show success message and refresh status
+            setTimeout(() => {
+                showStatus('success', `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>Welcome! Your subscription is now active. <a href="/blog.html">Go to blog</a></span>
+                `);
+                document.getElementById('pricing-section').style.display = 'none';
+            }, 100);
+        } else if (urlParams.get('canceled') === 'true') {
+            window.history.replaceState({}, '', '/subscribe.html');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+</html>

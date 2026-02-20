@@ -231,7 +231,7 @@
                     document.getElementById('og-url').content = `https://joshfreeman.me/blog/post.html?slug=${slug}`;
 
                     // Update content
-                    document.getElementById('post-title').innerHTML = post.title + (post.is_exclusive ? ' <span class="exclusive-badge" title="This post is only visible to friends">Friends Only</span>' : '') + (post.is_unlisted ? ' <span class="unlisted-badge" title="Unlisted - not shown in blog listing">Unlisted</span>' : '');
+                    document.getElementById('post-title').innerHTML = post.title + (post.is_friends_only ? ' <span class="exclusive-badge" title="This post is only visible to friends">Friends Only</span>' : '') + (post.is_unlisted ? ' <span class="unlisted-badge" title="Unlisted - not shown in blog listing">Unlisted</span>' : '');
                     document.getElementById('post-date').textContent = formatDate(post.created_at);
                     document.getElementById('post-date').setAttribute('datetime', post.created_at.split('T')[0]);
 
@@ -304,7 +304,7 @@
 
         // Check if user can generate 24h access links for this post
         function canGenerateTempLink() {
-            if (!currentPost || !currentPost.is_exclusive) return false;
+            if (!currentPost || !currentPost.is_friends_only) return false;
 
             const userStr = localStorage.getItem('comment_user');
             const token = localStorage.getItem('comment_token');
@@ -581,7 +581,7 @@
                         </div>
                         <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
                             <input type="hidden" id="edit-post-published" value="false">
-                            <input type="hidden" id="edit-post-exclusive" value="false">
+                            <input type="hidden" id="edit-post-friends_only" value="false">
                             <input type="hidden" id="edit-post-unlisted" value="false">
 
                             <button type="button" id="toggle-published" class="icon-toggle" title="Toggle Published/Draft" onclick="editToggle.toggle('published')">
@@ -590,7 +590,7 @@
                                 <span class="label-text">Draft</span>
                             </button>
 
-                            <button type="button" id="toggle-exclusive" class="icon-toggle" title="Toggle Friends Only/Public" onclick="editToggle.toggle('exclusive')">
+                            <button type="button" id="toggle-friends_only" class="icon-toggle" title="Toggle Friends Only/Public" onclick="editToggle.toggle('friends_only')">
                                 <span class="icon-on"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 16v-2a2 2 0 0 0-4 0v2"/><path d="M9.5 15H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><rect x="13" y="16" width="8" height="5" rx=".899"/></svg></span>
                                 <span class="icon-off"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
                                 <span class="label-text">Public</span>
@@ -648,8 +648,8 @@
                     try { editToggle.toggle('published'); } catch(err) { console.error(err); }
                     return;
                 }
-                if (target.closest('#toggle-exclusive')) {
-                    try { editToggle.toggle('exclusive'); } catch(err) { console.error(err); }
+                if (target.closest('#toggle-friends_only')) {
+                    try { editToggle.toggle('friends_only'); } catch(err) { console.error(err); }
                     return;
                 }
                 if (target.closest('#toggle-unlisted')) {
@@ -685,7 +685,7 @@
 
                 // Set toggle states
                 editToggle.set('published', post.is_published);
-                editToggle.set('exclusive', post.is_exclusive || false);
+                editToggle.set('friends_only', post.is_friends_only || false);
                 editToggle.set('unlisted', post.is_unlisted || false);
             } catch (err) {
                 console.error('Error setting up edit modal:', err);
@@ -1119,7 +1119,7 @@
                 excerpt: document.getElementById('edit-post-excerpt')?.value || '',
                 content: document.getElementById('edit-post-content')?.value || '',
                 is_published: document.getElementById('edit-post-published')?.value === 'true',
-                is_exclusive: document.getElementById('edit-post-exclusive')?.value === 'true',
+                is_friends_only: document.getElementById('edit-post-friends_only')?.value === 'true',
                 is_unlisted: document.getElementById('edit-post-unlisted')?.value === 'true'
             };
 
@@ -1185,15 +1185,15 @@
 
             try {
                 // Get toggle values with fallbacks
-                let isPublished = false, isExclusive = false, isUnlisted = false;
+                let isPublished = false, isFriendsOnly = false, isUnlisted = false;
                 try {
                     isPublished = editToggle.get('published');
-                    isExclusive = editToggle.get('exclusive');
+                    isFriendsOnly = editToggle.get('friends_only');
                     isUnlisted = editToggle.get('unlisted');
                 } catch (e) {
                     // Fallback: read from hidden inputs directly
                     isPublished = document.getElementById('edit-post-published')?.value === 'true';
-                    isExclusive = document.getElementById('edit-post-exclusive')?.value === 'true';
+                    isFriendsOnly = document.getElementById('edit-post-friends_only')?.value === 'true';
                     isUnlisted = document.getElementById('edit-post-unlisted')?.value === 'true';
                 }
 
@@ -1202,7 +1202,7 @@
                     excerpt: document.getElementById('edit-post-excerpt').value,
                     content: document.getElementById('edit-post-content').value,
                     is_published: isPublished,
-                    is_exclusive: isExclusive,
+                    is_friends_only: isFriendsOnly,
                     is_unlisted: isUnlisted
                 };
 

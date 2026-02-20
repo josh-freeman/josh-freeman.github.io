@@ -639,19 +639,25 @@
         if (urlParams.get('success') === 'true') {
             // Clear the URL params
             window.history.replaceState({}, '', '/subscribe.html');
-            // Show success message with sign-in instructions
+            // Show success message with email check instructions
             setTimeout(() => {
                 const statusHtml = `
-                    <div style="text-align: center;">
+                    <div style="text-align: center; max-width: 420px; margin: 0 auto;">
                         <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎉</div>
                         <h3 style="margin: 0 0 1rem 0; color: var(--text-primary);">Welcome!</h3>
                         <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
-                            Your subscription is now active. Sign in with Google using the email you just paid with to access your account.
+                            Your subscription is now active. Check your email for a link to set your password and complete your account setup.
                         </p>
-                        <button onclick="initiateGoogleLogin()" class="login-btn" style="margin: 0 auto;">
-                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" style="width: 18px; height: 18px;">
-                            <span>Sign in with Google</span>
-                        </button>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: 8px;">
+                            📬 Don't see it? Check your spam folder. The email is from <strong>josh@joshfreeman.me</strong>
+                        </p>
+                        <div style="border-top: 1px solid var(--border-default); padding-top: 1.5rem; margin-top: 1rem;">
+                            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.75rem;">Already have a Google account with this email?</p>
+                            <button onclick="initiateGoogleLogin()" class="login-btn" style="margin: 0 auto;">
+                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" style="width: 18px; height: 18px;">
+                                <span>Sign in with Google instead</span>
+                            </button>
+                        </div>
                     </div>
                 `;
                 document.getElementById('status-section').innerHTML = statusHtml;

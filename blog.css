@@ -139,11 +139,13 @@
     align-items: stretch;
 }
 
+a.post-thumbnail,
 .post-thumbnail {
     flex: 0 0 160px;
     width: 160px;
     overflow: hidden;
     background: var(--bg-tertiary);
+    display: block;
 }
 
 .post-thumbnail img {

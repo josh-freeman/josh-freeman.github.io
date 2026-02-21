@@ -117,9 +117,9 @@
                         <article class="post-preview ${post.thumbnail_url ? 'has-thumbnail' : ''} ${!post.is_published ? 'is-draft' : ''}">
                             ${isAdmin ? `<a href="/admin.html#edit/${post.slug}" class="post-edit-btn">Edit</a>` : ''}
                             ${post.thumbnail_url ? `
-                                <div class="post-thumbnail">
+                                <a href="/blog/post.html?slug=${post.slug}" class="post-thumbnail">
                                     <img src="${post.thumbnail_url}" alt="" loading="lazy">
-                                </div>
+                                </a>
                             ` : ''}
                             <div class="post-content">
                                 <a href="/blog/post.html?slug=${post.slug}">

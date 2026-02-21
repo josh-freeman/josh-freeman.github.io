@@ -477,9 +477,6 @@ function showReplyForm(parentId, parentAuthorName) {
         if (el.id !== `reply-form-${parentId}`) el.innerHTML = '';
     });
 
-    const user = getUser();
-    const isAdmin = user && user.is_admin;
-
     // Check if we're replying to a reply (show context)
     const parentComment = document.getElementById(`comment-${parentId}`);
     const isReplyingToReply = parentComment && parentComment.dataset.parentId;
@@ -489,20 +486,8 @@ function showReplyForm(parentId, parentAuthorName) {
         </div>
     ` : '';
 
-    // Admin can notify the parent comment author
-    const notifyOption = isAdmin ? `
-        <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary, #c2bdb4); cursor: pointer;" onclick="toggleReplyNotify(${parentId})">
-            <input type="checkbox" id="reply-notify-${parentId}" style="display: none;">
-            <span class="custom-checkbox-reply">
-                <svg class="unchecked" width="18" height="18" viewBox="0 0 24 24" style="color: var(--text-muted, #8a857c);"><use href="/resources/icons.svg#checkbox-empty"></use></svg>
-                <svg class="checked" width="18" height="18" viewBox="0 0 24 24" style="color: var(--accent-primary, #e5a54b); display:none;"><use href="/resources/icons.svg#checkbox-checked"></use></svg>
-            </span>
-            <span>Email notify <strong>${escapeHtml(parentAuthorName || 'author')}</strong></span>
-        </label>
-    ` : '';
-
     container.innerHTML = `
-        <div class="reply-form">
+        <div class="reply-form" data-parent-author="${escapeHtml(parentAuthorName || '')}">
             ${replyingToContext}
             <div class="comment-editor-tabs">
                 <button type="button" class="comment-editor-tab active" onclick="showCommentTab('write', 'reply-${parentId}')">Write</button>
@@ -513,7 +498,6 @@ function showReplyForm(parentId, parentAuthorName) {
                 <div id="mention-dropdown-reply-${parentId}" class="mention-dropdown" style="display: none;"></div>
             </div>
             <div id="comment-preview-reply-${parentId}" class="comment-preview" style="display: none;"></div>
-            ${notifyOption}
             <div class="reply-form-actions">
                 <button class="submit-reply" onclick="submitReply(${parentId})">Reply</button>
                 <button class="cancel-reply" onclick="hideReplyForm(${parentId})">Cancel</button>
@@ -570,21 +554,6 @@ function showCommentTab(tab, formId) {
     }
 }
 
-// Toggle reply notify checkbox
-function toggleReplyNotify(parentId) {
-    const input = document.getElementById(`reply-notify-${parentId}`);
-    if (!input) return;
-    input.checked = !input.checked;
-    const label = input.closest('label');
-    if (label) {
-        const unchecked = label.querySelector('.unchecked');
-        const checked = label.querySelector('.checked');
-        if (unchecked && checked) {
-            unchecked.style.display = input.checked ? 'none' : '';
-            checked.style.display = input.checked ? '' : 'none';
-        }
-    }
-}
 
 // Submit reply (with loading guard per parent)
 async function submitReply(parentId) {
@@ -612,22 +581,24 @@ async function submitReply(parentId) {
         return;
     }
 
-    // Check if admin wants to notify parent author
-    const notifyCheckbox = document.getElementById(`reply-notify-${parentId}`);
-    const notifyAuthor = notifyCheckbox ? notifyCheckbox.checked : false;
+    // Get parent author name for notification modal
+    const replyForm = textarea.closest('.reply-form');
+    const parentAuthorName = replyForm ? replyForm.dataset.parentAuthor : null;
 
-    // Check for mentions - admin gets confirmation modal
+    // Check for mentions
     const mentions = extractMentions(content);
-    if (user && user.is_admin && mentions.length > 0) {
+
+    // Admin gets notification modal for parent author and/or mentions
+    if (user && user.is_admin && (parentAuthorName || mentions.length > 0)) {
         guard.end(); // Release guard, modal will resubmit
-        showMentionNotifyModal(mentions, async (userIdsToNotify) => {
-            await doSubmitReply(parentId, content, slug, token, notifyAuthor, userIdsToNotify);
+        showReplyNotifyModal(parentId, parentAuthorName, mentions, async (notifyParent, userIdsToNotify) => {
+            await doSubmitReply(parentId, content, slug, token, notifyParent, userIdsToNotify);
         });
         return;
     }
 
-    // Non-admin or no mentions - submit directly
-    await doSubmitReply(parentId, content, slug, token, notifyAuthor, []);
+    // Non-admin - submit directly without notifications
+    await doSubmitReply(parentId, content, slug, token, false, []);
     guard.end();
 }
 
@@ -971,6 +942,147 @@ function extractMentions(content) {
         mentions.push({ name: match[1], id: match[2] });
     }
     return mentions;
+}
+
+// Show reply notification modal for admin (combines parent author + mentions)
+function showReplyNotifyModal(parentId, parentAuthorName, mentions, onConfirm) {
+    const modal = document.createElement('div');
+    modal.id = 'reply-notify-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1001;
+        backdrop-filter: blur(4px);
+    `;
+
+    // Build notification items
+    let notifyItems = '';
+    let itemIndex = 0;
+
+    // Parent author notification option
+    if (parentAuthorName) {
+        notifyItems += `
+            <label style="display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0; cursor: pointer; border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));" onclick="toggleNotifyItem('parent')">
+                <input type="checkbox" id="notify-parent" checked style="display: none;">
+                <span class="notify-checkbox" style="width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;">
+                    <svg class="notify-unchecked" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2" style="display: none;">
+                        <rect x="3" y="3" width="18" height="18" rx="4"/>
+                    </svg>
+                    <svg class="notify-checked" width="20" height="20" viewBox="0 0 24 24" fill="var(--accent-primary, #e5a54b)" stroke="none">
+                        <rect x="3" y="3" width="18" height="18" rx="4"/>
+                        <path d="M9 12l2 2 4-4" stroke="var(--bg-primary, #0c0b0d)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                </span>
+                <span style="flex: 1;">
+                    <span style="color: var(--text-primary, #f5f2ed); font-weight: 500;">@${escapeHtml(parentAuthorName)}</span>
+                    <span style="color: var(--text-muted, #8a857c); font-size: 0.85rem; margin-left: 0.5rem;">(replying to)</span>
+                </span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2" title="Email notification">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+            </label>
+        `;
+    }
+
+    // Mention notification options
+    mentions.forEach((m, idx) => {
+        notifyItems += `
+            <label style="display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0; cursor: pointer; border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));" onclick="toggleNotifyItem('mention-${idx}')">
+                <input type="checkbox" id="notify-mention-${idx}" data-user-id="${m.id}" checked style="display: none;">
+                <span class="notify-checkbox" style="width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;">
+                    <svg class="notify-unchecked" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2" style="display: none;">
+                        <rect x="3" y="3" width="18" height="18" rx="4"/>
+                    </svg>
+                    <svg class="notify-checked" width="20" height="20" viewBox="0 0 24 24" fill="var(--accent-primary, #e5a54b)" stroke="none">
+                        <rect x="3" y="3" width="18" height="18" rx="4"/>
+                        <path d="M9 12l2 2 4-4" stroke="var(--bg-primary, #0c0b0d)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                </span>
+                <span style="flex: 1;">
+                    <span style="color: var(--text-primary, #f5f2ed); font-weight: 500;">@${escapeHtml(m.name)}</span>
+                    <span style="color: var(--text-muted, #8a857c); font-size: 0.85rem; margin-left: 0.5rem;">(mentioned)</span>
+                </span>
+                <span style="display: flex; gap: 0.5rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2" title="Email notification">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2" title="Bell notification">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                </span>
+            </label>
+        `;
+    });
+
+    const totalCount = (parentAuthorName ? 1 : 0) + mentions.length;
+
+    modal.innerHTML = `
+        <div style="background: var(--bg-elevated, #262329); color: var(--text-primary, #f5f2ed); padding: 0; border-radius: 12px; max-width: 400px; width: 90%; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+            <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--text-primary, #f5f2ed);">Send notifications?</h3>
+                <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted, #8a857c);">
+                    Choose who to notify about this reply.
+                </p>
+            </div>
+            <div style="padding: 0.75rem 1.5rem; max-height: 250px; overflow-y: auto;">
+                ${notifyItems}
+            </div>
+            <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); display: flex; gap: 0.75rem; justify-content: flex-end;">
+                <button id="notify-skip-btn" style="padding: 0.6rem 1.25rem; background: var(--bg-tertiary, #1e1c21); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 6px; cursor: pointer; color: var(--text-secondary, #c2bdb4); font-size: 0.9rem;">Post without notifying</button>
+                <button id="notify-confirm-btn" style="padding: 0.6rem 1.25rem; background: var(--accent-primary, #e5a54b); border: none; border-radius: 6px; cursor: pointer; color: var(--bg-primary, #0c0b0d); font-weight: 600; font-size: 0.9rem;">Notify & Post</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Toggle checkbox handler
+    window.toggleNotifyItem = function(itemId) {
+        const input = document.getElementById(`notify-${itemId}`);
+        if (!input) return;
+        input.checked = !input.checked;
+        const label = input.closest('label');
+        const unchecked = label.querySelector('.notify-unchecked');
+        const checked = label.querySelector('.notify-checked');
+        unchecked.style.display = input.checked ? 'none' : '';
+        checked.style.display = input.checked ? '' : 'none';
+    };
+
+    // Button handlers
+    document.getElementById('notify-confirm-btn').onclick = () => {
+        const notifyParent = parentAuthorName ? document.getElementById('notify-parent')?.checked : false;
+        const mentionIds = [];
+        mentions.forEach((m, idx) => {
+            const checkbox = document.getElementById(`notify-mention-${idx}`);
+            if (checkbox && checkbox.checked) {
+                mentionIds.push(m.id);
+            }
+        });
+        modal.remove();
+        onConfirm(notifyParent, mentionIds);
+    };
+
+    document.getElementById('notify-skip-btn').onclick = () => {
+        modal.remove();
+        onConfirm(false, []); // Post without notifications
+    };
+
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
 }
 
 // Show mention notification modal for admin

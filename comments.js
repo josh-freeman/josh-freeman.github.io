@@ -211,6 +211,60 @@ const HEART_FILLED = `<svg class="comment-heart-icon active" width="16" height="
                     box-shadow: none;
                 }
             }
+
+            /* Reply context indicator (↳ @Name) */
+            .reply-context {
+                color: var(--text-muted, #8a857c);
+                font-size: 0.85rem;
+                text-decoration: none;
+                margin-right: 0.5rem;
+                transition: color 0.15s ease;
+            }
+            .reply-context:hover {
+                color: var(--accent-primary, #e5a54b);
+            }
+
+            /* Collapsed replies */
+            .replies-collapsed {
+                display: none;
+            }
+            .replies-collapsed.expanded {
+                display: block;
+            }
+
+            /* Show more replies button */
+            .show-more-replies {
+                background: none;
+                border: none;
+                color: var(--text-muted, #8a857c);
+                font-size: 0.85rem;
+                cursor: pointer;
+                padding: 0.5rem 0;
+                margin-top: 0.25rem;
+                transition: color 0.15s ease;
+            }
+            .show-more-replies:hover {
+                color: var(--accent-primary, #e5a54b);
+            }
+
+            /* Comment thread wrapper */
+            .comment-thread {
+                margin-bottom: 1rem;
+            }
+
+            /* Replying to context in reply form */
+            .replying-to-context {
+                font-size: 0.85rem;
+                color: var(--text-muted, #8a857c);
+                margin-bottom: 0.5rem;
+                padding: 0.4rem 0.6rem;
+                background: var(--bg-tertiary, #1e1c21);
+                border-radius: 4px;
+                border-left: 2px solid var(--accent-primary, #e5a54b);
+            }
+            .replying-to-context strong {
+                color: var(--accent-primary, #e5a54b);
+            }
         `;
         document.head.appendChild(style);
     }
@@ -245,15 +299,25 @@ function formatDate(dateString) {
 let userLikedComments = new Set();
 
 // Render a single comment (used for both top-level and replies)
-function renderSingleComment(comment, user, isReply = false) {
+// isReply: whether this is rendered in the replies section
+// showReplyContext: whether to show "↳ @Name" (for replies to replies)
+function renderSingleComment(comment, user, isReply = false, showReplyContext = false) {
     const canEdit = user && (user.id === comment.author_id || user.is_admin);
     const canDelete = user && (user.id === comment.author_id || user.is_admin);
     const isLiked = userLikedComments.has(comment.id);
-    const canReply = user && !isReply; // Only top-level comments can have replies
+    const canReply = !!user; // Any logged-in user can reply to any comment
+
+    // Show reply context when this is a reply-to-a-reply
+    const replyContextHtml = showReplyContext && comment.reply_to_author_name ? `
+        <a href="#" class="reply-context" onclick="scrollToParentComment(${comment.parent_id}); return false;">
+            ↳ @${escapeHtml(comment.reply_to_author_name)}
+        </a>
+    ` : '';
 
     return `
-        <div class="comment" id="comment-${comment.id}" data-id="${comment.id}">
+        <div class="comment" id="comment-${comment.id}" data-id="${comment.id}" data-parent-id="${comment.parent_id || ''}">
             <div class="comment-header">
+                ${replyContextHtml}
                 <a href="/profile.html?id=${comment.author_id}" class="comment-author">${escapeHtml(comment.author_name)}</a>
                 <span class="comment-date">${formatDate(comment.created_at)}</span>
                 ${canEdit || canDelete ? `
@@ -275,13 +339,87 @@ function renderSingleComment(comment, user, isReply = false) {
                 ${canReply ? `<button class="reply-btn" onclick="showReplyForm(${comment.id}, '${escapeHtml(comment.author_name).replace(/'/g, "\\'")}')">reply</button>` : ''}
             </div>
             <div id="reply-form-${comment.id}"></div>
-            ${!isReply && comment.replies && comment.replies.length > 0 ? `
-                <div class="comment-replies">
-                    ${comment.replies.map(reply => renderSingleComment(reply, user, true)).join('')}
-                </div>
-            ` : ''}
         </div>
     `;
+}
+
+// Flatten all nested replies into a single array (for visual flattening)
+function flattenReplies(replies, parentIsTopLevel = true) {
+    let flattened = [];
+    for (const reply of replies) {
+        // Mark whether this reply's parent is a reply (not top-level)
+        reply._showReplyContext = !parentIsTopLevel;
+        flattened.push(reply);
+        if (reply.replies && reply.replies.length > 0) {
+            flattened = flattened.concat(flattenReplies(reply.replies, false));
+        }
+    }
+    return flattened;
+}
+
+// Render a top-level comment with all its flattened replies
+function renderCommentThread(comment, user) {
+    const INITIAL_REPLIES_SHOWN = 5;
+
+    // Flatten all nested replies
+    const allReplies = comment.replies && comment.replies.length > 0
+        ? flattenReplies(comment.replies, true)
+        : [];
+
+    const hasMoreReplies = allReplies.length > INITIAL_REPLIES_SHOWN;
+    const visibleReplies = hasMoreReplies ? allReplies.slice(0, INITIAL_REPLIES_SHOWN) : allReplies;
+    const hiddenReplies = hasMoreReplies ? allReplies.slice(INITIAL_REPLIES_SHOWN) : [];
+
+    const repliesHtml = allReplies.length > 0 ? `
+        <div class="comment-replies" data-root-comment="${comment.id}">
+            ${visibleReplies.map(reply => renderSingleComment(reply, user, true, reply._showReplyContext)).join('')}
+            ${hasMoreReplies ? `
+                <div class="replies-collapsed" id="collapsed-${comment.id}">
+                    ${hiddenReplies.map(reply => renderSingleComment(reply, user, true, reply._showReplyContext)).join('')}
+                </div>
+                <button class="show-more-replies" onclick="toggleReplies(${comment.id}, ${hiddenReplies.length})">
+                    <span class="show-more-text">Show ${hiddenReplies.length} more ${hiddenReplies.length === 1 ? 'reply' : 'replies'}</span>
+                    <span class="show-less-text" style="display: none;">Show less</span>
+                </button>
+            ` : ''}
+        </div>
+    ` : `<div class="comment-replies" data-root-comment="${comment.id}" style="display: none;"></div>`;
+
+    // Wrap in a thread container for proper structure
+    return `
+        <div class="comment-thread" data-root-id="${comment.id}">
+            ${renderSingleComment(comment, user, false, false)}
+            ${repliesHtml}
+        </div>
+    `;
+}
+
+// Toggle collapsed replies
+function toggleReplies(commentId, count) {
+    const collapsed = document.getElementById(`collapsed-${commentId}`);
+    const button = collapsed.parentElement.querySelector('.show-more-replies');
+    const showMoreText = button.querySelector('.show-more-text');
+    const showLessText = button.querySelector('.show-less-text');
+
+    if (collapsed.classList.contains('expanded')) {
+        collapsed.classList.remove('expanded');
+        showMoreText.style.display = '';
+        showLessText.style.display = 'none';
+    } else {
+        collapsed.classList.add('expanded');
+        showMoreText.style.display = 'none';
+        showLessText.style.display = '';
+    }
+}
+
+// Scroll to and highlight parent comment
+function scrollToParentComment(parentId) {
+    const parentEl = document.getElementById(`comment-${parentId}`);
+    if (parentEl) {
+        parentEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        parentEl.classList.add('highlight');
+        setTimeout(() => parentEl.classList.remove('highlight'), 3000);
+    }
 }
 
 // Count total comments including replies
@@ -324,7 +462,8 @@ function renderComments(comments) {
     }
     comments.forEach(collectLikes);
 
-    const html = comments.map(comment => renderSingleComment(comment, user, false)).join('');
+    // Use renderCommentThread for each top-level comment (handles flattening)
+    const html = comments.map(comment => renderCommentThread(comment, user)).join('');
     container.innerHTML = html;
 }
 
@@ -341,6 +480,15 @@ function showReplyForm(parentId, parentAuthorName) {
     const user = getUser();
     const isAdmin = user && user.is_admin;
 
+    // Check if we're replying to a reply (show context)
+    const parentComment = document.getElementById(`comment-${parentId}`);
+    const isReplyingToReply = parentComment && parentComment.dataset.parentId;
+    const replyingToContext = isReplyingToReply ? `
+        <div class="replying-to-context">
+            Replying to <strong>@${escapeHtml(parentAuthorName || 'someone')}</strong>
+        </div>
+    ` : '';
+
     // Admin can notify the parent comment author
     const notifyOption = isAdmin ? `
         <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary, #c2bdb4); cursor: pointer;" onclick="toggleReplyNotify(${parentId})">
@@ -355,12 +503,14 @@ function showReplyForm(parentId, parentAuthorName) {
 
     container.innerHTML = `
         <div class="reply-form">
+            ${replyingToContext}
             <div class="comment-editor-tabs">
                 <button type="button" class="comment-editor-tab active" onclick="showCommentTab('write', 'reply-${parentId}')">Write</button>
                 <button type="button" class="comment-editor-tab" onclick="showCommentTab('preview', 'reply-${parentId}')">Preview</button>
             </div>
-            <div id="comment-write-reply-${parentId}">
-                <textarea id="reply-content-${parentId}" placeholder="Write a reply... (supports markdown)"></textarea>
+            <div id="comment-write-reply-${parentId}" style="position: relative;">
+                <textarea id="reply-content-${parentId}" placeholder="Write a reply... (supports markdown, use @ to mention)"></textarea>
+                <div id="mention-dropdown-reply-${parentId}" class="mention-dropdown" style="display: none;"></div>
             </div>
             <div id="comment-preview-reply-${parentId}" class="comment-preview" style="display: none;"></div>
             ${notifyOption}
@@ -371,7 +521,15 @@ function showReplyForm(parentId, parentAuthorName) {
         </div>
     `;
 
-    document.getElementById(`reply-content-${parentId}`).focus();
+    const textarea = document.getElementById(`reply-content-${parentId}`);
+    const dropdown = document.getElementById(`mention-dropdown-reply-${parentId}`);
+
+    // Setup @mention autocomplete for reply form
+    if (textarea && dropdown) {
+        setupMentionAutocomplete(textarea, dropdown);
+    }
+
+    textarea.focus();
 }
 
 // Hide reply form
@@ -446,6 +604,8 @@ async function submitReply(parentId) {
 
     const slug = getPostSlug();
     const token = localStorage.getItem('comment_token');
+    const user = getUser();
+
     if (!token) {
         showFriendsOnlyModal('reply');
         guard.end();
@@ -456,6 +616,23 @@ async function submitReply(parentId) {
     const notifyCheckbox = document.getElementById(`reply-notify-${parentId}`);
     const notifyAuthor = notifyCheckbox ? notifyCheckbox.checked : false;
 
+    // Check for mentions - admin gets confirmation modal
+    const mentions = extractMentions(content);
+    if (user && user.is_admin && mentions.length > 0) {
+        guard.end(); // Release guard, modal will resubmit
+        showMentionNotifyModal(mentions, async (userIdsToNotify) => {
+            await doSubmitReply(parentId, content, slug, token, notifyAuthor, userIdsToNotify);
+        });
+        return;
+    }
+
+    // Non-admin or no mentions - submit directly
+    await doSubmitReply(parentId, content, slug, token, notifyAuthor, []);
+    guard.end();
+}
+
+// Actual reply submission
+async function doSubmitReply(parentId, content, slug, token, notifyAuthor, mentionedUserIds) {
     try {
         const response = await fetch(`${window.COMMENTS_API_BASE}/comments`, {
             method: 'POST',
@@ -467,7 +644,8 @@ async function submitReply(parentId) {
                 post_slug: slug,
                 content: content,
                 parent_id: parentId,
-                notify_parent_author: notifyAuthor
+                notify_parent_author: notifyAuthor,
+                notify_mentioned_users: mentionedUserIds
             })
         });
 
@@ -480,8 +658,6 @@ async function submitReply(parentId) {
         }
     } catch (error) {
         alert('Failed to post reply');
-    } finally {
-        guard.end();
     }
 }
 
@@ -1388,6 +1564,18 @@ function setupWebSocketComments() {
     });
 }
 
+// Find the root parent (top-level comment) for a given comment
+function findRootParentId(commentId) {
+    let el = document.getElementById(`comment-${commentId}`);
+    while (el) {
+        const parentId = el.dataset.parentId;
+        if (!parentId) return commentId; // This is a top-level comment
+        el = document.getElementById(`comment-${parentId}`);
+        if (el && !el.dataset.parentId) return parseInt(parentId); // Found the top-level parent
+    }
+    return commentId;
+}
+
 // Add a new comment to the DOM in real-time
 function addCommentToDOM(comment) {
     const container = document.getElementById('comments-container');
@@ -1400,25 +1588,64 @@ function addCommentToDOM(comment) {
     const user = getUser();
 
     if (comment.parent_id) {
-        // This is a reply - add it to the parent's replies container
-        const parentComment = document.getElementById(`comment-${comment.parent_id}`);
-        if (parentComment) {
-            let repliesContainer = parentComment.querySelector('.comment-replies');
-            if (!repliesContainer) {
+        // This is a reply - find the root parent's replies container
+        const rootParentId = findRootParentId(comment.parent_id);
+
+        // Find the replies container by data attribute
+        let repliesContainer = container.querySelector(`.comment-replies[data-root-comment="${rootParentId}"]`);
+
+        if (!repliesContainer) {
+            // Create the thread structure if it doesn't exist
+            const thread = container.querySelector(`.comment-thread[data-root-id="${rootParentId}"]`);
+            if (thread) {
                 repliesContainer = document.createElement('div');
                 repliesContainer.className = 'comment-replies';
-                parentComment.appendChild(repliesContainer);
+                repliesContainer.dataset.rootComment = rootParentId;
+                thread.appendChild(repliesContainer);
             }
-            repliesContainer.insertAdjacentHTML('beforeend', renderSingleComment(comment, user, true));
+        }
+
+        if (repliesContainer) {
+            // Show the container if it was hidden
+            repliesContainer.style.display = '';
+
+            // Determine if we should show reply context (replying to a reply, not to root)
+            const isReplyToReply = comment.parent_id !== rootParentId;
+            const showReplyContext = isReplyToReply && comment.reply_to_author_name;
+
+            // Add the reply at the end of visible replies (before collapsed section or show-more button)
+            const collapsed = repliesContainer.querySelector('.replies-collapsed');
+            const showMoreBtn = repliesContainer.querySelector('.show-more-replies');
+
+            if (collapsed) {
+                collapsed.insertAdjacentHTML('beforebegin', renderSingleComment(comment, user, true, showReplyContext));
+            } else if (showMoreBtn) {
+                showMoreBtn.insertAdjacentHTML('beforebegin', renderSingleComment(comment, user, true, showReplyContext));
+            } else {
+                repliesContainer.insertAdjacentHTML('beforeend', renderSingleComment(comment, user, true, showReplyContext));
+            }
         }
     } else {
-        // Top-level comment - add to the end
-        container.insertAdjacentHTML('beforeend', renderSingleComment(comment, user, false));
+        // Top-level comment - create a new thread wrapper
+        const threadHtml = `
+            <div class="comment-thread" data-root-id="${comment.id}">
+                ${renderSingleComment(comment, user, false, false)}
+                <div class="comment-replies" data-root-comment="${comment.id}" style="display: none;"></div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', threadHtml);
     }
 
     // Highlight the new comment briefly
     const newCommentEl = document.getElementById(`comment-${comment.id}`);
     if (newCommentEl) {
         newCommentEl.classList.add('highlight');
+    }
+
+    // Update comment count
+    const header = document.querySelector('.comments-section h2');
+    if (header) {
+        const allComments = container.querySelectorAll('.comment').length;
+        header.textContent = allComments > 0 ? `Comments (${allComments})` : 'Comments';
     }
 }

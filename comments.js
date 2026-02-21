@@ -785,21 +785,150 @@ function logout() {
     updateCommentForm();
 }
 
+// Extract mentioned user IDs from comment content
+function extractMentions(content) {
+    // Match markdown links that look like mentions: [@Name](/profile.html?id=uuid)
+    const mentionRegex = /\[@([^\]]+)\]\(\/profile\.html\?id=([a-f0-9-]+)\)/g;
+    const mentions = [];
+    let match;
+    while ((match = mentionRegex.exec(content)) !== null) {
+        mentions.push({ name: match[1], id: match[2] });
+    }
+    return mentions;
+}
+
+// Show mention notification modal for admin
+function showMentionNotifyModal(mentions, onConfirm, onCancel) {
+    const modal = document.createElement('div');
+    modal.id = 'mention-notify-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1001;
+        backdrop-filter: blur(4px);
+    `;
+
+    const mentionItems = mentions.map((m, idx) => `
+        <label style="display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0; cursor: pointer; border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));" onclick="toggleMentionNotify(${idx})">
+            <input type="checkbox" id="mention-notify-${idx}" data-user-id="${m.id}" checked style="display: none;">
+            <span class="mention-checkbox" style="width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;">
+                <svg class="mention-unchecked" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2" style="display: none;">
+                    <rect x="3" y="3" width="18" height="18" rx="4"/>
+                </svg>
+                <svg class="mention-checked" width="20" height="20" viewBox="0 0 24 24" fill="var(--accent-primary, #e5a54b)" stroke="none">
+                    <rect x="3" y="3" width="18" height="18" rx="4"/>
+                    <path d="M9 12l2 2 4-4" stroke="var(--bg-primary, #0c0b0d)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </span>
+            <span style="flex: 1; color: var(--text-primary, #f5f2ed); font-weight: 500;">@${escapeHtml(m.name)}</span>
+            <span style="display: flex; gap: 0.5rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2" title="Email notification">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2" title="Bell notification">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+            </span>
+        </label>
+    `).join('');
+
+    modal.innerHTML = `
+        <div style="background: var(--bg-elevated, #262329); color: var(--text-primary, #f5f2ed); padding: 0; border-radius: 12px; max-width: 380px; width: 90%; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+            <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--text-primary, #f5f2ed);">Notify mentioned users?</h3>
+                <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted, #8a857c);">
+                    You mentioned ${mentions.length} ${mentions.length === 1 ? 'person' : 'people'} in this comment.
+                </p>
+            </div>
+            <div style="padding: 0.75rem 1.5rem; max-height: 250px; overflow-y: auto;">
+                ${mentionItems}
+            </div>
+            <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); display: flex; gap: 0.75rem; justify-content: flex-end;">
+                <button id="mention-skip-btn" style="padding: 0.6rem 1.25rem; background: var(--bg-tertiary, #1e1c21); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 6px; cursor: pointer; color: var(--text-secondary, #c2bdb4); font-size: 0.9rem;">Post without notifying</button>
+                <button id="mention-confirm-btn" style="padding: 0.6rem 1.25rem; background: var(--accent-primary, #e5a54b); border: none; border-radius: 6px; cursor: pointer; color: var(--bg-primary, #0c0b0d); font-weight: 600; font-size: 0.9rem;">Notify & Post</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Toggle checkbox handler
+    window.toggleMentionNotify = function(idx) {
+        const input = document.getElementById(`mention-notify-${idx}`);
+        input.checked = !input.checked;
+        const label = input.closest('label');
+        const unchecked = label.querySelector('.mention-unchecked');
+        const checked = label.querySelector('.mention-checked');
+        unchecked.style.display = input.checked ? 'none' : '';
+        checked.style.display = input.checked ? '' : 'none';
+    };
+
+    // Button handlers
+    document.getElementById('mention-confirm-btn').onclick = () => {
+        const toNotify = [];
+        mentions.forEach((m, idx) => {
+            const checkbox = document.getElementById(`mention-notify-${idx}`);
+            if (checkbox && checkbox.checked) {
+                toNotify.push(m.id);
+            }
+        });
+        modal.remove();
+        onConfirm(toNotify);
+    };
+
+    document.getElementById('mention-skip-btn').onclick = () => {
+        modal.remove();
+        onConfirm([]); // Post without notifications
+    };
+
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+            if (onCancel) onCancel();
+        }
+    });
+}
+
 // Submit comment (with loading guard)
 async function submitComment(event) {
     event.preventDefault();
 
-    const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.commentSubmit : { start: () => true, end: () => {} };
-    if (!guard.start()) return;
-
     const content = document.getElementById('comment-content').value;
     const slug = getPostSlug();
     const token = localStorage.getItem('comment_token');
+    const user = getUser();
 
     if (!content || !slug || !token) {
-        guard.end();
         return;
     }
+
+    // Check for mentions - admin gets confirmation modal
+    const mentions = extractMentions(content);
+    if (user && user.is_admin && mentions.length > 0) {
+        showMentionNotifyModal(mentions, async (userIdsToNotify) => {
+            await doSubmitComment(content, slug, token, userIdsToNotify);
+        });
+        return;
+    }
+
+    // Non-admin or no mentions - submit directly
+    await doSubmitComment(content, slug, token, []);
+}
+
+// Actual comment submission
+async function doSubmitComment(content, slug, token, mentionedUserIds) {
+    const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.commentSubmit : { start: () => true, end: () => {} };
+    if (!guard.start()) return;
 
     try {
         const response = await fetch(`${window.COMMENTS_API_BASE}/comments`, {
@@ -808,7 +937,11 @@ async function submitComment(event) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ post_slug: slug, content })
+            body: JSON.stringify({
+                post_slug: slug,
+                content,
+                notify_mentioned_users: mentionedUserIds
+            })
         });
 
         if (response.ok) {

@@ -234,6 +234,37 @@
             'email_mismatch': 'This invite is for a different email address.'
         };
 
+        // Collect browser data for VPN detection / location disambiguation
+        function getBrowserData() {
+            return {
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                timezone_offset: new Date().getTimezoneOffset(),
+                language: navigator.language || navigator.userLanguage,
+                languages: navigator.languages ? Array.from(navigator.languages) : [],
+                platform: navigator.platform,
+                screen_width: screen.width,
+                screen_height: screen.height,
+                color_depth: screen.colorDepth
+            };
+        }
+
+        async function sendBrowserData(authToken) {
+            const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            const apiBase = isLocalDev ? 'http://localhost:8080' : 'https://api.joshfreeman.me';
+            try {
+                await fetch(`${apiBase}/users/browser-data`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(getBrowserData())
+                });
+            } catch (e) {
+                console.debug('Browser data send failed:', e);
+            }
+        }
+
         if (error) {
             showError(errorMessages[error] || 'An unexpected error occurred.');
         } else if (token && email) {
@@ -247,6 +278,9 @@
                 is_approved: isApproved,
                 subscription_status: subscriptionStatus
             }));
+
+            // Send browser data for location disambiguation (VPN detection)
+            sendBrowserData(token);
 
             showSuccess();
 

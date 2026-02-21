@@ -3,6 +3,49 @@
  */
 
 /**
+ * Collect browser fingerprint data for location disambiguation
+ * Used to detect VPN usage by comparing with IP-based location
+ * @returns {Object} Browser data including timezone, language, etc.
+ */
+function getBrowserData() {
+    const data = {
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezone_offset: new Date().getTimezoneOffset(),
+        language: navigator.language || navigator.userLanguage,
+        languages: navigator.languages ? Array.from(navigator.languages) : [],
+        platform: navigator.platform,
+        screen_width: screen.width,
+        screen_height: screen.height,
+        color_depth: screen.colorDepth
+    };
+    return data;
+}
+
+/**
+ * Send browser data to backend for location disambiguation
+ * Called after login or periodically to update location hints
+ */
+async function sendBrowserData() {
+    const token = getToken();
+    if (!token) return;
+
+    try {
+        const browserData = getBrowserData();
+        await fetch(`${window.API_BASE || API_BASE}/users/browser-data`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(browserData)
+        });
+    } catch (e) {
+        // Silently fail - this is supplementary data
+        console.debug('Browser data send failed:', e);
+    }
+}
+
+/**
  * Get the current auth token
  * @returns {string|null} Auth token or null
  */
@@ -49,6 +92,8 @@ function isAdmin() {
 function saveAuth(token, user) {
     localStorage.setItem('comment_token', token);
     localStorage.setItem('comment_user', JSON.stringify(user));
+    // Send browser data for location disambiguation (VPN detection)
+    setTimeout(() => sendBrowserData(), 100);
 }
 
 /**
@@ -138,6 +183,8 @@ if (typeof module !== 'undefined' && module.exports) {
         login,
         logout,
         requireAuth,
-        requireAdmin
+        requireAdmin,
+        getBrowserData,
+        sendBrowserData
     };
 }

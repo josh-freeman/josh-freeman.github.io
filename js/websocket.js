@@ -26,7 +26,10 @@
         'new_comment': [],
         'comment_deleted': [],
         'notification': [],
-        'notification_update': []
+        'notification_update': [],
+        'direct_message': [],
+        'message_count_update': [],
+        'presence': []
     };
 
     /**
@@ -148,6 +151,27 @@
             case 'notification_update':
                 emitEvent('notification_update', {
                     unread_count: data.unread_count
+                });
+                break;
+
+            case 'direct_message':
+                emitEvent('direct_message', {
+                    message: data.message
+                });
+                break;
+
+            case 'message_count_update':
+                emitEvent('message_count_update', {
+                    unread_count: data.unread_count
+                });
+                break;
+
+            case 'presence':
+                emitEvent('presence', {
+                    user_id: data.user_id,
+                    user_name: data.user_name,
+                    status: data.status,
+                    timestamp: data.timestamp
                 });
                 break;
 

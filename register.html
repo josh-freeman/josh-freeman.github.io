@@ -71,6 +71,15 @@
             color: var(--text-primary);
         }
 
+        /* Wildcard invite - open invite badge */
+        .invite-badge.wildcard {
+            background: linear-gradient(135deg, rgba(229, 165, 75, 0.15), rgba(126, 184, 168, 0.15));
+            border-color: var(--accent-primary);
+        }
+        .invite-badge.wildcard svg {
+            color: var(--success);
+        }
+
         /* Choice section heading */
         .choice-heading {
             font-family: var(--font-ui);
@@ -359,13 +368,24 @@
                 <h1>You're invited!</h1>
                 <p class="subtitle">Join my friends and family as we share updates :)</p>
 
-                <!-- Invite email badge -->
-                <div class="invite-badge">
+                <!-- Invite email badge (for specific invites) -->
+                <div id="invite-badge-specific" class="invite-badge">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect width="20" height="16" x="2" y="4" rx="2"/>
                         <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                     </svg>
                     <span>Invited as <strong id="invite-email-display"></strong></span>
+                </div>
+
+                <!-- Open invite badge (for wildcard/QR invites) -->
+                <div id="invite-badge-wildcard" class="invite-badge wildcard" style="display: none;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                        <rect x="14" y="14" width="3" height="3"/>
+                    </svg>
+                    <span>Open invite — use any email</span>
                 </div>
 
                 <p class="choice-heading">Choose how to sign in</p>
@@ -422,8 +442,21 @@
                         </button>
 
                         <form id="register-form" class="password-form collapsed" onsubmit="handleRegister(event)">
+                            <!-- Hidden fields for specific invites -->
                             <input type="hidden" id="name">
                             <input type="hidden" id="email">
+
+                            <!-- Visible fields for wildcard invites -->
+                            <div id="wildcard-fields" style="display: none;">
+                                <div class="form-group">
+                                    <label for="wildcard-name">Your Name</label>
+                                    <input type="text" id="wildcard-name" placeholder="Your full name" minlength="2" maxlength="100">
+                                </div>
+                                <div class="form-group">
+                                    <label for="wildcard-email">Your Email</label>
+                                    <input type="email" id="wildcard-email" placeholder="you@example.com">
+                                </div>
+                            </div>
 
                             <div class="form-group">
                                 <label for="password">Password</label>
@@ -484,6 +517,7 @@
 
         let inviteToken = null;
         let inviteEmail = null;
+        let isWildcardInvite = false;
 
         // Get token from URL
         function getToken() {
@@ -500,6 +534,29 @@
             // Store return URL
             localStorage.setItem('auth_return_to', '/blog.html');
             window.location.href = `${API_BASE}/auth/google?invite_token=${encodeURIComponent(inviteToken)}`;
+        }
+
+        // Setup UI for wildcard invite
+        function setupWildcardInvite() {
+            isWildcardInvite = true;
+
+            // Show wildcard badge, hide specific badge
+            document.getElementById('invite-badge-specific').style.display = 'none';
+            document.getElementById('invite-badge-wildcard').style.display = 'inline-flex';
+
+            // Show editable fields
+            document.getElementById('wildcard-fields').style.display = 'block';
+
+            // Make wildcard fields required
+            document.getElementById('wildcard-name').required = true;
+            document.getElementById('wildcard-email').required = true;
+
+            // Auto-expand password form for QR invites (they're always password-based)
+            setTimeout(() => {
+                expandPasswordForm();
+                // Focus on name field
+                document.getElementById('wildcard-name').focus();
+            }, 100);
         }
 
         // Expand password form
@@ -540,36 +597,44 @@
                 const response = await fetch(`${API_BASE}/auth/invite/${inviteToken}`);
                 if (response.ok) {
                     const invite = await response.json();
-                    inviteEmail = invite.email;
-                    // Pre-fill hidden fields
-                    document.getElementById('name').value = invite.name;
-                    document.getElementById('email').value = invite.email;
-                    // Show email in display
-                    document.getElementById('invite-email-display').textContent = invite.email;
+
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('register-section').style.display = 'block';
 
-                    // Auto-expand password form for non-Gmail emails
-                    if (!isLikelyGoogleEmail(invite.email)) {
-                        setTimeout(() => {
-                            expandPasswordForm();
-                            // Add a note about Google option
-                            const googleOption = document.getElementById('google-option');
-                            if (googleOption) {
-                                const noteEl = document.createElement('div');
-                                noteEl.className = 'help-note';
-                                noteEl.style.marginTop = '1rem';
-                                noteEl.innerHTML = `
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="10"/>
-                                        <path d="M12 16v-4"/>
-                                        <path d="M12 8h.01"/>
-                                    </svg>
-                                    <span>If your email is linked to a Google Workspace account, you can still use Google sign-in above.</span>
-                                `;
-                                googleOption.appendChild(noteEl);
-                            }
-                        }, 100);
+                    // Check if this is a wildcard (QR code) invite
+                    if (invite.is_wildcard) {
+                        setupWildcardInvite();
+                    } else {
+                        // Regular invite with specific email
+                        inviteEmail = invite.email;
+                        // Pre-fill hidden fields
+                        document.getElementById('name').value = invite.name;
+                        document.getElementById('email').value = invite.email;
+                        // Show email in display
+                        document.getElementById('invite-email-display').textContent = invite.email;
+
+                        // Auto-expand password form for non-Gmail emails
+                        if (!isLikelyGoogleEmail(invite.email)) {
+                            setTimeout(() => {
+                                expandPasswordForm();
+                                // Add a note about Google option
+                                const googleOption = document.getElementById('google-option');
+                                if (googleOption) {
+                                    const noteEl = document.createElement('div');
+                                    noteEl.className = 'help-note';
+                                    noteEl.style.marginTop = '1rem';
+                                    noteEl.innerHTML = `
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M12 16v-4"/>
+                                            <path d="M12 8h.01"/>
+                                        </svg>
+                                        <span>If your email is linked to a Google Workspace account, you can still use Google sign-in above.</span>
+                                    `;
+                                    googleOption.appendChild(noteEl);
+                                }
+                            }, 100);
+                        }
                     }
                 } else {
                     showInvalid();
@@ -593,11 +658,35 @@
             if (registerLoading) return;
             registerLoading = true;
 
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
+            // Get values based on invite type
+            let name, email;
+            if (isWildcardInvite) {
+                name = document.getElementById('wildcard-name').value.trim();
+                email = document.getElementById('wildcard-email').value.trim();
+            } else {
+                name = document.getElementById('name').value;
+                email = document.getElementById('email').value;
+            }
+
             const password = document.getElementById('password').value;
             const passwordConfirm = document.getElementById('password-confirm').value;
             const errorEl = document.getElementById('error-message');
+
+            // Validate for wildcard invites
+            if (isWildcardInvite) {
+                if (!name || name.length < 2) {
+                    errorEl.textContent = 'Please enter your name (at least 2 characters)';
+                    errorEl.style.display = 'block';
+                    registerLoading = false;
+                    return;
+                }
+                if (!email || !email.includes('@')) {
+                    errorEl.textContent = 'Please enter a valid email address';
+                    errorEl.style.display = 'block';
+                    registerLoading = false;
+                    return;
+                }
+            }
 
             // Validate passwords match
             if (password !== passwordConfirm) {

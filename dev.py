@@ -11,12 +11,12 @@ import signal
 import time
 
 FRONTEND_DIR = os.path.dirname(os.path.abspath(__file__))
-API_DIR = os.path.join(os.path.dirname(FRONTEND_DIR), "joshfreeman-blog-api")
+API_DIR = os.path.join(os.path.dirname(FRONTEND_DIR), "joshfreeman-socialnet-api")
 
 def main():
     if not os.path.exists(API_DIR):
         print(f"❌ API directory not found: {API_DIR}")
-        print("   Expected joshfreeman-blog-api alongside josh-freeman.github.io")
+        print("   Expected joshfreeman-socialnet-api alongside josh-freeman.github.io")
         sys.exit(1)
 
     processes = []

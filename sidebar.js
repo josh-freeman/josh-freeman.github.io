@@ -104,8 +104,8 @@ function loadNavbarDiv() {
             </submenu>
 
             <submenu>
-                <a href="/blog.html">
-                    Blog
+                <a href="/socialnet.html">
+                    SocialNet
                 </a>
             </submenu>
 

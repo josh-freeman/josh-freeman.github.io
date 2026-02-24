@@ -10,7 +10,7 @@ const defaultInviteTemplate = {
     body: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
     <h2 style="color: #1f2937;">Hey {name}!</h2>
     <p style="color: #4b5563; line-height: 1.6;">
-        I'd love for you to join my blog — it's where I share updates with friends and family. You'll be able to see posts and leave comments.
+        I'd love for you to join my socialnet — it's where I share updates with friends and family. You'll be able to see posts and leave comments.
     </p>
     <p style="margin: 24px 0;">
         <a href="{url}" style="background: linear-gradient(135deg, #e5a54b, #c48a3a); color: #0c0b0d; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500;">

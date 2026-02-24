@@ -280,7 +280,7 @@ if (typeof getPostSlug === 'undefined') {
 
         // Fall back to path-based slug
         const path = window.location.pathname;
-        const match = path.match(/\/blog\/([^\/]+)\.html$/);
+        const match = path.match(/\/socialnet\/([^\/]+)\.html$/);
         return match ? match[1] : null;
     };
 }

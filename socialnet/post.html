@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="/css/theme.css">
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/buttons.css">
-    <link rel="stylesheet" href="/blog.css">
+    <link rel="stylesheet" href="/socialnet.css">
     <link rel="stylesheet" href="/css/components.css">
 
     <!-- Theme Script (before body to prevent flash) -->
@@ -123,7 +123,7 @@
         </sidebar>
 
         <article class="post-container">
-            <a href="/blog.html" class="back-link">Back to blog</a>
+            <a href="/socialnet.html" class="back-link">Back to socialnet</a>
 
             <header class="post-header">
                 <h1 id="post-title"><span class="loading-spinner"></span>Loading...</h1>
@@ -209,7 +209,7 @@
             const slug = getPostSlug();
             if (!slug) {
                 document.getElementById('post-title').textContent = 'Post Not Found';
-                document.getElementById('post-content').innerHTML = '<p>No post specified. <a href="/blog.html">Back to blog</a></p>';
+                document.getElementById('post-content').innerHTML = '<p>No post specified. <a href="/socialnet.html">Back to socialnet</a></p>';
                 return;
             }
 
@@ -231,10 +231,10 @@
                     document.getElementById('page-description').content = post.excerpt || '';
                     document.getElementById('og-title').content = `${post.title} - Joshua Freeman`;
                     document.getElementById('og-description').content = post.excerpt || '';
-                    document.getElementById('og-url').content = `https://joshfreeman.me/blog/post.html?slug=${slug}`;
+                    document.getElementById('og-url').content = `https://joshfreeman.me/socialnet/post.html?slug=${slug}`;
 
                     // Update content
-                    document.getElementById('post-title').innerHTML = post.title + (post.is_friends_only ? ' <span class="exclusive-badge" title="This post is only visible to friends">Friends Only</span>' : '') + (post.is_unlisted ? ' <span class="unlisted-badge" title="Unlisted - not shown in blog listing">Unlisted</span>' : '');
+                    document.getElementById('post-title').innerHTML = post.title + (post.is_friends_only ? ' <span class="exclusive-badge" title="This post is only visible to friends">Friends Only</span>' : '') + (post.is_unlisted ? ' <span class="unlisted-badge" title="Unlisted - not shown in socialnet listing">Unlisted</span>' : '');
                     document.getElementById('post-date').textContent = formatDate(post.created_at);
                     document.getElementById('post-date').setAttribute('datetime', post.created_at.split('T')[0]);
 
@@ -260,7 +260,7 @@
                     // Show same message for 401 (exclusive) and 404 (not found) to avoid leaking info
                     document.getElementById('post-title').textContent = 'Post Not Found';
                     document.getElementById('post-content').innerHTML = `
-                        <p>This post does not exist or has been removed. <a href="/blog.html">Back to blog</a></p>
+                        <p>This post does not exist or has been removed. <a href="/socialnet.html">Back to socialnet</a></p>
                         ${response.status === 401 && !localStorage.getItem('comment_token') ? '<p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1.5rem;">Think this post should exist? Try <a href="#" onclick="showLogin(); return false;">logging in</a>, or <a href="/subscribe.html">subscribe</a> to access more content.</p>' : ''}
                     `;
                     // Hide reactions and comments
@@ -272,7 +272,7 @@
                 }
             } catch (error) {
                 document.getElementById('post-title').textContent = 'Error Loading Post';
-                document.getElementById('post-content').innerHTML = '<p>Failed to load post content. Please try again later. <a href="/blog.html">Back to blog</a></p>';
+                document.getElementById('post-content').innerHTML = '<p>Failed to load post content. Please try again later. <a href="/socialnet.html">Back to socialnet</a></p>';
             }
         }
 
@@ -372,7 +372,7 @@
 
                         <div style="background: var(--bg-tertiary, #1e1c21); border-left: 3px solid var(--warning, #e5a54b); padding: 0.6rem 0.8rem; border-radius: 0 6px 6px 0; margin-bottom: 1rem;">
                             <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary, #c4bfb6);">
-                                <strong style="color: var(--text-accent, #e8c574);">Friends-only post</strong> — this link only works for people with blog access.
+                                <strong style="color: var(--text-accent, #e8c574);">Friends-only post</strong> — this link only works for people with socialnet access.
                             </p>
                         </div>
 
@@ -1245,7 +1245,7 @@
                 });
 
                 if (response.ok) {
-                    window.location.href = '/blog.html';
+                    window.location.href = '/socialnet.html';
                 } else {
                     alert('Failed to delete post');
                 }

@@ -195,8 +195,8 @@ function showTemplateTab(templateType, tab) {
             expires: '7 days'
         } : {
             name: 'John Doe',
-            url: `${baseUrl}/blog/post.html?slug=sample-post`,
-            title: 'My Awesome Blog Post',
+            url: `${baseUrl}/socialnet/post.html?slug=sample-post`,
+            title: 'My Awesome SocialNet Post',
             excerpt: 'This is a sample excerpt that shows what the post preview will look like...'
         };
 

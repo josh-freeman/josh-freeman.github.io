@@ -194,7 +194,7 @@
         </sidebar>
 
         <div class="profile-container">
-            <a href="/blog.html" class="back-link">&larr; Back to blog</a>
+            <a href="/socialnet.html" class="back-link">&larr; Back to socialnet</a>
 
             <div id="profile-content">
                 <p style="color: var(--text-muted); text-align: center;">Loading profile...</p>
@@ -293,7 +293,7 @@
                     ${activity.map(item => `
                         <div class="activity-item comment">
                             <div class="activity-type comment">Comment</div>
-                            <a href="/blog/post.html?slug=${item.post_slug}" class="activity-post-link">${escapeHtml(item.post_title)}</a>
+                            <a href="/socialnet/post.html?slug=${item.post_slug}" class="activity-post-link">${escapeHtml(item.post_title)}</a>
                             <div class="activity-content">${escapeHtml(item.content)}</div>
                             <div class="activity-meta">${formatRelativeTime(item.created_at)}</div>
                         </div>
@@ -366,7 +366,7 @@
             return `
                 <div class="activity-item share-link">
                     <div class="activity-type share">Shared link</div>
-                    <a href="/blog/post.html?slug=${item.post_slug}" class="activity-post-link">${escapeHtml(item.post_title)}</a>
+                    <a href="/socialnet/post.html?slug=${item.post_slug}" class="activity-post-link">${escapeHtml(item.post_title)}</a>
                     ${statusBadge}
                     <div class="activity-meta">
                         Created ${formatRelativeTime(item.created_at)}
@@ -381,7 +381,7 @@
             return `
                 <div class="activity-item comment">
                     <div class="activity-type comment">Comment</div>
-                    <a href="/blog/post.html?slug=${item.post_slug}" class="activity-post-link">${escapeHtml(item.post_title)}</a>
+                    <a href="/socialnet/post.html?slug=${item.post_slug}" class="activity-post-link">${escapeHtml(item.post_title)}</a>
                     <div class="activity-content">${escapeHtml(item.content)}</div>
                     <div class="activity-meta">${formatRelativeTime(item.created_at)}</div>
                 </div>

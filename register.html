@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invitation to my personal blog</title>
-    <meta name="description" content="You've been invited to join Joshua Freeman's blog">
+    <title>Invitation to my personal socialnet</title>
+    <meta name="description" content="You've been invited to join Joshua Freeman's socialnet">
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Open Graph for link previews -->
-    <meta property="og:title" content="Invitation to my personal blog">
-    <meta property="og:description" content="You've been invited to join Joshua Freeman's blog">
+    <meta property="og:title" content="Invitation to my personal socialnet">
+    <meta property="og:description" content="You've been invited to join Joshua Freeman's socialnet">
     <meta property="og:image" content="https://joshfreeman.me/resources/big_icon.jpg">
     <meta property="og:type" content="website">
 
@@ -361,7 +361,7 @@
                 <h2>Invalid Invite</h2>
                 <p>This invite link is invalid, expired, or has already been used.</p>
                 <p style="margin-top: 1rem; color: var(--text-muted);">You can also <a href="/subscribe.html" style="color: var(--accent-primary, #e5a54b);">subscribe</a> to join the conversation.</p>
-                <p style="margin-top: 1rem;"><a href="/blog.html">Go to blog</a></p>
+                <p style="margin-top: 1rem;"><a href="/socialnet.html">Go to socialnet</a></p>
             </div>
 
             <div id="register-section" style="display: none;">
@@ -505,7 +505,7 @@
             <div id="success-section" style="display: none;">
                 <h1>Welcome!</h1>
                 <p class="success-message">Your account has been created and you're now logged in.</p>
-                <p style="margin-top: 1rem;"><a href="/blog.html" class="btn btn-primary" style="display: inline-block;">Go to Blog</a></p>
+                <p style="margin-top: 1rem;"><a href="/socialnet.html" class="btn btn-primary" style="display: inline-block;">Go to SocialNet</a></p>
             </div>
         </div>
     </div>
@@ -532,7 +532,7 @@
                 return;
             }
             // Store return URL
-            localStorage.setItem('auth_return_to', '/blog.html');
+            localStorage.setItem('auth_return_to', '/socialnet.html');
             window.location.href = `${API_BASE}/auth/google?invite_token=${encodeURIComponent(inviteToken)}`;
         }
 

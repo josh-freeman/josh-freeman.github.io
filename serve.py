@@ -28,7 +28,7 @@ if __name__ == "__main__":
         print(f"\n🚀 Frontend server at http://localhost:{PORT}")
         print(f"📁 Serving: {DIRECTORY}")
         print("\n⚠️  You also need to run the API locally:")
-        print("   cd ../joshfreeman-blog-api && DEBUG=true uvicorn main:app --port 8080 --reload")
+        print("   cd ../joshfreeman-socialnet-api && DEBUG=true uvicorn main:app --port 8080 --reload")
         print("\nPress Ctrl+C to stop\n")
         try:
             httpd.serve_forever()

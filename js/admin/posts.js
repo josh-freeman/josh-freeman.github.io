@@ -89,7 +89,7 @@ function renderPosts() {
             </div>
             <div class="post-item-actions">
                 <button class="btn" onclick="editPost('${post.slug}')">Edit</button>
-                <a href="/blog/post.html?slug=${post.slug}" target="_blank" class="btn" ${!post.is_published ? 'style="opacity: 0.5;"' : ''}>View</a>
+                <a href="/socialnet/post.html?slug=${post.slug}" target="_blank" class="btn" ${!post.is_published ? 'style="opacity: 0.5;"' : ''}>View</a>
             </div>
         </div>
     `}).join('') + (hasMore ? `

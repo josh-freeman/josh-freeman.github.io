@@ -9,7 +9,7 @@ if (typeof window.API_BASE === 'undefined') {
     window.API_BASE = isLocalDev ? 'http://localhost:8080' : 'https://api.joshfreeman.me';
     if (isLocalDev) {
         console.log('%c🛠 LOCAL DEV: Using API at http://localhost:8080', 'background: #e5a54b; color: #0c0b0d; padding: 4px 8px; border-radius: 4px;');
-        console.log('%c   Run: cd joshfreeman-blog-api && DEBUG=true uvicorn main:app --port 8080 --reload', 'color: #8a857c;');
+        console.log('%c   Run: cd joshfreeman-socialnet-api && DEBUG=true uvicorn main:app --port 8080 --reload', 'color: #8a857c;');
     }
 }
 

@@ -273,7 +273,7 @@ function showFriendsOnlyModal(feature = 'react') {
             <div style="font-size: 2.5rem; margin-bottom: 1rem;">👋</div>
             <h3 style="margin: 0 0 1rem 0; color: var(--text-primary, #f5f2ed);">${title} are for members</h3>
             <p style="color: var(--text-secondary, #c4bfb6); margin-bottom: 1rem; line-height: 1.6;">
-                This is a small personal blog. If you'd like to join the conversation, there are two ways:
+                This is a small personal socialnet. If you'd like to join the conversation, there are two ways:
             </p>
             <div style="text-align: left; background: var(--bg-tertiary, #1e1c21); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
                 <p style="color: var(--text-primary, #f5f2ed); margin: 0 0 0.75rem 0;">

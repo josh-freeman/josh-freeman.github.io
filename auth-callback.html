@@ -221,7 +221,7 @@
             title.textContent = 'Sign in failed';
             subtitle.textContent = '';
             errorContainer.classList.remove('hidden');
-            errorContainer.innerHTML = `<p class="error-message">${message}<br><br><a href="/blog.html">Return to blog</a></p>`;
+            errorContainer.innerHTML = `<p class="error-message">${message}<br><br><a href="/socialnet.html">Return to socialnet</a></p>`;
         }
 
         const errorMessages = {
@@ -286,8 +286,8 @@
 
             // Redirect after brief delay
             setTimeout(() => {
-                // Go back to previous page or default to blog
-                const returnTo = localStorage.getItem('auth_return_to') || '/blog.html';
+                // Go back to previous page or default to socialnet
+                const returnTo = localStorage.getItem('auth_return_to') || '/socialnet.html';
                 localStorage.removeItem('auth_return_to');
                 window.location.href = returnTo;
             }, 1200);

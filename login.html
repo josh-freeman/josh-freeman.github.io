@@ -151,7 +151,7 @@
     <div id="main" style="margin-left: 0;">
         <div class="login-container">
             <h1>Log in</h1>
-            <p class="subtitle">Access your account on Joshua's blog</p>
+            <p class="subtitle">Access your account on Joshua's socialnet</p>
 
             <!-- Error banner (shown when redirected with error) -->
             <div id="error-banner" class="error-banner" style="display: none;"></div>
@@ -191,7 +191,7 @@
             </form>
 
             <p style="margin-top: 1.5rem; text-align: center;">
-                <a href="/blog.html" style="color: var(--text-muted);">Back to blog</a>
+                <a href="/socialnet.html" style="color: var(--text-muted);">Back to socialnet</a>
             </p>
         </div>
     </div>
@@ -227,7 +227,7 @@
 
         // Sign in with Google
         function signInWithGoogle() {
-            localStorage.setItem('auth_return_to', '/blog.html');
+            localStorage.setItem('auth_return_to', '/socialnet.html');
             window.location.href = `${API_BASE}/auth/google`;
         }
 
@@ -281,8 +281,8 @@
                     localStorage.setItem('comment_user', JSON.stringify(data.user));
                     // Send browser data for location disambiguation (VPN detection)
                     sendBrowserData(data.token);
-                    // Redirect to blog
-                    window.location.href = '/blog.html';
+                    // Redirect to socialnet
+                    window.location.href = '/socialnet.html';
                 } else {
                     const error = await response.json();
                     errorEl.textContent = error.detail || 'Invalid credentials';

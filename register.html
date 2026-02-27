@@ -848,8 +848,9 @@
                 alert('No invite token found');
                 return;
             }
-            // Store return URL
+            // Store return URL and mark as signing up (for onboarding)
             localStorage.setItem('auth_return_to', '/socialnet.html');
+            localStorage.setItem('pending_signup', 'true');
             window.location.href = `${API_BASE}/auth/google?invite_token=${encodeURIComponent(inviteToken)}`;
         }
 
@@ -1065,6 +1066,9 @@
                     // Store login info
                     localStorage.setItem('comment_token', data.token);
                     localStorage.setItem('comment_user', JSON.stringify(data.user));
+
+                    // Mark as new user for onboarding
+                    localStorage.setItem('is_new_user', 'true');
 
                     // Redirect to socialnet
                     window.location.href = '/socialnet.html';

@@ -208,10 +208,10 @@
         const subtitle = document.getElementById('subtitle');
         const errorContainer = document.getElementById('error-container');
 
-        function showSuccess() {
+        function showSuccess(isNewUser) {
             icon.classList.add('success');
             icon.querySelector('.checkmark').classList.remove('hidden');
-            title.textContent = 'Welcome back!';
+            title.textContent = isNewUser ? 'Welcome!' : 'Welcome back!';
             subtitle.textContent = `Signed in as ${name || email}`;
         }
 
@@ -268,6 +268,15 @@
         if (error) {
             showError(errorMessages[error] || 'An unexpected error occurred.');
         } else if (token && email) {
+            // Check if this is a new user signing up (vs returning user signing in)
+            const isNewUser = localStorage.getItem('pending_signup') === 'true';
+            localStorage.removeItem('pending_signup');
+
+            // If new user, set flag for onboarding
+            if (isNewUser) {
+                localStorage.setItem('is_new_user', 'true');
+            }
+
             // Store auth data
             localStorage.setItem('comment_token', token);
             localStorage.setItem('comment_user', JSON.stringify({
@@ -282,7 +291,7 @@
             // Send browser data for location disambiguation (VPN detection)
             sendBrowserData(token);
 
-            showSuccess();
+            showSuccess(isNewUser);
 
             // Redirect after brief delay
             setTimeout(() => {

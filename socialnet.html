@@ -203,6 +203,130 @@
         .tour-tooltip.welcome-step .tour-tooltip-arrow {
             display: none;
         }
+
+        /* Invite-only notice - personal letter aesthetic */
+        .invite-notice {
+            margin-bottom: 2.5rem;
+            animation: noticeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes noticeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-16px) rotate(-0.5deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotate(0);
+            }
+        }
+
+        .invite-notice-card {
+            position: relative;
+            background: linear-gradient(165deg,
+                rgba(245, 242, 237, 0.03) 0%,
+                rgba(229, 165, 75, 0.02) 50%,
+                rgba(245, 242, 237, 0.01) 100%);
+            border: 1px solid rgba(229, 165, 75, 0.15);
+            border-radius: 4px;
+            padding: 2rem 2rem 1.5rem;
+            box-shadow:
+                0 1px 3px rgba(0, 0, 0, 0.1),
+                0 8px 24px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            overflow: hidden;
+        }
+
+        /* Subtle paper texture */
+        .invite-notice-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.015;
+            pointer-events: none;
+        }
+
+        /* Invite only stamp */
+        .invite-notice-stamp {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-family: var(--font-ui, 'DM Sans', sans-serif);
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent-primary, #e5a54b);
+            padding: 0.35rem 0.6rem;
+            border: 1.5px solid var(--accent-primary, #e5a54b);
+            border-radius: 2px;
+            transform: rotate(2deg);
+            opacity: 0.7;
+        }
+
+        .invite-notice-body {
+            position: relative;
+        }
+
+        .invite-notice-greeting {
+            font-family: var(--font-display, 'Fraunces', Georgia, serif);
+            font-size: 1.25rem;
+            font-weight: 400;
+            font-style: italic;
+            color: var(--text-primary, #f5f2ed);
+            margin: 0 0 1rem 0;
+        }
+
+        .invite-notice-body p {
+            font-family: var(--font-body, 'Source Serif 4', Georgia, serif);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text-secondary, #c4bfb6);
+            margin: 0 0 0.875rem 0;
+        }
+
+        .invite-notice-body p:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .invite-notice-body a {
+            color: var(--accent-primary, #e5a54b);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(229, 165, 75, 0.3);
+            transition: border-color 0.2s ease;
+        }
+
+        .invite-notice-body a:hover {
+            border-color: var(--accent-primary, #e5a54b);
+        }
+
+        /* Signature */
+        .invite-notice-signature {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+        }
+
+        .signature-line {
+            flex: 0 0 40px;
+            height: 1px;
+            background: linear-gradient(90deg, var(--accent-primary, #e5a54b), transparent);
+            opacity: 0.4;
+        }
+
+        .signature-name {
+            font-family: var(--font-display, 'Fraunces', Georgia, serif);
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--text-primary, #f5f2ed);
+            opacity: 0.9;
+        }
     </style>
 
     <div id="main">
@@ -214,6 +338,22 @@
         <div class="blog-container">
             <h1>SocialNet</h1>
             <p class="blog-intro">thoughts on stuff</p>
+
+            <!-- Invite-only notice for non-friends -->
+            <div id="invite-notice" class="invite-notice" style="display: none;">
+                <div class="invite-notice-card">
+                    <div class="invite-notice-stamp">invite only</div>
+                    <div class="invite-notice-body">
+                        <p class="invite-notice-greeting">Hey there!</p>
+                        <p>This is my little corner of the internet where I share things with people I care about. Some posts are just for friends and family — so if it feels like something's missing, that's probably why.</p>
+                        <p>If we know each other, I'd love to have you here properly — just <a href="/login.html">log in</a> or ask me for an invite. And if we haven't met yet, you're still welcome to <a href="/subscribe.html">subscribe</a> and join the conversation.</p>
+                    </div>
+                    <div class="invite-notice-signature">
+                        <span class="signature-line"></span>
+                        <span class="signature-name">Josh</span>
+                    </div>
+                </div>
+            </div>
 
             <div id="posts-list" class="posts-list">
                 <p style="color: var(--text-muted);">Loading posts...</p>
@@ -235,6 +375,24 @@
                 }
             } catch (e) {}
             return false;
+        }
+
+        function isFriend() {
+            try {
+                const user = localStorage.getItem('comment_user');
+                if (user) {
+                    const userData = JSON.parse(user);
+                    return userData.is_approved === true || userData.is_admin === true;
+                }
+            } catch (e) {}
+            return false;
+        }
+
+        function showInviteNotice() {
+            // Show notice if not a friend (not logged in, or logged in but not approved)
+            if (!isFriend()) {
+                document.getElementById('invite-notice').style.display = 'flex';
+            }
         }
 
         function formatDate(dateString) {
@@ -462,6 +620,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             loadPosts();
+            showInviteNotice();
             checkOnboarding();
         });
     </script>

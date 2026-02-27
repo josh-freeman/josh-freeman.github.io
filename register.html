@@ -1066,9 +1066,8 @@
                     localStorage.setItem('comment_token', data.token);
                     localStorage.setItem('comment_user', JSON.stringify(data.user));
 
-                    // Show success
-                    document.getElementById('register-section').style.display = 'none';
-                    document.getElementById('success-section').style.display = 'block';
+                    // Redirect to socialnet
+                    window.location.href = '/socialnet.html';
                 } else {
                     const error = await response.json();
                     errorEl.textContent = error.detail || 'Registration failed';

@@ -31,177 +31,194 @@
     <script src="/js/theme.js"></script>
 </head>
 <body>
-    <!-- Spotlight Tour for New Users -->
-    <div id="tour-overlay" class="tour-overlay" style="display: none;"></div>
-    <div id="tour-tooltip" class="tour-tooltip" style="display: none;">
-        <div class="tour-tooltip-content">
+    <!-- Welcome Tour for New Users -->
+    <div id="tour-spotlight" class="tour-spotlight"></div>
+    <div id="tour-tooltip" class="tour-tooltip">
+        <div class="tour-content">
             <h3 id="tour-title"></h3>
             <p id="tour-text"></p>
         </div>
-        <div class="tour-tooltip-footer">
+        <div class="tour-footer">
             <button class="tour-skip" onclick="endTour()">Skip</button>
-            <div class="tour-progress">
-                <span id="tour-step-indicator"></span>
-            </div>
-            <button class="tour-next btn btn-primary" onclick="nextTourStep()">Next</button>
+            <span class="tour-progress" id="tour-progress"></span>
+            <button class="tour-next" onclick="nextTourStep()">Next</button>
         </div>
-        <div class="tour-tooltip-arrow" id="tour-arrow"></div>
     </div>
 
     <style>
-        .tour-overlay {
+        /* Spotlight overlay - uses massive box-shadow to create cutout effect */
+        .tour-spotlight {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 9998;
+            z-index: 9990;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            border-radius: 12px;
+            opacity: 0;
+            visibility: hidden;
+            transition:
+                top 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                left 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease,
+                visibility 0.3s ease;
+            box-shadow:
+                0 0 0 9999px rgba(12, 11, 13, 0.92),
+                0 0 0 3px rgba(229, 165, 75, 0.5),
+                0 0 20px 5px rgba(229, 165, 75, 0.15);
         }
 
-        .tour-overlay.active {
+        .tour-spotlight.active {
+            opacity: 1;
+            visibility: visible;
             pointer-events: auto;
         }
 
-        /* Spotlight element gets this class */
-        .tour-spotlight {
-            position: relative;
-            z-index: 9999 !important;
-            box-shadow: 0 0 0 9999px rgba(12, 11, 13, 0.85);
-            border-radius: 12px;
-            animation: spotlightPulse 2s ease-in-out infinite;
+        .tour-spotlight.centered {
+            /* For welcome step - full screen dark overlay */
+            top: 50% !important;
+            left: 50% !important;
+            width: 0 !important;
+            height: 0 !important;
+            border-radius: 50%;
         }
 
-        @keyframes spotlightPulse {
-            0%, 100% { box-shadow: 0 0 0 9999px rgba(12, 11, 13, 0.85), 0 0 0 4px rgba(229, 165, 75, 0.3); }
-            50% { box-shadow: 0 0 0 9999px rgba(12, 11, 13, 0.85), 0 0 0 8px rgba(229, 165, 75, 0.15); }
-        }
-
+        /* Tooltip card */
         .tour-tooltip {
             position: fixed;
             z-index: 10000;
             background: var(--bg-secondary, #151418);
-            border: 1px solid var(--border-default, rgba(255, 255, 255, 0.15));
+            border: 1px solid rgba(229, 165, 75, 0.3);
             border-radius: 16px;
-            padding: 1.25rem;
-            max-width: 320px;
-            width: calc(100vw - 2rem);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            animation: tooltipIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 1.5rem;
+            width: 320px;
+            max-width: calc(100vw - 2rem);
+            opacity: 0;
+            visibility: hidden;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                0 0 60px rgba(229, 165, 75, 0.08);
+            transition:
+                opacity 0.3s ease,
+                visibility 0.3s ease;
         }
 
-        @keyframes tooltipIn {
-            from {
+        .tour-tooltip.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tour-tooltip.entering {
+            animation: tooltipPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes tooltipPop {
+            0% {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: scale(0.92);
             }
-            to {
+            100% {
                 opacity: 1;
-                transform: translateY(0);
+                transform: scale(1);
             }
         }
 
-        .tour-tooltip-content h3 {
+        .tour-content h3 {
             font-family: var(--font-display, 'Fraunces', Georgia, serif);
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 500;
             color: var(--text-primary, #f5f2ed);
             margin: 0 0 0.5rem 0;
+            line-height: 1.3;
         }
 
-        .tour-tooltip-content p {
-            font-size: 0.9rem;
+        .tour-content p {
+            font-family: var(--font-body, 'Source Serif 4', Georgia, serif);
+            font-size: 0.92rem;
             color: var(--text-secondary, #c4bfb6);
-            line-height: 1.5;
+            line-height: 1.6;
             margin: 0;
         }
 
-        .tour-tooltip-footer {
+        .tour-footer {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-top: 1.25rem;
             padding-top: 1rem;
-            border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .tour-skip {
             background: none;
             border: none;
             color: var(--text-muted, #8a857c);
+            font-family: var(--font-ui, 'DM Sans', sans-serif);
             font-size: 0.85rem;
             cursor: pointer;
-            padding: 0.5rem;
+            padding: 0.5rem 0.75rem;
             margin: -0.5rem;
-            transition: color 0.2s;
+            margin-right: 0;
+            border-radius: 8px;
+            transition: all 0.2s;
         }
 
         .tour-skip:hover {
             color: var(--text-secondary, #c4bfb6);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .tour-progress {
-            font-size: 0.8rem;
+            font-family: var(--font-ui, 'DM Sans', sans-serif);
+            font-size: 0.75rem;
             color: var(--text-muted, #8a857c);
+            letter-spacing: 0.05em;
         }
 
         .tour-next {
-            padding: 0.6rem 1.25rem;
+            background: linear-gradient(135deg, var(--accent-primary, #e5a54b) 0%, var(--accent-primary-dim, #c48a3a) 100%);
+            color: var(--bg-primary, #0c0b0d);
+            border: none;
+            border-radius: 10px;
+            padding: 0.65rem 1.25rem;
+            font-family: var(--font-ui, 'DM Sans', sans-serif);
             font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(229, 165, 75, 0.25);
         }
 
-        .tour-tooltip-arrow {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            background: var(--bg-secondary, #151418);
-            border: 1px solid var(--border-default, rgba(255, 255, 255, 0.15));
-            transform: rotate(45deg);
+        .tour-next:hover {
+            box-shadow: 0 4px 16px rgba(229, 165, 75, 0.35);
+            filter: brightness(1.05);
         }
 
-        .tour-tooltip-arrow.top {
-            bottom: -7px;
-            left: 50%;
-            margin-left: -6px;
-            border-top: none;
-            border-left: none;
+        .tour-next:active {
+            transform: scale(0.98);
         }
 
-        .tour-tooltip-arrow.bottom {
-            top: -7px;
-            left: 50%;
-            margin-left: -6px;
-            border-bottom: none;
-            border-right: none;
-        }
+        /* Mobile: bottom-anchored tooltip */
+        @media (max-width: 640px) {
+            .tour-tooltip {
+                left: 1rem !important;
+                right: 1rem !important;
+                width: auto !important;
+                bottom: 1rem !important;
+                top: auto !important;
+            }
 
-        .tour-tooltip-arrow.left {
-            right: -7px;
-            top: 50%;
-            margin-top: -6px;
-            border-bottom: none;
-            border-left: none;
-        }
+            .tour-content h3 {
+                font-size: 1.1rem;
+            }
 
-        .tour-tooltip-arrow.right {
-            left: -7px;
-            top: 50%;
-            margin-top: -6px;
-            border-top: none;
-            border-right: none;
-        }
+            .tour-content p {
+                font-size: 0.88rem;
+            }
 
-        /* Welcome step - no spotlight, centered tooltip */
-        .tour-tooltip.welcome-step {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .tour-tooltip.welcome-step .tour-tooltip-arrow {
-            display: none;
+            .tour-footer {
+                margin-top: 1rem;
+            }
         }
 
         /* Invite-only notice - personal letter aesthetic */
@@ -472,150 +489,138 @@
             }
         }
 
-        // Spotlight Tour System
-        let currentTourStep = 0;
-        let currentSpotlightEl = null;
+        // Welcome Tour System
+        let tourStep = 0;
 
         const tourSteps = [
             {
-                type: 'welcome',
                 title: 'Welcome to SocialNet!',
                 text: "You're now part of a small circle of friends and family. Let me show you around.",
-                nextLabel: "Show me"
+                btn: "Let's go"
             },
             {
-                selector: '.posts-list',
-                title: 'Posts from the group',
-                text: 'Here you\'ll find thoughts, updates, and stories shared just with this circle.',
-                position: 'top'
-            },
-            {
-                selector: '.post-preview',
-                title: 'Read & comment',
-                text: 'Click any post to read the full article and join the conversation.',
-                position: 'top',
-                nextLabel: "Got it!"
+                target: '.post-preview',
+                title: 'Your feed',
+                text: 'Posts appear here. Click any to read more and join the conversation.',
+                btn: "Got it"
             }
         ];
 
         function checkOnboarding() {
             if (localStorage.getItem('is_new_user') === 'true') {
-                // Small delay to let posts load first
-                setTimeout(startTour, 500);
+                setTimeout(startTour, 800);
             }
         }
 
         function startTour() {
-            currentTourStep = 0;
-            document.getElementById('tour-overlay').style.display = 'block';
-            document.getElementById('tour-overlay').classList.add('active');
+            tourStep = 0;
             showTourStep();
         }
 
         function showTourStep() {
-            const step = tourSteps[currentTourStep];
+            const step = tourSteps[tourStep];
+            const spotlight = document.getElementById('tour-spotlight');
             const tooltip = document.getElementById('tour-tooltip');
             const title = document.getElementById('tour-title');
             const text = document.getElementById('tour-text');
-            const indicator = document.getElementById('tour-step-indicator');
-            const arrow = document.getElementById('tour-arrow');
+            const progress = document.getElementById('tour-progress');
             const nextBtn = tooltip.querySelector('.tour-next');
-
-            // Clear previous spotlight
-            if (currentSpotlightEl) {
-                currentSpotlightEl.classList.remove('tour-spotlight');
-            }
 
             // Update content
             title.textContent = step.title;
             text.textContent = step.text;
-            indicator.textContent = `${currentTourStep + 1} of ${tourSteps.length}`;
-            nextBtn.textContent = step.nextLabel || (currentTourStep === tourSteps.length - 1 ? "Done" : "Next");
+            nextBtn.textContent = step.btn || 'Next';
+            progress.textContent = `${tourStep + 1} / ${tourSteps.length}`;
 
-            // Welcome step - centered, no spotlight
-            if (step.type === 'welcome') {
-                tooltip.className = 'tour-tooltip welcome-step';
-                tooltip.style.display = 'block';
-                tooltip.style.top = '';
-                tooltip.style.left = '';
-                tooltip.style.bottom = '';
-                tooltip.style.right = '';
+            // If no target, use centered overlay (welcome step)
+            if (!step.target) {
+                spotlight.classList.add('centered');
+                spotlight.classList.add('active');
+
+                // Center tooltip
+                tooltip.style.top = '50%';
+                tooltip.style.left = '50%';
+                tooltip.style.transform = 'translate(-50%, -50%)';
+
+                tooltip.classList.add('active', 'entering');
+                setTimeout(() => tooltip.classList.remove('entering'), 400);
                 return;
             }
 
-            // Find and spotlight the element
-            const targetEl = document.querySelector(step.selector);
+            // Find target element
+            const targetEl = document.querySelector(step.target);
             if (!targetEl) {
                 nextTourStep();
                 return;
             }
 
-            currentSpotlightEl = targetEl;
-            targetEl.classList.add('tour-spotlight');
+            // Scroll target into view
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-            // Position tooltip relative to element
-            tooltip.className = 'tour-tooltip';
-            tooltip.style.display = 'block';
+            // Position spotlight and tooltip after scroll
+            setTimeout(() => {
+                const rect = targetEl.getBoundingClientRect();
+                const padding = 12;
 
-            const rect = targetEl.getBoundingClientRect();
-            const tooltipRect = tooltip.getBoundingClientRect();
-            const padding = 16;
+                // Position spotlight cutout around target
+                spotlight.classList.remove('centered');
+                spotlight.style.top = (rect.top - padding) + 'px';
+                spotlight.style.left = (rect.left - padding) + 'px';
+                spotlight.style.width = (rect.width + padding * 2) + 'px';
+                spotlight.style.height = (rect.height + padding * 2) + 'px';
+                spotlight.classList.add('active');
 
-            // Reset arrow classes
-            arrow.className = 'tour-tooltip-arrow';
+                // Position tooltip - check if mobile
+                const isMobile = window.innerWidth <= 640;
 
-            // Position based on preference
-            if (step.position === 'top' || step.position === 'bottom') {
-                // Center horizontally
-                let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-                left = Math.max(padding, Math.min(left, window.innerWidth - tooltipRect.width - padding));
-                tooltip.style.left = left + 'px';
+                if (!isMobile) {
+                    // Desktop: position below or above target
+                    tooltip.style.transform = 'none';
+                    const tooltipHeight = 180;
+                    const gap = 16;
 
-                if (step.position === 'top') {
-                    tooltip.style.top = (rect.bottom + padding) + 'px';
-                    arrow.classList.add('bottom');
-                } else {
-                    tooltip.style.top = (rect.top - tooltipRect.height - padding) + 'px';
-                    arrow.classList.add('top');
+                    if (rect.bottom + gap + tooltipHeight < window.innerHeight) {
+                        // Below
+                        tooltip.style.top = (rect.bottom + gap) + 'px';
+                    } else {
+                        // Above
+                        tooltip.style.top = Math.max(16, rect.top - tooltipHeight - gap) + 'px';
+                    }
+
+                    // Horizontal: center on target, but keep on screen
+                    const tooltipWidth = 320;
+                    let left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+                    left = Math.max(16, Math.min(left, window.innerWidth - tooltipWidth - 16));
+                    tooltip.style.left = left + 'px';
                 }
-            }
+                // Mobile uses CSS to anchor to bottom
 
-            // Scroll element into view if needed
-            if (rect.top < 100 || rect.bottom > window.innerHeight - 100) {
-                targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+                tooltip.classList.add('active', 'entering');
+                setTimeout(() => tooltip.classList.remove('entering'), 400);
+            }, 400);
         }
 
         function nextTourStep() {
-            currentTourStep++;
-            if (currentTourStep >= tourSteps.length) {
+            const tooltip = document.getElementById('tour-tooltip');
+
+            tooltip.classList.remove('active');
+
+            tourStep++;
+            if (tourStep >= tourSteps.length) {
                 endTour();
             } else {
-                showTourStep();
+                setTimeout(showTourStep, 200);
             }
         }
 
         function endTour() {
-            // Clean up
-            if (currentSpotlightEl) {
-                currentSpotlightEl.classList.remove('tour-spotlight');
-            }
-
+            const spotlight = document.getElementById('tour-spotlight');
             const tooltip = document.getElementById('tour-tooltip');
-            const overlay = document.getElementById('tour-overlay');
 
-            tooltip.style.opacity = '0';
-            tooltip.style.transition = 'opacity 0.2s';
-            overlay.style.opacity = '0';
-            overlay.style.transition = 'opacity 0.2s';
+            spotlight.classList.remove('active', 'centered');
+            tooltip.classList.remove('active', 'entering');
 
-            setTimeout(() => {
-                tooltip.style.display = 'none';
-                overlay.style.display = 'none';
-                tooltip.style.opacity = '';
-                overlay.style.opacity = '';
-                localStorage.removeItem('is_new_user');
-            }, 200);
+            localStorage.removeItem('is_new_user');
         }
 
         document.addEventListener('DOMContentLoaded', () => {

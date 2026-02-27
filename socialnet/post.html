@@ -208,8 +208,7 @@
         async function loadPost() {
             const slug = getPostSlug();
             if (!slug) {
-                document.getElementById('post-title').textContent = 'Post Not Found';
-                document.getElementById('post-content').innerHTML = '<p>No post specified. <a href="/socialnet.html">Back to socialnet</a></p>';
+                window.location.replace('/socialnet.html');
                 return;
             }
 
@@ -257,22 +256,15 @@
                         credentials: 'include'
                     }).catch(() => {});
                 } else if (response.status === 401 || response.status === 404) {
-                    // Show same message for 401 (exclusive) and 404 (not found) to avoid leaking info
-                    document.getElementById('post-title').textContent = 'Post Not Found';
-                    document.getElementById('post-content').innerHTML = `
-                        <p>This post does not exist or has been removed. <a href="/socialnet.html">Back to socialnet</a></p>
-                        ${response.status === 401 && !localStorage.getItem('comment_token') ? '<p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1.5rem;">Think this post should exist? Try <a href="#" onclick="showLogin(); return false;">logging in</a>, or <a href="/subscribe.html">subscribe</a> to access more content.</p>' : ''}
-                    `;
-                    // Hide reactions and comments
-                    document.getElementById('reaction-container').style.display = 'none';
-                    document.getElementById('forest-link').style.display = 'none';
-                    document.querySelector('.comments-section').style.display = 'none';
+                    // Redirect to socialnet - don't leak whether post exists
+                    window.location.replace('/socialnet.html');
+                    return;
                 } else {
                     throw new Error('Failed to load');
                 }
             } catch (error) {
-                document.getElementById('post-title').textContent = 'Error Loading Post';
-                document.getElementById('post-content').innerHTML = '<p>Failed to load post content. Please try again later. <a href="/socialnet.html">Back to socialnet</a></p>';
+                // Network error or other failure - redirect to socialnet
+                window.location.replace('/socialnet.html');
             }
         }
 

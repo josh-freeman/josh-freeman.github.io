@@ -71,15 +71,6 @@
             color: var(--text-primary);
         }
 
-        /* Wildcard invite - open invite badge */
-        .invite-badge.wildcard {
-            background: linear-gradient(135deg, rgba(229, 165, 75, 0.15), rgba(126, 184, 168, 0.15));
-            border-color: var(--accent-primary);
-        }
-        .invite-badge.wildcard svg {
-            color: var(--success);
-        }
-
         /* Choice section heading */
         .choice-heading {
             font-family: var(--font-ui);
@@ -589,16 +580,6 @@
                     <span>Invited as <strong id="invite-email-display"></strong></span>
                 </div>
 
-                <!-- Open invite badge (for wildcard/QR invites) -->
-                <div id="invite-badge-wildcard" class="invite-badge wildcard" style="display: none;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="7"/>
-                        <rect x="14" y="3" width="7" height="7"/>
-                        <rect x="3" y="14" width="7" height="7"/>
-                        <rect x="14" y="14" width="3" height="3"/>
-                    </svg>
-                    <span>Open invite — use any email</span>
-                </div>
 
                 <!-- === METHOD SELECTION STEP (shown first for wildcard invites) === -->
                 <div id="method-selection-step">
@@ -858,9 +839,8 @@
         function setupWildcardInvite() {
             isWildcardInvite = true;
 
-            // Show wildcard badge, hide specific badge
+            // Hide specific invite badge (wildcard invites don't need a badge)
             document.getElementById('invite-badge-specific').style.display = 'none';
-            document.getElementById('invite-badge-wildcard').style.display = 'inline-flex';
 
             // Show method selection, hide specific invite options
             document.getElementById('method-selection-step').style.display = 'block';

@@ -73,7 +73,7 @@ function renderUsers() {
             </div>
         </div>
     `}).join('') + (hasMore ? `
-        <button class="btn" onclick="showMoreUsers()" style="width: 100%; margin-top: 0.5rem; background: #f3f4f6; color: #374151;">
+        <button class="btn" onclick="showMoreUsers()" style="width: 100%; margin-top: 0.5rem; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed);">
             Show more (${allUsers.length - usersVisible} remaining)
         </button>
     ` : '');

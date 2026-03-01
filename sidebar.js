@@ -99,8 +99,8 @@ function loadNavbarDiv() {
         accountWidget = `
             <div class="sidebar-account">
                 <a href="/login.html" class="sidebar-login-link">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/></svg>
-                    <span>Log in</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/></svg>
+                    Log in
                 </a>
             </div>
         `;
@@ -184,8 +184,12 @@ function sidebarLogout() {
     style.textContent = `
         .sidebar-account {
             margin-top: auto;
-            padding: 0.75rem 0;
+            padding: 0.5rem 0;
             border-top: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
+        }
+        .sidebar-account a {
+            display: flex !important;
+            padding: 0.75rem 1.25rem !important;
         }
         .sidebar-account-row {
             display: flex;

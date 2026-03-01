@@ -455,7 +455,8 @@
                     container.innerHTML = posts.map(post => {
                         const badges = [];
                         if (!post.is_published) badges.push('<span class="draft-badge">Draft</span>');
-                        if (post.is_friends_only) badges.push('<span class="exclusive-badge">Friends</span>');
+                        if (post.is_early_access) badges.push('<span class="early-access-badge">Early Access</span>');
+                        if (post.is_friends_only && !post.is_early_access) badges.push('<span class="exclusive-badge">Friends</span>');
                         const badgeHtml = badges.length ? ' ' + badges.join(' ') : '';
 
                         // Only show date for published posts
@@ -464,7 +465,7 @@
                             : '';
 
                         return `
-                        <article class="post-preview ${post.thumbnail_url ? 'has-thumbnail' : ''} ${!post.is_published ? 'is-draft' : ''}">
+                        <article class="post-preview ${post.thumbnail_url ? 'has-thumbnail' : ''} ${!post.is_published ? 'is-draft' : ''} ${post.is_early_access ? 'is-early-access' : ''}">
                             ${isAdmin ? `<a href="/admin.html#edit/${post.slug}" class="post-edit-btn">Edit</a>` : ''}
                             ${post.thumbnail_url ? `
                                 <a href="/socialnet/post.html?slug=${post.slug}" class="post-thumbnail">
@@ -489,12 +490,22 @@
                 const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
                 if (isLocalDev) {
                     container.innerHTML = `
+                        <article class="post-preview is-early-access">
+                            <div class="post-content">
+                                <a href="#">
+                                    <h2>Early Access Test <span class="early-access-badge">Early Access</span></h2>
+                                    <time>March 1, 2026</time>
+                                    <p>This post is available for feedback from friends and subscribers before full publication.</p>
+                                    <span class="read-more">Read more &rarr;</span>
+                                </a>
+                            </div>
+                        </article>
                         <article class="post-preview">
                             <div class="post-content">
                                 <a href="#">
-                                    <h2>Test Post for Tour</h2>
-                                    <time>March 1, 2026</time>
-                                    <p>This is a mock post for testing the onboarding tour locally.</p>
+                                    <h2>Regular Post</h2>
+                                    <time>February 28, 2026</time>
+                                    <p>This is a regular published post for comparison.</p>
                                     <span class="read-more">Read more &rarr;</span>
                                 </a>
                             </div>

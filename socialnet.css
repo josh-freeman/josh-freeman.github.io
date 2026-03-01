@@ -464,6 +464,39 @@ a.post-thumbnail,
     letter-spacing: 0.05em;
 }
 
+/* Early Access badge - exclusive preview feel */
+.early-access-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    font-size: var(--text-xs) !important;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    background: linear-gradient(135deg, #5b9a8b 0%, #7ab8a8 50%, #5b9a8b 100%) !important;
+    background-size: 200% 100%;
+    color: var(--bg-primary) !important;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-md);
+    vertical-align: middle;
+    margin-left: var(--space-2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: default;
+    animation: early-access-shimmer 3s ease-in-out infinite;
+    box-shadow: 0 1px 4px rgba(91, 154, 139, 0.25);
+}
+
+.early-access-badge::before {
+    content: '✦';
+    font-size: 0.7em;
+    opacity: 0.8;
+}
+
+@keyframes early-access-shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
 /* Draft post styling - subtle visual distinction */
 .post-preview.is-draft {
     opacity: 0.85;
@@ -472,6 +505,34 @@ a.post-thumbnail,
 
 .post-preview.is-draft::before {
     background: var(--warning);
+}
+
+/* Early Access post styling - preview treatment */
+.post-preview.is-early-access {
+    position: relative;
+    border-color: rgba(91, 154, 139, 0.3);
+}
+
+.post-preview.is-early-access::before {
+    background: linear-gradient(135deg, #5b9a8b, #7ab8a8);
+}
+
+.post-preview.is-early-access::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 10px,
+        rgba(91, 154, 139, 0.02) 10px,
+        rgba(91, 154, 139, 0.02) 20px
+    );
+    pointer-events: none;
+    border-radius: inherit;
 }
 
 /* ========================================

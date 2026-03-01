@@ -206,6 +206,7 @@
                 width: auto !important;
                 bottom: 1rem !important;
                 top: auto !important;
+                transform: none !important;
             }
 
             .tour-content h3 {
@@ -484,8 +485,24 @@
                     throw new Error('Failed to load');
                 }
             } catch (error) {
-                // Show error if API fails
-                container.innerHTML = '<p style="color: var(--text-muted);">Unable to load posts. Please try again later.</p>';
+                // In local dev, show a mock post for testing
+                const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                if (isLocalDev) {
+                    container.innerHTML = `
+                        <article class="post-preview">
+                            <div class="post-content">
+                                <a href="#">
+                                    <h2>Test Post for Tour</h2>
+                                    <time>March 1, 2026</time>
+                                    <p>This is a mock post for testing the onboarding tour locally.</p>
+                                    <span class="read-more">Read more &rarr;</span>
+                                </a>
+                            </div>
+                        </article>
+                    `;
+                } else {
+                    container.innerHTML = '<p style="color: var(--text-muted);">Unable to load posts. Please try again later.</p>';
+                }
             }
         }
 

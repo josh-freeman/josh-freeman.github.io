@@ -195,6 +195,7 @@
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
     <script src="/js/toggle-component.js"></script>
+    <script src="/js/visibility-selector.js"></script>
     <script src="/js/modal.js"></script>
 
     <script src="/comments.js" defer></script>
@@ -204,6 +205,16 @@
 
         // Create toggle manager for edit modal (var for global scope access from inline onclick)
         var editToggle = createToggleManager('toggle', 'edit-post');
+
+        // Create reusable visibility selector for edit modal
+        var editVisibilitySelector = createVisibilitySelector('edit-post');
+
+        // Wrapper functions for backward compatibility (delegate to reusable component)
+        function setEditVisibility(value) { editVisibilitySelector.setVisibility(value); }
+        function updateEditListedState() { editVisibilitySelector.updateListedState(); }
+        function getEditVisibilityFields() { return editVisibilitySelector.getFields(); }
+        function setEditVisibilityFromPost(post) { editVisibilitySelector.setFromPost(post); }
+        function initEditVisibilitySelector() { editVisibilitySelector.init(); }
 
         async function loadPost() {
             const slug = getPostSlug();
@@ -574,35 +585,9 @@
                                 <div id="edit-preview-content" class="md-editor-preview blog-content" style="background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; padding: 0.75rem; min-height: 300px;"></div>
                             </div>
                         </div>
-                        <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                            <input type="hidden" id="edit-post-published" value="false">
-                            <input type="hidden" id="edit-post-friends_only" value="false">
-                            <input type="hidden" id="edit-post-unlisted" value="false">
-                            <input type="hidden" id="edit-post-early_access" value="false">
-
-                            <button type="button" id="toggle-published" class="icon-toggle" title="Toggle Published/Draft" onclick="editToggle.toggle('published')">
-                                <span class="icon-on"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span>
-                                <span class="icon-off"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg></span>
-                                <span class="label-text">Draft</span>
-                            </button>
-
-                            <button type="button" id="toggle-friends_only" class="icon-toggle" title="Toggle Friends Only/Public" onclick="editToggle.toggle('friends_only')">
-                                <span class="icon-on"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 16v-2a2 2 0 0 0-4 0v2"/><path d="M9.5 15H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><rect x="13" y="16" width="8" height="5" rx=".899"/></svg></span>
-                                <span class="icon-off"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-                                <span class="label-text">Public</span>
-                            </button>
-
-                            <button type="button" id="toggle-unlisted" class="icon-toggle" title="Toggle Unlisted/Listed" onclick="editToggle.toggle('unlisted')">
-                                <span class="icon-on"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg></span>
-                                <span class="icon-off"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 19H3"/><path d="M16 5H3"/><path d="M16 12H3"/><path d="m15 18 2 2 4-4"/></svg></span>
-                                <span class="label-text">Listed</span>
-                            </button>
-
-                            <button type="button" id="toggle-early_access" class="icon-toggle" title="Toggle Early Access" onclick="editToggle.toggle('early_access')" style="background: linear-gradient(135deg, rgba(91,154,139,0.15), rgba(91,154,139,0.05));">
-                                <span class="icon-on"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5b9a8b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></span>
-                                <span class="icon-off"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></span>
-                                <span class="label-text" style="color: #5b9a8b;">Early Access</span>
-                            </button>
+                        <!-- Visibility Funnel Selector (rendered by component) -->
+                        <div id="edit-visibility-container" style="margin-bottom: 1rem;">
+                            ${editVisibilitySelector.render()}
                         </div>
                         <div style="display: flex; gap: 1rem;">
                             <button type="button" onclick="handleEditSave()" class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); border: none;">Save</button>
@@ -645,23 +630,7 @@
                     return;
                 }
 
-                // Toggle buttons
-                if (target.closest('#toggle-published')) {
-                    try { editToggle.toggle('published'); } catch(err) { console.error(err); }
-                    return;
-                }
-                if (target.closest('#toggle-friends_only')) {
-                    try { editToggle.toggle('friends_only'); } catch(err) { console.error(err); }
-                    return;
-                }
-                if (target.closest('#toggle-unlisted')) {
-                    try { editToggle.toggle('unlisted'); } catch(err) { console.error(err); }
-                    return;
-                }
-                if (target.closest('#toggle-early_access')) {
-                    try { editToggle.toggle('early_access'); } catch(err) { console.error(err); }
-                    return;
-                }
+                // Note: Visibility selector uses onclick handlers directly on buttons
 
                 // Notify button
                 if (target.closest('#edit-notify-btn')) {
@@ -689,11 +658,9 @@
                     content: post.content || ''
                 };
 
-                // Set toggle states
-                editToggle.set('published', post.is_published);
-                editToggle.set('friends_only', post.is_friends_only || false);
-                editToggle.set('unlisted', post.is_unlisted || false);
-                editToggle.set('early_access', post.is_early_access || false);
+                // Initialize and set visibility state using reusable component
+                initEditVisibilitySelector();
+                setEditVisibilityFromPost(post);
             } catch (err) {
                 console.error('Error setting up edit modal:', err);
             }
@@ -1120,15 +1087,15 @@
 
             const token = localStorage.getItem('comment_token');
 
+            // Get visibility fields from the new selector
+            const visibilityFields = getEditVisibilityFields();
+
             // Get values directly from form
             const postData = {
                 title: document.getElementById('edit-post-title')?.value || '',
                 excerpt: document.getElementById('edit-post-excerpt')?.value || '',
                 content: document.getElementById('edit-post-content')?.value || '',
-                is_published: document.getElementById('edit-post-published')?.value === 'true',
-                is_friends_only: document.getElementById('edit-post-friends_only')?.value === 'true',
-                is_unlisted: document.getElementById('edit-post-unlisted')?.value === 'true',
-                is_early_access: document.getElementById('edit-post-early_access')?.value === 'true'
+                ...visibilityFields
             };
 
             // Send save request
@@ -1192,29 +1159,14 @@
             }
 
             try {
-                // Get toggle values with fallbacks
-                let isPublished = false, isFriendsOnly = false, isUnlisted = false, isEarlyAccess = false;
-                try {
-                    isPublished = editToggle.get('published');
-                    isFriendsOnly = editToggle.get('friends_only');
-                    isUnlisted = editToggle.get('unlisted');
-                    isEarlyAccess = editToggle.get('early_access');
-                } catch (e) {
-                    // Fallback: read from hidden inputs directly
-                    isPublished = document.getElementById('edit-post-published')?.value === 'true';
-                    isFriendsOnly = document.getElementById('edit-post-friends_only')?.value === 'true';
-                    isUnlisted = document.getElementById('edit-post-unlisted')?.value === 'true';
-                    isEarlyAccess = document.getElementById('edit-post-early_access')?.value === 'true';
-                }
+                // Get visibility fields from the new selector
+                const visibilityFields = getEditVisibilityFields();
 
                 const postData = {
                     title: document.getElementById('edit-post-title').value,
                     excerpt: document.getElementById('edit-post-excerpt').value,
                     content: document.getElementById('edit-post-content').value,
-                    is_published: isPublished,
-                    is_friends_only: isFriendsOnly,
-                    is_unlisted: isUnlisted,
-                    is_early_access: isEarlyAccess
+                    ...visibilityFields
                 };
 
                 // Fire and forget - close modal immediately, reload post

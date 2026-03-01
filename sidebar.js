@@ -81,13 +81,15 @@ function loadNavbarDiv() {
             const userName = user.name || 'User';
             accountWidget = `
                 <div class="sidebar-account">
-                    <div class="sidebar-account-info">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <span>${userName}</span>
+                    <div class="sidebar-account-row">
+                        <div class="sidebar-account-info">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <span>${userName}</span>
+                        </div>
+                        <button onclick="sidebarLogout()" class="sidebar-logout-btn" title="Log out">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
+                        </button>
                     </div>
-                    <button onclick="sidebarLogout()" class="sidebar-logout-btn" title="Log out">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
-                    </button>
                 </div>
             `;
         } catch (e) {
@@ -182,19 +184,22 @@ function sidebarLogout() {
     style.textContent = `
         .sidebar-account {
             margin-top: auto;
-            padding: 1rem 1.25rem;
+            padding: 0.75rem 0;
             border-top: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
+        }
+        .sidebar-account-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 0.75rem;
+            padding: 0.75rem 1.25rem;
+            border-left: 2px solid transparent;
         }
         .sidebar-account-info {
             display: flex;
             align-items: center;
             gap: 0.5rem;
             color: var(--text-secondary, #c4bfb6);
-            font-size: 0.9rem;
+            font-size: var(--text-sm, 0.875rem);
             font-family: var(--font-ui, 'DM Sans', sans-serif);
             min-width: 0;
         }
@@ -229,18 +234,20 @@ function sidebarLogout() {
             gap: 0.5rem;
             color: var(--text-secondary, #c4bfb6);
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: var(--text-sm, 0.875rem);
             font-family: var(--font-ui, 'DM Sans', sans-serif);
-            padding: 0.4rem 0.6rem;
-            border-radius: 6px;
+            padding: 0.75rem 1.25rem;
+            border-left: 2px solid transparent;
             transition: all 0.2s ease;
         }
         .sidebar-login-link:hover {
-            background: rgba(229, 165, 75, 0.1);
-            color: var(--accent-primary, #e5a54b);
+            background: var(--bg-hover, rgba(255,255,255,0.05));
+            color: var(--text-primary, #f5f2ed);
+            border-left-color: var(--accent-primary, #e5a54b);
         }
         .sidebar-login-link svg {
             color: var(--accent-primary, #e5a54b);
+            flex-shrink: 0;
         }
     `;
     document.head.appendChild(style);

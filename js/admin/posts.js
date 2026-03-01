@@ -83,7 +83,8 @@ function renderPosts() {
                     <span class="badge ${post.is_published ? 'badge-published' : 'badge-draft'}">
                         ${post.is_published ? 'Published' : 'Draft'}
                     </span>
-                    ${post.is_friends_only ? '<span class="badge badge-exclusive">Friends</span>' : ''}
+                    ${post.is_early_access ? '<span class="badge" style="background: rgba(91, 154, 139, 0.2); color: #5b9a8b;">Early Access</span>' : ''}
+                    ${post.is_friends_only && !post.is_early_access ? '<span class="badge badge-exclusive">Friends</span>' : ''}
                     &middot; /${post.slug} &middot; ${formatDate(post.created_at)}
                 </div>
             </div>
@@ -159,9 +160,11 @@ function showEditor(slug = null) {
         document.getElementById('post-featured-image').value = '';
         document.getElementById('post-thumbnail-square').value = '';
         document.getElementById('post-thumbnail-wide').value = '';
-        adminToggle.set('published', false);
-        adminToggle.set('friends_only', false);
-        adminToggle.set('unlisted', false);
+        // Set default visibility state
+        if (typeof setVisibility === 'function') {
+            setVisibility('draft');
+            setListedState(true);
+        }
         document.getElementById('preview-content').innerHTML = '';
         updateFeaturedImagePreview();
     }
@@ -192,9 +195,10 @@ async function loadPost(slug) {
             document.getElementById('post-thumbnail-square').value = post.thumbnail_square_url || '';
             document.getElementById('post-thumbnail-wide').value = post.thumbnail_wide_url || '';
             document.getElementById('post-content').value = post.content;
-            adminToggle.set('published', post.is_published);
-            adminToggle.set('friends_only', post.is_friends_only || false);
-            adminToggle.set('unlisted', post.is_unlisted || false);
+            // Set visibility from post fields
+            if (typeof setVisibilityFromPost === 'function') {
+                setVisibilityFromPost(post);
+            }
             updateFeaturedImagePreview();
             updatePreview();
         }
@@ -217,6 +221,11 @@ async function savePost(event) {
     const thumbnailSquareUrl = document.getElementById('post-thumbnail-square').value;
     const thumbnailWideUrl = document.getElementById('post-thumbnail-wide').value;
 
+    // Get visibility fields from the selector
+    const visibilityFields = typeof getVisibilityFields === 'function'
+        ? getVisibilityFields()
+        : { is_published: false, is_early_access: false, is_friends_only: false, is_unlisted: false };
+
     const postData = {
         slug: document.getElementById('post-slug').value,
         title: document.getElementById('post-title').value,
@@ -225,9 +234,10 @@ async function savePost(event) {
         thumbnail_square_url: thumbnailSquareUrl,
         thumbnail_wide_url: thumbnailWideUrl,
         content: document.getElementById('post-content').value,
-        is_published: adminToggle.get('published'),
-        is_friends_only: adminToggle.get('friends_only'),
-        is_unlisted: adminToggle.get('unlisted')
+        is_published: visibilityFields.is_published,
+        is_early_access: visibilityFields.is_early_access,
+        is_friends_only: visibilityFields.is_friends_only,
+        is_unlisted: visibilityFields.is_unlisted
     };
 
     try {

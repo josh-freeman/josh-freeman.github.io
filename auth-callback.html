@@ -201,6 +201,7 @@
         const isAdmin = params.get('is_admin') === 'true';
         const isApproved = params.get('is_approved') === 'true';
         const subscriptionStatus = params.get('subscription_status') || 'none';
+        const profilePictureUrl = params.get('profile_picture_url') || null;
         const error = params.get('error');
 
         const icon = document.getElementById('icon');
@@ -285,7 +286,8 @@
                 name: name,
                 is_admin: isAdmin,
                 is_approved: isApproved,
-                subscription_status: subscriptionStatus
+                subscription_status: subscriptionStatus,
+                profile_picture_url: profilePictureUrl
             }));
 
             // Send browser data for location disambiguation (VPN detection)

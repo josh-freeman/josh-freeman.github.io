@@ -110,6 +110,7 @@
         let currentPost = null, editPostStats = null, userReacted = false, userReactionId = null;
         let maxReactionDepth = 3, currentUser = null, reactionsPreloaded = false;
         let forestView = 'tree', cachedReactions = null, cy = null, editModalOriginalValues = {};
+        let fullMarkdownContent = null; // For lazy loading
         const editToggle = createToggleManager('toggle', 'edit-post');
         const editVisibilitySelector = createVisibilitySelector('edit-post');
 
@@ -158,39 +159,67 @@
             document.getElementById('post-title').innerHTML = post.title + badges;
             document.getElementById('post-date').textContent = formatDate(post.created_at);
             document.getElementById('post-date').setAttribute('datetime', post.created_at.split('T')[0]);
-            document.getElementById('post-content').innerHTML = marked.parse(post.content);
+
+            // Lazy loading: split long content, only render preview initially
+            const content = post.content;
+            const preview = getContentPreview(content);
+            fullMarkdownContent = content;
+
+            if (preview.truncated) {
+                document.getElementById('post-content').innerHTML = marked.parse(preview.text);
+                document.getElementById('post-content-wrapper').classList.add('collapsed');
+                document.getElementById('continue-reading-btn').classList.add('visible');
+            } else {
+                document.getElementById('post-content').innerHTML = marked.parse(content);
+            }
+            styleBlockquotes();
+        }
+
+        function getContentPreview(markdown) {
+            // Split at ~1500 chars, but at a paragraph boundary
+            if (markdown.length < 2000) return { text: markdown, truncated: false };
+
+            const paragraphs = markdown.split(/\n\n+/);
+            let preview = '';
+            let charCount = 0;
+
+            for (const p of paragraphs) {
+                if (charCount > 1500) break;
+                preview += (preview ? '\n\n' : '') + p;
+                charCount += p.length;
+            }
+
+            // Ensure we have at least some content
+            if (preview.length < 500) return { text: markdown, truncated: false };
+            return { text: preview, truncated: true };
+        }
+
+        function styleBlockquotes() {
             document.querySelectorAll('.post-content blockquote').forEach(bq => {
                 const text = bq.textContent.toLowerCase().trim();
                 if (text.includes('⚠️') || /^warning\b/i.test(text)) bq.classList.add('warning');
                 else if (text.includes('💡') || /^tip\b/i.test(text)) bq.classList.add('tip');
                 else if (text.includes('ℹ️') || /^note\b/i.test(text)) bq.classList.add('note');
             });
-            // Check if content is long enough to collapse
-            requestAnimationFrame(() => initCollapseState());
-        }
-
-        function initCollapseState() {
-            const wrapper = document.getElementById('post-content-wrapper');
-            const content = document.getElementById('post-content');
-            const btn = document.getElementById('continue-reading-btn');
-            if (!wrapper || !content || !btn) return;
-            // Only collapse if content is taller than threshold (600px)
-            if (content.scrollHeight > 600) {
-                wrapper.classList.add('collapsed');
-                btn.classList.add('visible');
-            }
         }
 
         function expandPost() {
             const wrapper = document.getElementById('post-content-wrapper');
+            const content = document.getElementById('post-content');
             const btn = document.getElementById('continue-reading-btn');
-            if (!wrapper || !btn) return;
+            if (!wrapper || !content || !btn) return;
+
+            // Render full content (lazy load the rest)
+            if (fullMarkdownContent) {
+                content.innerHTML = marked.parse(fullMarkdownContent);
+                styleBlockquotes();
+            }
+
             wrapper.style.maxHeight = wrapper.scrollHeight + 'px';
             wrapper.classList.remove('collapsed');
             btn.style.opacity = '0';
             btn.style.transform = 'translateY(-10px)';
             setTimeout(() => { btn.classList.remove('visible'); btn.style = ''; }, 300);
-            // Smooth transition
             setTimeout(() => { wrapper.style.maxHeight = ''; }, 500);
         }
 

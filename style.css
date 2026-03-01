@@ -215,6 +215,7 @@ small {
     align-items: center;
     justify-content: center;
     border-radius: var(--radius-sm);
+    z-index: 10;
 }
 
 .sidebar .closebtn:hover {

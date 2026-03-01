@@ -1506,3 +1506,101 @@
     align-items: center;
     gap: 0.5rem;
 }
+
+/* ==========================================================================
+   Post Page Specific
+   ========================================================================== */
+
+.forest-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--primary-color);
+    font-size: 0.95rem;
+    padding: 0.6rem 0;
+}
+
+.heart-icon {
+    transition: color 0.2s, transform 0.2s;
+}
+
+.heart-icon.active {
+    fill: #ef4444;
+    color: #ef4444;
+}
+
+#reaction-btn:hover .heart-icon:not(.active) {
+    color: #fca5a5;
+}
+
+.early-access-badge {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    margin-left: 0.5rem;
+}
+
+/* Tree View */
+.tree-node {
+    font-size: 0.95rem;
+    padding: 0.3rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.tree-node a {
+    color: var(--text-primary, #f5f2ed);
+    text-decoration: none;
+}
+
+.tree-node a:hover {
+    color: var(--accent-primary, #e5a54b);
+}
+
+.tree-node .btn-icon {
+    opacity: 0;
+    font-size: 0.8rem;
+    padding: 0.2rem 0.4rem;
+}
+
+.tree-node:hover .btn-icon {
+    opacity: 1;
+}
+
+/* User List (Notify Modal) */
+.user-list {
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
+    border-radius: 8px;
+    background: var(--bg-secondary, #151418);
+}
+
+.user-list-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
+    transition: background 0.15s;
+}
+
+.user-list-item:last-child {
+    border-bottom: none;
+}
+
+.user-list-item:hover {
+    background: var(--bg-hover, #2d2a31);
+}
+
+.custom-checkbox-notify {
+    display: flex;
+    align-items: center;
+}

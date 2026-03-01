@@ -5,99 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">Loading... - Joshua Freeman</title>
     <meta name="description" id="page-description" content="">
-
-    <!-- Favicon -->
     <link rel="icon" href="/resources/icon_blue.png" type="image/png">
-
-    <!-- Open Graph -->
     <meta property="og:title" id="og-title" content="">
     <meta property="og:description" id="og-description" content="">
     <meta property="og:image" content="https://joshfreeman.me/resources/big_icon.jpg">
     <meta property="og:url" id="og-url" content="">
     <meta property="og:type" content="article">
-
-    <!-- Fonts: Fraunces (display), Source Serif 4 (body), DM Sans (UI) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
-
-    <!-- Styles -->
     <link rel="stylesheet" href="/css/theme.css">
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/buttons.css">
     <link rel="stylesheet" href="/socialnet.css">
     <link rel="stylesheet" href="/css/components.css">
-
-    <!-- Theme Script (before body to prevent flash) -->
     <script src="/js/theme.js"></script>
-
-    <style>
-        /* Page-specific styles */
-        .forest-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--primary-color);
-            font-size: 0.95rem;
-            padding: 0.6rem 0;
-        }
-
-        #reaction-btn:hover .heart-icon:not(.active) {
-            color: #fca5a5;
-        }
-
-        /* Write/Preview tab component (GitHub-style) */
-        .md-editor-tabs {
-            display: flex;
-            border-bottom: 1px solid #e0e0e0;
-            margin-bottom: 0;
-        }
-        .md-editor-tab {
-            padding: 0.4rem 0.8rem;
-            border: 1px solid transparent;
-            border-bottom: none;
-            background: none;
-            cursor: pointer;
-            font-size: 0.85rem;
-            color: #57606a;
-            margin-bottom: -1px;
-            border-radius: 6px 6px 0 0;
-        }
-        .md-editor-tab:hover { color: #24292f; }
-        .md-editor-tab.active {
-            background: #fff;
-            border-color: #e0e0e0;
-            color: #24292f;
-            font-weight: 500;
-        }
-        .md-editor-content {
-            border: 1px solid #e0e0e0;
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-            min-height: 250px;
-        }
-        .md-editor-content textarea {
-            border: none;
-            border-radius: 0 0 8px 8px;
-            min-height: 250px;
-        }
-        .md-editor-content textarea:focus {
-            outline: none;
-            box-shadow: inset 0 0 0 1px var(--primary-color);
-        }
-        .md-editor-preview {
-            padding: 1rem;
-            background: #fafafa;
-            border-radius: 0 0 8px 8px;
-            min-height: 250px;
-            max-height: 400px;
-            overflow-y: auto;
-            display: none;
-        }
-        .md-editor-preview.active { display: block; }
-    </style>
-
-    <!-- Set initial OG title from URL slug for better previews -->
     <script>
         (function() {
             var slug = new URLSearchParams(window.location.search).get('slug');
@@ -109,78 +31,57 @@
             }
         })();
     </script>
-
-    <!-- Marked.js for markdown rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Cytoscape.js for graph visualization -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
 </head>
 <body>
     <div id="main">
-        <!-- Sidebar -->
-        <sidebar>
-            <script src="/sidebar.js"></script>
-        </sidebar>
-
+        <sidebar><script src="/sidebar.js"></script></sidebar>
         <article class="post-container">
             <a href="/socialnet.html" class="back-link">Back to socialnet</a>
-
             <header class="post-header">
                 <h1 id="post-title"><span class="loading-spinner"></span>Loading...</h1>
                 <p class="post-meta">
                     <time id="post-date" datetime=""></time>
-                    <span id="reaction-container" style="margin-left: 1rem;">
-                        <button id="reaction-btn" onclick="toggleReaction()" style="background: none; border: none; cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 6px; transition: background 0.2s; display: inline-flex; align-items: center; gap: 0.3rem;" title="Add your reaction">
-                            <svg id="reaction-icon" class="heart-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z"/></svg>
-                            <span id="reaction-count" style="font-size: 0.9rem; color: var(--text-muted);">0</span>
+                    <span id="reaction-container" class="ml-2">
+                        <button id="reaction-btn" onclick="toggleReaction()" class="btn-icon" title="Add your reaction">
+                            <svg id="reaction-icon" class="heart-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z"/></svg>
+                            <span id="reaction-count" class="text-muted text-small">0</span>
                         </button>
                     </span>
-                    <span id="admin-actions" style="display: none; margin-left: 1rem;">
-                        <button onclick="editPost()" title="Edit post" style="background: none; border: none; cursor: pointer; padding: 0.25rem; color: var(--text-muted); transition: color 0.2s;" onmouseover="this.style.color='var(--primary-color)'" onmouseout="this.style.color='var(--text-muted)'">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
+                    <span id="admin-actions" class="ml-2" style="display:none">
+                        <button onclick="editPost()" title="Edit post" class="btn-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
                         </button>
-                        <button onclick="deletePost()" title="Delete post" style="background: none; border: none; cursor: pointer; padding: 0.25rem; color: var(--text-muted); transition: color 0.2s;" onmouseover="this.style.color='#e74c3c'" onmouseout="this.style.color='var(--text-muted)'">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        <button onclick="deletePost()" title="Delete post" class="btn-icon danger">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                         </button>
                     </span>
                     <button id="share-btn-header" onclick="openShareModal()" class="share-btn-inline" title="Share this post">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
                         Share
                     </button>
                 </p>
             </header>
-
-            <div id="post-content" class="post-content">
-                <p class="loading-text"><span class="loading-spinner"></span>Loading post content...</p>
-            </div>
-
-            <!-- Share & Reaction Actions -->
-            <div id="post-actions" style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+            <div id="post-content" class="post-content"><p class="loading-text"><span class="loading-spinner"></span>Loading post content...</p></div>
+            <div id="post-actions" class="flex gap-2 flex-wrap items-center mt-3">
                 <button id="share-btn-footer" onclick="openShareModal()" class="share-btn-prominent">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
                     Share this post
                 </button>
                 <button onclick="openReactionForest()" class="forest-btn">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M10 10v.2A3 3 0 0 1 8.9 16H5a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z"/><path d="M7 16v6"/><path d="M13 19v3"/><path d="M12 19h8.3a1 1 0 0 0 .7-1.7L18 14h.3a1 1 0 0 0 .7-1.7L16 9h.2a1 1 0 0 0 .8-1.7L13 3l-1.4 1.5"/></svg>
-                    View Reaction Forest <span id="forest-count" style="color: var(--text-muted);"></span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><path d="M10 10v.2A3 3 0 0 1 8.9 16H5a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z"/><path d="M7 16v6"/><path d="M13 19v3"/><path d="M12 19h8.3a1 1 0 0 0 .7-1.7L18 14h.3a1 1 0 0 0 .7-1.7L16 9h.2a1 1 0 0 0 .8-1.7L13 3l-1.4 1.5"/></svg>
+                    View Reaction Forest <span id="forest-count" class="text-muted"></span>
                 </button>
             </div>
-
-            <!-- Comments Section -->
             <section class="comments-section">
                 <h2>Comments</h2>
-                <div id="comments-container">
-                    <p class="comments-loading">Loading comments...</p>
-                </div>
+                <div id="comments-container"><p class="comments-loading">Loading comments...</p></div>
                 <div id="comment-form-container">
                     <div class="comment-login-notice">
-                        <p class="login-action">
-                            <a href="#" id="login-link">Log in</a> to leave a comment
-                        </p>
+                        <p class="login-action"><a href="#" id="login-link">Log in</a> to leave a comment</p>
                         <div class="login-divider">or</div>
-                        <p class="login-invite">
-                            <a href="/subscribe.html">Subscribe</a> for early access and to join the conversation, or reach out if we know each other!
-                        </p>
+                        <p class="login-invite"><a href="/subscribe.html">Subscribe</a> to join the conversation, or reach out if we know each other!</p>
                     </div>
                 </div>
             </section>
@@ -189,1560 +90,443 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="/submenus.js"></script>
-
-    <!-- Shared modules -->
     <script src="/js/utils.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
     <script src="/js/toggle-component.js"></script>
     <script src="/js/visibility-selector.js"></script>
     <script src="/js/modal.js"></script>
-
     <script src="/comments.js" defer></script>
 
     <script>
-        let currentPost = null;  // Store current post data for sharing
+        // State
+        let currentPost = null, editPostStats = null, userReacted = false, userReactionId = null;
+        let maxReactionDepth = 3, currentUser = null, reactionsPreloaded = false;
+        let forestView = 'tree', cachedReactions = null, cy = null, editModalOriginalValues = {};
+        const editToggle = createToggleManager('toggle', 'edit-post');
+        const editVisibilitySelector = createVisibilitySelector('edit-post');
 
-        // Create toggle manager for edit modal (var for global scope access from inline onclick)
-        var editToggle = createToggleManager('toggle', 'edit-post');
+        // Icons
+        const ICONS = {
+            share: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>',
+            email: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+            eye: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>',
+            users: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+            forest: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 10v.2A3 3 0 0 1 8.9 16H5a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z"/><path d="M7 16v6"/><path d="M13 19v3"/><path d="M12 19h8.3a1 1 0 0 0 .7-1.7L18 14h.3a1 1 0 0 0 .7-1.7L16 9h.2a1 1 0 0 0 .8-1.7L13 3l-1.4 1.5"/></svg>',
+            heart: '<svg width="18" height="18" viewBox="0 0 24 24" fill="#ef4444" stroke="none"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z"/></svg>',
+            seedling: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5"><path d="M12 22V12"/><path d="M12 12C12 12 8 9 8 6c0-2.2 1.8-4 4-4s4 1.8 4 4c0 3-4 6-4 6z"/><path d="M12 12c0 0-4-1-6-3"/><path d="M12 12c0 0 4-1 6-3"/></svg>'
+        };
 
-        // Create reusable visibility selector for edit modal
-        var editVisibilitySelector = createVisibilitySelector('edit-post');
-
-        // Wrapper functions for backward compatibility (delegate to reusable component)
-        function setEditVisibility(value) { editVisibilitySelector.setVisibility(value); }
-        function updateEditListedState() { editVisibilitySelector.updateListedState(); }
-        function getEditVisibilityFields() { return editVisibilitySelector.getFields(); }
-        function setEditVisibilityFromPost(post) { editVisibilitySelector.setFromPost(post); }
-        function initEditVisibilitySelector() { editVisibilitySelector.init(); }
-
+        // Post Loading
         async function loadPost() {
             const slug = getPostSlug();
-            if (!slug) {
-                window.location.replace('/socialnet.html');
-                return;
-            }
-
+            if (!slug) return window.location.replace('/socialnet.html');
             try {
-                // Include auth token if logged in (for exclusive posts)
                 const token = localStorage.getItem('comment_token');
                 const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-
-                // Use batched endpoint to reduce API calls (post + comments + reactions in one request)
                 const response = await fetch(`${API_BASE}/posts/${slug}/full`, { headers, credentials: 'include' });
-
                 if (response.ok) {
                     const data = await response.json();
-                    const post = data.post;
-                    currentPost = post;  // Store for sharing
-
-                    // Update page metadata
-                    document.getElementById('page-title').textContent = `${post.title} - Joshua Freeman`;
-                    document.getElementById('page-description').content = post.excerpt || '';
-                    document.getElementById('og-title').content = `${post.title} - Joshua Freeman`;
-                    document.getElementById('og-description').content = post.excerpt || '';
-                    document.getElementById('og-url').content = `https://joshfreeman.me/socialnet/post.html?slug=${slug}`;
-
-                    // Update content
-                    document.getElementById('post-title').innerHTML = post.title + (post.is_early_access ? ' <span class="early-access-badge">Early Access</span>' : '') + (post.is_friends_only && !post.is_early_access ? ' <span class="exclusive-badge" title="This post is only visible to friends">Friends Only</span>' : '') + (post.is_unlisted ? ' <span class="unlisted-badge" title="Unlisted - not shown in socialnet listing">Unlisted</span>' : '');
-                    document.getElementById('post-date').textContent = formatDate(post.created_at);
-                    document.getElementById('post-date').setAttribute('datetime', post.created_at.split('T')[0]);
-
-                    // Render markdown content
-                    document.getElementById('post-content').innerHTML = marked.parse(post.content);
-
-                    // Style blockquotes based on content
-                    styleBlockquotes();
-
-                    // Initialize comments with pre-loaded data (prevents extra API call)
+                    currentPost = data.post;
+                    renderPost(data.post);
                     window.PRELOADED_COMMENTS = data.comments;
-
-                    // Initialize reactions with pre-loaded data
                     initReactionsWithData(data.reactions);
-
-                    // Record view (fire and forget)
-                    fetch(`${API_BASE}/posts/${slug}/view`, {
-                        method: 'POST',
-                        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
-                        credentials: 'include'
-                    }).catch(() => {});
+                    fetch(`${API_BASE}/posts/${slug}/view`, { method: 'POST', headers, credentials: 'include' }).catch(() => {});
                 } else if (response.status === 401 || response.status === 404) {
-                    // Redirect to socialnet - don't leak whether post exists
                     window.location.replace('/socialnet.html');
-                    return;
-                } else {
-                    throw new Error('Failed to load');
-                }
-            } catch (error) {
-                // Network error or other failure - redirect to socialnet
-                window.location.replace('/socialnet.html');
-            }
+                } else throw new Error('Failed to load');
+            } catch (e) { window.location.replace('/socialnet.html'); }
         }
 
-        document.addEventListener('DOMContentLoaded', loadPost);
-
-        // Style blockquotes based on content (note, warning, tip)
-        function styleBlockquotes() {
-            const blockquotes = document.querySelectorAll('.post-content blockquote');
-            blockquotes.forEach(bq => {
+        function renderPost(post) {
+            document.getElementById('page-title').textContent = `${post.title} - Joshua Freeman`;
+            document.getElementById('page-description').content = post.excerpt || '';
+            document.getElementById('og-title').content = `${post.title} - Joshua Freeman`;
+            document.getElementById('og-description').content = post.excerpt || '';
+            document.getElementById('og-url').content = `https://joshfreeman.me/socialnet/post.html?slug=${post.slug}`;
+            let badges = '';
+            if (post.is_early_access) badges += ' <span class="early-access-badge">Early Access</span>';
+            if (post.is_friends_only && !post.is_early_access) badges += ' <span class="exclusive-badge" title="Friends Only">Friends Only</span>';
+            if (post.is_unlisted) badges += ' <span class="unlisted-badge" title="Unlisted">Unlisted</span>';
+            document.getElementById('post-title').innerHTML = post.title + badges;
+            document.getElementById('post-date').textContent = formatDate(post.created_at);
+            document.getElementById('post-date').setAttribute('datetime', post.created_at.split('T')[0]);
+            document.getElementById('post-content').innerHTML = marked.parse(post.content);
+            document.querySelectorAll('.post-content blockquote').forEach(bq => {
                 const text = bq.textContent.toLowerCase().trim();
-                // Check start of text for keywords (with flexible spacing/punctuation)
-                if (text.includes('⚠️') || /^warning\b/i.test(text) || text.includes('/!\\')) {
-                    bq.classList.add('warning');
-                } else if (text.includes('💡') || /^tip\b/i.test(text)) {
-                    bq.classList.add('tip');
-                } else if (text.includes('ℹ️') || /^note\b/i.test(text)) {
-                    bq.classList.add('note');
-                }
+                if (text.includes('⚠️') || /^warning\b/i.test(text)) bq.classList.add('warning');
+                else if (text.includes('💡') || /^tip\b/i.test(text)) bq.classList.add('tip');
+                else if (text.includes('ℹ️') || /^note\b/i.test(text)) bq.classList.add('note');
             });
         }
 
-        // Check if user is admin and show edit/delete buttons
         function checkAdminActions() {
             const userStr = localStorage.getItem('comment_user');
             if (userStr) {
                 const user = JSON.parse(userStr);
-                if (user.is_admin) {
-                    document.getElementById('admin-actions').style.display = 'inline';
-                }
+                if (user.is_admin) document.getElementById('admin-actions').style.display = 'inline';
             }
         }
 
-        // Check if user can generate 24h access links for this post
+        document.addEventListener('DOMContentLoaded', () => { loadPost(); checkAdminActions(); });
+
+        // Share Modal
         function canGenerateTempLink() {
-            if (!currentPost || !currentPost.is_friends_only) return false;
-
-            const userStr = localStorage.getItem('comment_user');
-            const token = localStorage.getItem('comment_token');
+            if (!currentPost?.is_friends_only) return false;
+            const userStr = localStorage.getItem('comment_user'), token = localStorage.getItem('comment_token');
             if (!userStr || !token) return false;
-
             const user = JSON.parse(userStr);
-            const isMentioned = currentPost.content.toLowerCase().includes(user.name.toLowerCase());
-            return user.is_admin || isMentioned;
+            return user.is_admin || currentPost.content.toLowerCase().includes(user.name.toLowerCase());
         }
 
-        // Open the share modal - works for all posts
         function openShareModal() {
             if (!currentPost) return;
-
             const postUrl = window.location.href;
             const isExclusive = currentPost.is_friends_only;
             const canGenerate = canGenerateTempLink();
-
-            const modal = document.createElement('div');
-            modal.id = 'share-modal';
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.5);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 1000;
-                padding: 1rem;
-            `;
-
-            let content = '';
-
+            let content = modalHeader('Share this post', 'share-modal', ICONS.share);
             if (!isExclusive) {
-                // PUBLIC POST - simple share
-                content = `
-                    <div style="background: white; padding: 1.75rem; border-radius: 12px; max-width: 440px; width: 100%;">
-                        <h3 style="margin: 0 0 1rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-                            Share this post
-                        </h3>
-                        <div style="position: relative;">
-                            <input type="text" id="share-url-main" value="${postUrl}" readonly
-                                style="width: 100%; padding: 0.7rem 0.9rem; padding-right: 70px; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; font-size: 0.85rem; background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed);"
-                                onclick="this.select()">
-                            <button onclick="copyUrl('share-url-main', this)" style="position: absolute; right: 4px; top: 50%; transform: translateY(-50%); padding: 0.4rem 0.7rem; background: var(--accent-primary, #e5a54b); color: var(--bg-primary, #0c0b0d); border: none; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 500;">Copy</button>
-                        </div>
-                        <button onclick="closeShareModal()" style="width: 100%; margin-top: 1rem; padding: 0.6rem; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; cursor: pointer; font-size: 0.9rem;">Done</button>
-                    </div>
-                `;
+                content += `<div class="input-with-button"><input type="text" id="share-url-main" value="${postUrl}" readonly onclick="this.select()"><button onclick="copyUrl('share-url-main',this)">Copy</button></div><button onclick="closeModal('share-modal')" class="btn-secondary mt-2 w-full">Done</button>`;
             } else {
-                // FRIENDS-ONLY POST
-                content = `
-                    <div style="background: var(--bg-elevated, #262329); color: var(--text-primary, #f5f2ed); padding: 1.75rem; border-radius: 12px; max-width: 440px; width: 100%; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">
-                        <h3 style="margin: 0 0 0.75rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary, #f5f2ed);">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-                            Share this post
-                        </h3>
-
-                        <div style="background: var(--bg-tertiary, #1e1c21); border-left: 3px solid var(--warning, #e5a54b); padding: 0.6rem 0.8rem; border-radius: 0 6px 6px 0; margin-bottom: 1rem;">
-                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary, #c4bfb6);">
-                                <strong style="color: var(--text-accent, #e8c574);">Friends-only post</strong> — this link only works for people with socialnet access.
-                            </p>
-                        </div>
-
-                        <div style="margin-bottom: 1rem;">
-                            <label style="font-size: 0.8rem; color: var(--text-muted, #8a857c); display: block; margin-bottom: 0.3rem;">Link for members</label>
-                            <div style="position: relative;">
-                                <input type="text" id="share-url-main" value="${postUrl}" readonly
-                                    style="width: 100%; padding: 0.6rem 0.8rem; padding-right: 65px; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; font-size: 0.8rem; background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed);"
-                                    onclick="this.select()">
-                                <button onclick="copyUrl('share-url-main', this)" style="position: absolute; right: 4px; top: 50%; transform: translateY(-50%); padding: 0.35rem 0.6rem; background: var(--text-muted, #8a857c); color: var(--bg-primary, #0c0b0d); border: none; border-radius: 5px; font-size: 0.75rem; cursor: pointer;">Copy</button>
-                            </div>
-                        </div>
-
-                        ${canGenerate ? `
-                        <div style="border-top: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); padding-top: 1rem; margin-top: 0.5rem;">
-                            <div style="background: var(--accent-primary-glow, rgba(229, 165, 75, 0.15)); border-left: 3px solid var(--accent-primary, #e5a54b); padding: 0.7rem 0.9rem; border-radius: 0 8px 8px 0; margin-bottom: 0.75rem;">
-                                <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary, #c4bfb6);">
-                                    <strong style="color: var(--text-accent, #e8c574);">You can share with anyone!</strong><br>
-                                    <span style="font-size: 0.8rem; opacity: 0.9;">Generate a 24-hour access link that works without login.</span>
-                                </p>
-                            </div>
-                            <div id="temp-link-section">
-                                <button onclick="generateTempLink()" id="generate-temp-btn" style="width: 100%; padding: 0.65rem; background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500;">
-                                    Generate 24-hour link
-                                </button>
-                            </div>
-                        </div>
-                        ` : ''}
-
-                        <button onclick="closeShareModal()" style="width: 100%; margin-top: 1rem; padding: 0.6rem; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; cursor: pointer; font-size: 0.9rem;">Done</button>
-                    </div>
-                `;
+                content += `<div class="warning-box"><p><strong class="text-accent">Friends-only post</strong> — this link only works for people with socialnet access.</p></div>
+                <div class="form-group"><label class="form-label-small">Link for members</label><div class="input-with-button"><input type="text" id="share-url-main" value="${postUrl}" readonly onclick="this.select()"><button onclick="copyUrl('share-url-main',this)">Copy</button></div></div>
+                ${canGenerate ? `<div class="border-t pt-2 mt-1"><div class="highlight-box highlight-box-warning"><p><strong class="text-accent">You can share with anyone!</strong><br><span class="text-small">Generate a 24-hour access link that works without login.</span></p></div><div id="temp-link-section"><button onclick="generateTempLink()" id="generate-temp-btn" class="btn-primary-gradient w-full">Generate 24-hour link</button></div></div>` : ''}
+                <button onclick="closeModal('share-modal')" class="btn-secondary mt-2 w-full">Done</button>`;
             }
-
-            modal.innerHTML = content;
-            document.body.appendChild(modal);
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeShareModal();
-            });
+            createModal('share-modal', content);
         }
 
-        // Generate temporary 24h access link (with loading guard)
         async function generateTempLink() {
-            const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.shareLink : { start: () => true, end: () => {} };
+            const guard = loadingGuards.shareLink;
             if (!guard.start()) return;
-
-            const btn = document.getElementById('generate-temp-btn');
-            const section = document.getElementById('temp-link-section');
-            const token = localStorage.getItem('comment_token');
-            const slug = getPostSlug();
-
-            btn.disabled = true;
-            btn.textContent = 'Generating...';
-
+            const btn = document.getElementById('generate-temp-btn'), section = document.getElementById('temp-link-section');
+            btn.disabled = true; btn.textContent = 'Generating...';
             try {
-                const response = await fetch(`${API_BASE}/posts/${slug}/share`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
+                const response = await fetch(`${API_BASE}/posts/${getPostSlug()}/share`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('comment_token')}` } });
                 if (response.ok) {
                     const data = await response.json();
-                    section.innerHTML = `
-                        <label style="font-size: 0.8rem; color: var(--text-muted, #8a857c); display: block; margin-bottom: 0.3rem;">24-hour access link</label>
-                        <div style="position: relative; margin-bottom: 0.5rem;">
-                            <input type="text" id="share-url-temp" value="${data.share_url}" readonly
-                                style="width: 100%; padding: 0.6rem 0.8rem; padding-right: 65px; border: 1px solid var(--accent-primary, #e5a54b); border-radius: 8px; font-size: 0.8rem; background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed);"
-                                onclick="this.select()">
-                            <button onclick="copyUrl('share-url-temp', this)" style="position: absolute; right: 4px; top: 50%; transform: translateY(-50%); padding: 0.35rem 0.6rem; background: var(--accent-primary, #e5a54b); color: var(--bg-primary, #0c0b0d); border: none; border-radius: 5px; font-size: 0.75rem; cursor: pointer; font-weight: 500;">Copy</button>
-                        </div>
-                        <p style="margin: 0; font-size: 0.75rem; color: var(--text-muted, #8a857c);">
-                            Expires ${new Date(data.expires_at).toLocaleString()}
-                        </p>
-                    `;
-                } else {
-                    const error = await response.json();
-                    btn.disabled = false;
-                    btn.textContent = 'Generate 24-hour link';
-                    alert(error.detail || 'Failed to generate link');
-                }
-            } catch (error) {
-                btn.disabled = false;
-                btn.textContent = 'Generate 24-hour link';
-                alert('Failed to generate link');
-            } finally {
-                guard.end();
-            }
+                    section.innerHTML = `<label class="form-label-small">24-hour access link</label><div class="input-with-button mb-1"><input type="text" id="share-url-temp" value="${data.share_url}" readonly onclick="this.select()" class="border-accent"><button onclick="copyUrl('share-url-temp',this)">Copy</button></div><p class="text-muted text-small">Expires ${new Date(data.expires_at).toLocaleString()}</p>`;
+                } else { btn.disabled = false; btn.textContent = 'Generate 24-hour link'; alert((await response.json()).detail || 'Failed'); }
+            } catch (e) { btn.disabled = false; btn.textContent = 'Generate 24-hour link'; alert('Failed'); }
+            finally { guard.end(); }
         }
 
-        // Copy URL helper
         function copyUrl(inputId, btn) {
-            const input = document.getElementById(inputId);
-            input.select();
+            document.getElementById(inputId).select();
             document.execCommand('copy');
-            const originalText = btn.textContent;
-            btn.textContent = '✓';
-            btn.style.background = '#10b981';
-            setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.background = '';
-            }, 1500);
+            const orig = btn.textContent;
+            btn.textContent = '✓'; btn.style.background = '#10b981';
+            setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1500);
         }
 
-        function closeShareModal() {
-            const modal = document.getElementById('share-modal');
-            if (modal) modal.remove();
-        }
-
-        // Edit post - opens modal with markdown editor
+        // Edit Post Modal
         function editPost() {
-            const slug = getPostSlug();
-            if (!slug) return;
-
-            const token = localStorage.getItem('comment_token');
-            if (!token) {
-                alert('Please log in first');
-                return;
-            }
-
-            // Fetch current content and show edit modal
-            fetch(`${API_BASE}/admin/posts/${slug}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            })
-            .then(r => r.json())
-            .then(post => {
-                showEditModal(post);
-            })
-            .catch(() => alert('Failed to load post for editing'));
+            const slug = getPostSlug(), token = localStorage.getItem('comment_token');
+            if (!slug || !token) return alert('Please log in first');
+            fetch(`${API_BASE}/admin/posts/${slug}`, { headers: { 'Authorization': `Bearer ${token}` } })
+                .then(r => r.json()).then(post => showEditModal(post)).catch(() => alert('Failed to load post'));
         }
-
-        let editPostStats = null;
 
         async function showEditModal(post) {
-            // Close any existing edit modal first
-            closeEditModal();
-
+            closeModal('edit-post-modal');
             const token = localStorage.getItem('comment_token');
-
-            const modal = document.createElement('div');
-            modal.id = 'edit-post-modal';
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.5);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 1000;
-                padding: 1rem;
-            `;
-
-            // Fetch stats in background
-            fetch(`${API_BASE}/admin/posts/${post.slug}/stats`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            }).then(r => {
-                if (!r.ok) throw new Error('Failed to load stats');
-                return r.json();
-            }).then(stats => {
-                editPostStats = stats;
-                if (stats) updateEditModalStats(stats, post.is_published);
-            }).catch(err => {
-                console.error('Failed to load post stats:', err);
-                const statsEl = document.getElementById('edit-view-stats');
-                if (statsEl) statsEl.innerHTML = '<span style="color: var(--error, #d4726a);">Failed to load stats</span>';
-            });
-
-            modal.innerHTML = `
-                <div class="edit-modal-content" style="background: var(--bg-elevated, #262329); color: var(--text-primary, #f5f2ed); padding: 2rem; border-radius: 12px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));" onclick="event.stopPropagation()">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
-                        <h3 style="margin: 0; color: var(--text-primary, #f5f2ed);">Edit Post</h3>
-                        <button type="button" onclick="confirmCloseEditModal()" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: var(--text-muted, #8a857c); line-height: 1;">&times;</button>
-                    </div>
-
-                    <!-- View Stats & Notify Section -->
-                    <div id="edit-stats-section" style="background: var(--bg-tertiary, #1e1c21); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                            <div id="edit-view-stats" style="display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
-                                <span>Loading stats...</span>
-                            </div>
-                            <button id="edit-notify-btn" onclick="openNotifyFromEdit()" style="display: none; background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500;">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.3rem;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                                Notify Users
-                            </button>
-                        </div>
-                    </div>
-
-                    <form id="edit-post-form">
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary, #f5f2ed);">Title</label>
-                            <input type="text" id="edit-post-title" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; font-size: 1rem; background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed);">
-                        </div>
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary, #f5f2ed);">Excerpt</label>
-                            <input type="text" id="edit-post-excerpt" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; font-size: 1rem; background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed);">
-                        </div>
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary, #f5f2ed);">Content (Markdown)</label>
-                            <div class="md-editor-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                                <button type="button" class="md-editor-tab active" onclick="showEditTab('write')" style="padding: 0.5rem 1rem; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 6px; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed); cursor: pointer;">Write</button>
-                                <button type="button" class="md-editor-tab" onclick="showEditTab('preview')" style="padding: 0.5rem 1rem; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 6px; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed); cursor: pointer;">Preview</button>
-                            </div>
-                            <div class="md-editor-content">
-                                <textarea id="edit-post-content" style="width: 100%; min-height: 300px; padding: 0.75rem; font-family: Monaco, Menlo, monospace; font-size: 0.9rem; resize: vertical; background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px;"></textarea>
-                                <div id="edit-preview-content" class="md-editor-preview blog-content" style="background: var(--bg-secondary, #151418); color: var(--text-primary, #f5f2ed); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; padding: 0.75rem; min-height: 300px;"></div>
-                            </div>
-                        </div>
-                        <!-- Visibility Funnel Selector (rendered by component) -->
-                        <div id="edit-visibility-container" style="margin-bottom: 1rem;">
-                            ${editVisibilitySelector.render()}
-                        </div>
-                        <div style="display: flex; gap: 1rem;">
-                            <button type="button" onclick="handleEditSave()" class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); border: none;">Save</button>
-                            <button type="button" onclick="confirmCloseEditModal()" class="btn" style="flex: 1; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">Cancel</button>
-                        </div>
-                        <p id="edit-post-error" style="color: #e74c3c; margin-top: 1rem; display: none;"></p>
-                    </form>
-                </div>
-            `;
-
-            // Add click handler for clicking outside (on overlay)
-            modal.onclick = function(e) {
-                if (e.target === this) {
-                    confirmCloseEditModal();
-                }
-            };
-
-            document.body.appendChild(modal);
-
-            // CRITICAL: Attach event listeners FIRST, before anything that might fail
-            // Use event delegation on the modal
-            modal.addEventListener('click', function(e) {
-                const target = e.target;
-
-                // Click on backdrop (the modal overlay itself, not content)
-                if (target === modal) {
-                    closeEditModal();
-                    return;
-                }
-
-                // X close button
-                if (target.closest('.edit-modal-close-x')) {
-                    closeEditModal();
-                    return;
-                }
-
-                // Cancel button
-                if (target.closest('.edit-modal-cancel-btn')) {
-                    closeEditModal();
-                    return;
-                }
-
-                // Note: Visibility selector uses onclick handlers directly on buttons
-
-                // Notify button
-                if (target.closest('#edit-notify-btn')) {
-                    openNotifyFromEdit();
-                    return;
-                }
-            });
-
-            // Form submit handler
-            document.getElementById('edit-post-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                savePostEdit(post.slug);
-            });
-
-            // Now set up values and toggles (wrapped in try-catch so it doesn't break close buttons)
-            try {
-                document.getElementById('edit-post-title').value = post.title;
-                document.getElementById('edit-post-excerpt').value = post.excerpt || '';
-                document.getElementById('edit-post-content').value = post.content;
-
-                // Store original values for change detection
-                editModalOriginalValues = {
-                    title: post.title || '',
-                    excerpt: post.excerpt || '',
-                    content: post.content || ''
-                };
-
-                // Initialize and set visibility state using reusable component
-                initEditVisibilitySelector();
-                setEditVisibilityFromPost(post);
-            } catch (err) {
-                console.error('Error setting up edit modal:', err);
-            }
+            fetch(`${API_BASE}/admin/posts/${post.slug}/stats`, { headers: { 'Authorization': `Bearer ${token}` } })
+                .then(r => r.ok ? r.json() : Promise.reject())
+                .then(stats => { editPostStats = stats; updateEditModalStats(stats, post.is_published); })
+                .catch(() => { const el = document.getElementById('edit-view-stats'); if (el) el.innerHTML = '<span class="text-error">Failed to load stats</span>'; });
+            const content = `${modalHeader('Edit Post', 'edit-post-modal')}
+                <div id="edit-stats-section" class="info-box mb-2"><div class="flex justify-between items-center flex-wrap gap-2"><div id="edit-view-stats" class="stats-bar"><span>Loading stats...</span></div><button id="edit-notify-btn" onclick="openNotifyFromEdit()" class="btn-primary-gradient btn-small" style="display:none">${ICONS.email.replace(/width="\d+"/g,'width="16"').replace(/height="\d+"/g,'height="16"')} Notify Users</button></div></div>
+                <form id="edit-post-form">
+                    <div class="form-group"><label class="form-label">Title</label><input type="text" id="edit-post-title" class="form-input" value="${escapeHtml(post.title)}"></div>
+                    <div class="form-group"><label class="form-label">Excerpt</label><input type="text" id="edit-post-excerpt" class="form-input" value="${escapeHtml(post.excerpt || '')}"></div>
+                    <div class="form-group"><label class="form-label">Content (Markdown)</label><div class="md-tabs"><button type="button" class="md-tab active" onclick="showEditTab('write')">Write</button><button type="button" class="md-tab" onclick="showEditTab('preview')">Preview</button></div><textarea id="edit-post-content" class="form-textarea">${escapeHtml(post.content)}</textarea><div id="edit-preview-content" class="md-preview blog-content" style="display:none"></div></div>
+                    <div id="edit-visibility-container" class="form-group">${editVisibilitySelector.render()}</div>
+                    <div class="btn-row"><button type="button" onclick="handleEditSave()" class="btn-primary-gradient">Save</button><button type="button" onclick="confirmCloseEditModal()" class="btn-secondary">Cancel</button></div>
+                    <p id="edit-post-error" class="text-small mt-1 text-error" style="display:none"></p>
+                </form>`;
+            createModal('edit-post-modal', content, { wide: true, closeOnOverlay: false });
+            editModalOriginalValues = { title: post.title || '', excerpt: post.excerpt || '', content: post.content || '' };
+            editVisibilitySelector.init();
+            editVisibilitySelector.setFromPost(post);
         }
 
         function updateEditModalStats(stats, isPublished) {
-            const statsEl = document.getElementById('edit-view-stats');
-            const notifyBtn = document.getElementById('edit-notify-btn');
+            const statsEl = document.getElementById('edit-view-stats'), notifyBtn = document.getElementById('edit-notify-btn');
             if (!statsEl) return;
-
-            statsEl.innerHTML = `
-                <span onclick="showFriendsViewedDetails()" style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='rgba(229, 165, 75, 0.15)'" onmouseout="this.style.background='transparent'">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary, #e5a54b)" stroke-width="2"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
-                    <strong>${stats.friend_views}</strong> friends viewed
-                </span>
-                <span onclick="showAnonymousViewsDetails()" style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='rgba(138, 133, 124, 0.15)'" onmouseout="this.style.background='transparent'">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    <strong>${stats.anonymous_views}</strong> anonymous
-                </span>
-                ${stats.unnotified_not_viewed_count > 0 ? `
-                <span style="display: flex; align-items: center; gap: 0.4rem; color: var(--accent-primary, #e5a54b);">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                    <strong>${stats.unnotified_not_viewed_count}</strong> to notify
-                </span>
-                ` : ''}
-            `;
-
-            // Show notify button if post is published
-            if (notifyBtn && isPublished) {
-                notifyBtn.style.display = 'inline-flex';
-                notifyBtn.style.alignItems = 'center';
-            }
+            statsEl.innerHTML = `<span class="stat-item clickable" onclick="showFriendsViewedDetails()">${ICONS.eye} <strong>${stats.friend_views}</strong> friends viewed</span><span class="stat-item clickable" onclick="showAnonymousViewsDetails()">${ICONS.users} <strong>${stats.anonymous_views}</strong> anonymous</span>${stats.unnotified_not_viewed_count > 0 ? `<span class="stat-item text-accent">${ICONS.email.replace(/width="\d+"/g,'width="16"').replace(/height="\d+"/g,'height="16"')} <strong>${stats.unnotified_not_viewed_count}</strong> to notify</span>` : ''}`;
+            if (notifyBtn && isPublished) notifyBtn.style.display = 'inline-flex';
         }
 
         function showFriendsViewedDetails() {
-            if (!editPostStats || !editPostStats.friends_who_viewed) return;
-
+            if (!editPostStats?.friends_who_viewed) return;
             const friends = editPostStats.friends_who_viewed;
-            if (friends.length === 0) {
-                alert('No friends have viewed this post yet.');
-                return;
-            }
-
-            let listHtml = friends.map(f => {
-                const lastViewed = new Date(f.last_viewed_at).toLocaleDateString();
-                return `<div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">
-                    <span style="font-weight: 500; color: var(--text-primary, #f5f2ed);">${f.name}</span>
-                    <span style="color: var(--text-muted, #8a857c); font-size: 0.85rem;">${f.view_count}× · last ${lastViewed}</span>
-                </div>`;
-            }).join('');
-
-            // Create a popup
-            const popup = document.createElement('div');
-            popup.id = 'friends-viewed-popup';
-            popup.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1002;';
-            popup.onclick = function(e) { if (e.target === this) this.remove(); };
-            popup.innerHTML = `
-                <div style="background: var(--bg-elevated, #262329); color: var(--text-primary, #f5f2ed); padding: 1.5rem; border-radius: 12px; max-width: 400px; width: 90%; max-height: 70vh; overflow-y: auto; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h4 style="margin: 0; color: var(--text-primary, #f5f2ed);">Friends Who Viewed (${friends.length})</h4>
-                        <button onclick="document.getElementById('friends-viewed-popup').remove()" style="background: none; border: none; cursor: pointer; font-size: 1.25rem; color: var(--text-muted, #8a857c);">&times;</button>
-                    </div>
-                    ${listHtml}
-                </div>
-            `;
-            document.body.appendChild(popup);
+            if (!friends.length) return alert('No friends have viewed this post yet.');
+            const list = friends.map(f => `<div class="flex justify-between border-b py-1"><span class="font-medium">${escapeHtml(f.name)}</span><span class="text-muted text-small">${f.view_count}× · last ${new Date(f.last_viewed_at).toLocaleDateString()}</span></div>`).join('');
+            createModal('friends-viewed-popup', `${modalHeader('Friends Who Viewed (' + friends.length + ')', 'friends-viewed-popup')}${list}`);
         }
 
         function showAnonymousViewsDetails() {
             if (!editPostStats) return;
-
             const count = editPostStats.anonymous_views;
-            const popup = document.createElement('div');
-            popup.id = 'anonymous-views-popup';
-            popup.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1002;';
-            popup.onclick = function(e) { if (e.target === this) this.remove(); };
-            popup.innerHTML = `
-                <div style="background: var(--bg-elevated, #262329); color: var(--text-primary, #f5f2ed); padding: 1.5rem; border-radius: 12px; max-width: 400px; width: 90%; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h4 style="margin: 0; color: var(--text-primary, #f5f2ed);">Anonymous Views (${count})</h4>
-                        <button onclick="document.getElementById('anonymous-views-popup').remove()" style="background: none; border: none; cursor: pointer; font-size: 1.25rem; color: var(--text-muted, #8a857c);">&times;</button>
-                    </div>
-                    <p style="color: var(--text-secondary, #c2bdb4); margin: 0 0 0.75rem;">
-                        ${count} unique visitor${count !== 1 ? 's' : ''} viewed this post without being logged in.
-                    </p>
-                    <p style="color: var(--text-muted, #8a857c); font-size: 0.85rem; margin: 0;">
-                        Anonymous views are tracked by a hash of IP address and browser fingerprint. No personal information is stored.
-                    </p>
-                </div>
-            `;
-            document.body.appendChild(popup);
+            createModal('anonymous-views-popup', `${modalHeader('Anonymous Views (' + count + ')', 'anonymous-views-popup')}<p class="text-secondary mb-2">${count} unique visitor${count !== 1 ? 's' : ''} viewed this post without being logged in.</p><p class="text-muted text-small">Anonymous views are tracked by a hash of IP address and browser fingerprint. No personal information is stored.</p>`);
         }
 
+        function showEditTab(tab) {
+            const tabs = document.querySelectorAll('.md-tab'), textarea = document.getElementById('edit-post-content'), preview = document.getElementById('edit-preview-content');
+            if (!tabs.length || !textarea || !preview) return;
+            tabs.forEach((t, i) => t.classList.toggle('active', (tab === 'write' && i === 0) || (tab === 'preview' && i === 1)));
+            textarea.style.display = tab === 'write' ? 'block' : 'none';
+            preview.style.display = tab === 'write' ? 'none' : 'block';
+            if (tab === 'preview') preview.innerHTML = marked.parse(textarea.value);
+        }
+
+        function hasUnsavedChanges() {
+            return (document.getElementById('edit-post-title')?.value || '') !== editModalOriginalValues.title ||
+                   (document.getElementById('edit-post-excerpt')?.value || '') !== editModalOriginalValues.excerpt ||
+                   (document.getElementById('edit-post-content')?.value || '') !== editModalOriginalValues.content;
+        }
+
+        function confirmCloseEditModal() {
+            if (hasUnsavedChanges() && !confirm('You have unsaved changes. Are you sure you want to close?')) return;
+            closeModal('edit-post-modal');
+        }
+
+        function handleEditSave() {
+            const slug = getPostSlug(); if (!slug) return;
+            const btn = event.target; btn.disabled = true; btn.textContent = 'Saving...';
+            const postData = { title: document.getElementById('edit-post-title')?.value || '', excerpt: document.getElementById('edit-post-excerpt')?.value || '', content: document.getElementById('edit-post-content')?.value || '', ...editVisibilitySelector.getFields() };
+            fetch(`${API_BASE}/admin/posts/${slug}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('comment_token')}` }, body: JSON.stringify(postData) }).catch(() => {});
+            setTimeout(() => { closeModal('edit-post-modal'); loadPost(); }, 300);
+        }
+
+        // Notify Modal
         function openNotifyFromEdit() {
-            if (!editPostStats) {
-                alert('Stats not loaded yet. Please wait a moment and try again.');
-                return;
-            }
-            const slug = getPostSlug();
-            const postTitle = document.getElementById('edit-post-title')?.value || currentPost?.title || 'this post';
-            showNotifyModal(slug, postTitle, editPostStats);
+            if (!editPostStats) return alert('Stats not loaded yet. Please wait.');
+            showNotifyModal(getPostSlug(), document.getElementById('edit-post-title')?.value || currentPost?.title || 'this post', editPostStats);
         }
 
         function showNotifyModal(slug, postTitle, stats) {
             const smartCount = stats.unnotified_not_viewed_count;
-            const viewedCount = stats.friend_views;
-            const anonymousCount = stats.anonymous_views;
-
-            // Build user list for manual selection
-            let userListHtml = '';
-            const allUsers = [
-                ...stats.friends_who_viewed.map(u => ({ ...u, viewed: true, notified: stats.notified_users.some(n => n.id === u.id) })),
-                ...stats.friends_not_viewed.map(u => ({ ...u, viewed: false, notified: stats.notified_users.some(n => n.id === u.id) }))
-            ].sort((a, b) => a.name.localeCompare(b.name));
-
-            for (const user of allUsers) {
-                const statusBadges = [];
-                if (user.viewed) statusBadges.push('<span style="background: rgba(34, 197, 94, 0.2); color: #22c55e; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">viewed</span>');
-                if (user.notified) statusBadges.push('<span style="background: rgba(229, 165, 75, 0.2); color: var(--accent-primary, #e5a54b); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">notified</span>');
-                const isChecked = !user.viewed && !user.notified;
-
-                userListHtml += `
-                    <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; cursor: pointer;" onclick="toggleNotifyCheckbox(this, ${user.id})">
-                        <input type="checkbox" name="notify-user-edit" value="${user.id}" ${isChecked ? 'checked' : ''} style="display: none;">
-                        <span class="custom-checkbox-notify">
-                            <svg class="unchecked" width="18" height="18" viewBox="0 0 24 24" style="color: var(--text-muted, #8a857c); ${isChecked ? 'display:none' : ''}"><use href="/resources/icons.svg#checkbox-empty"></use></svg>
-                            <svg class="checked" width="18" height="18" viewBox="0 0 24 24" style="color: var(--accent-primary, #e5a54b); ${isChecked ? '' : 'display:none'}"><use href="/resources/icons.svg#checkbox-checked"></use></svg>
-                        </span>
-                        <span style="flex: 1; color: var(--text-primary, #f5f2ed);">${user.name}</span>
-                        ${statusBadges.join(' ')}
-                    </label>
-                `;
-            }
-
-            const modal = document.createElement('div');
-            modal.id = 'notify-modal-edit';
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.6);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 1001;
-                padding: 1rem;
-            `;
-            modal.innerHTML = `
-                <div style="background: var(--bg-elevated, #262329); color: var(--text-primary, #f5f2ed); padding: 2rem; border-radius: 12px; max-width: 500px; width: 100%; max-height: 80vh; overflow-y: auto; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                        <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary, #f5f2ed);">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary, #e5a54b)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                            Notify Users
-                        </h3>
-                        <button onclick="closeNotifyModalEdit()" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: var(--text-muted, #8a857c);">&times;</button>
-                    </div>
-                    <p style="color: var(--text-secondary, #c2bdb4); margin-bottom: 1rem;">
-                        Post: <strong>"${postTitle}"</strong>
-                    </p>
-
-                    <!-- View Stats -->
-                    <div style="background: var(--bg-tertiary, #1e1c21); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
-                        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.9rem;">
-                            <div style="display: flex; align-items: center; gap: 0.4rem;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary, #e5a54b)" stroke-width="2"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
-                                <span><strong>${viewedCount}</strong> friends viewed</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 0.4rem;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted, #8a857c)" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                <span><strong>${anonymousCount}</strong> anonymous</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- User Selection List -->
-                    <div style="margin-bottom: 1rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                            <label style="font-weight: 500; font-size: 0.9rem; color: var(--text-primary, #f5f2ed);">Select users to notify:</label>
-                            <div style="display: flex; gap: 0.5rem;">
-                                <button onclick="selectAllNotifyEdit(true)" class="btn" style="font-size: 0.75rem; padding: 0.3rem 0.6rem; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">All</button>
-                                <button onclick="selectAllNotifyEdit(false)" class="btn" style="font-size: 0.75rem; padding: 0.3rem 0.6rem; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">None</button>
-                            </div>
-                        </div>
-                        <div style="max-height: 220px; overflow-y: auto; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); border-radius: 8px; padding: 0.75rem; background: var(--bg-secondary, #151418);">
-                            ${userListHtml || '<p style="color: var(--text-muted, #8a857c); margin: 0;">No users available</p>'}
-                        </div>
-                        <p id="notify-selected-count" style="font-size: 0.8rem; color: var(--text-muted, #8a857c); margin: 0.5rem 0 0;">
-                            <span id="notify-count-num">0</span> user(s) selected
-                        </p>
-                    </div>
-
-                    <!-- Quick Actions -->
-                    ${smartCount > 0 ? `
-                    <div style="background: rgba(229, 165, 75, 0.15); border: 1px solid rgba(229, 165, 75, 0.3); padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                        <p style="margin: 0; font-size: 0.85rem; color: var(--accent-primary, #e5a54b);">
-                            <strong>${smartCount}</strong> haven't seen this post yet
-                        </p>
-                        <button onclick="selectUnnotifiedEdit()" class="btn" style="font-size: 0.8rem; padding: 0.4rem 0.75rem; background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); border: none;">
-                            Select these ${smartCount}
-                        </button>
-                    </div>
-                    ` : `
-                    <div style="background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                        <p style="margin: 0; font-size: 0.85rem; color: #22c55e;">
-                            All friends have either viewed this post or been notified already!
-                        </p>
-                    </div>
-                    `}
-
-                    <!-- Send Button -->
-                    <button onclick="confirmAndSendNotifyEdit()" class="btn btn-primary" style="width: 100%; padding: 0.6rem; font-size: 0.95rem; background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); border: none;">
-                        Send Notifications
-                    </button>
-
-                    <div style="display: flex; gap: 1rem; justify-content: flex-end; border-top: 1px solid var(--border-default, rgba(255, 255, 255, 0.1)); padding-top: 1rem; margin-top: 0.5rem;">
-                        <button onclick="closeNotifyModalEdit()" class="btn" style="padding: 0.6rem 1.2rem; background: var(--bg-tertiary, #1e1c21); color: var(--text-primary, #f5f2ed); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">Done</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-            updateNotifyCountEdit();
+            const allUsers = [...stats.friends_who_viewed.map(u => ({ ...u, viewed: true, notified: stats.notified_users.some(n => n.id === u.id) })), ...stats.friends_not_viewed.map(u => ({ ...u, viewed: false, notified: stats.notified_users.some(n => n.id === u.id) }))].sort((a, b) => a.name.localeCompare(b.name));
+            const userListHtml = allUsers.map(u => {
+                const badges = (u.viewed ? '<span class="badge badge-success">viewed</span>' : '') + (u.notified ? '<span class="badge badge-warning">notified</span>' : '');
+                const checked = !u.viewed && !u.notified;
+                return `<label class="user-list-item" onclick="toggleNotifyCheckbox(this)"><input type="checkbox" name="notify-user" value="${u.id}" ${checked ? 'checked' : ''} style="display:none"><span class="custom-checkbox-notify"><svg class="unchecked" width="18" height="18" viewBox="0 0 24 24" style="color:var(--text-muted);${checked ? 'display:none' : ''}"><use href="/resources/icons.svg#checkbox-empty"></use></svg><svg class="checked" width="18" height="18" viewBox="0 0 24 24" style="color:var(--accent-primary);${checked ? '' : 'display:none'}"><use href="/resources/icons.svg#checkbox-checked"></use></svg></span><span>${escapeHtml(u.name)}</span>${badges}</label>`;
+            }).join('');
+            const content = `${modalHeader('Notify Users', 'notify-modal', ICONS.email)}<p class="text-secondary mb-2">Post: <strong>"${escapeHtml(postTitle)}"</strong></p><div class="info-box mb-2"><div class="stats-bar"><span class="stat-item">${ICONS.eye} <strong>${stats.friend_views}</strong> friends viewed</span><span class="stat-item">${ICONS.users} <strong>${stats.anonymous_views}</strong> anonymous</span></div></div>
+                <div class="form-group"><div class="flex justify-between items-center mb-1"><label class="form-label" style="margin:0">Select users to notify:</label><div class="flex gap-1"><button onclick="selectAllNotify(true)" class="btn-secondary btn-small">All</button><button onclick="selectAllNotify(false)" class="btn-secondary btn-small">None</button></div></div><div class="user-list">${userListHtml || '<p class="text-muted">No users available</p>'}</div><p id="notify-selected-count" class="text-muted text-small mt-1"><span id="notify-count-num">0</span> user(s) selected</p></div>
+                ${smartCount > 0 ? `<div class="highlight-box highlight-box-warning flex justify-between items-center flex-wrap gap-1"><p class="text-small text-accent" style="margin:0"><strong>${smartCount}</strong> haven't seen this post yet</p><button onclick="selectUnnotified()" class="btn-primary-gradient btn-small">Select these ${smartCount}</button></div>` : `<div class="highlight-box highlight-box-success"><p class="text-success" style="margin:0">All friends have either viewed this post or been notified already!</p></div>`}
+                <button onclick="confirmAndSendNotify()" class="btn-primary-gradient w-full mt-2">Send Notifications</button><div class="border-t pt-2 mt-1 text-right"><button onclick="closeModal('notify-modal')" class="btn-secondary">Done</button></div>`;
+            createModal('notify-modal', content);
+            updateNotifyCount();
         }
 
-        function closeNotifyModalEdit() {
-            const modal = document.getElementById('notify-modal-edit');
-            if (modal) modal.remove();
-        }
-
-        function toggleNotifyCheckbox(label, userId) {
-            const input = label.querySelector('input[type="checkbox"]');
-            const unchecked = label.querySelector('.unchecked');
-            const checked = label.querySelector('.checked');
-            if (input) {
-                input.checked = !input.checked;
-                if (unchecked && checked) {
-                    unchecked.style.display = input.checked ? 'none' : '';
-                    checked.style.display = input.checked ? '' : 'none';
-                }
-            }
-            updateNotifyCountEdit();
+        function toggleNotifyCheckbox(label) {
+            const input = label.querySelector('input[type="checkbox"]'), unchecked = label.querySelector('.unchecked'), checked = label.querySelector('.checked');
+            if (input) { input.checked = !input.checked; if (unchecked && checked) { unchecked.style.display = input.checked ? 'none' : ''; checked.style.display = input.checked ? '' : 'none'; } }
+            updateNotifyCount();
         }
 
         function updateNotifyCheckboxVisuals() {
-            const checkboxes = document.querySelectorAll('input[name="notify-user-edit"]');
-            checkboxes.forEach(cb => {
-                const label = cb.closest('label');
-                if (label) {
-                    const unchecked = label.querySelector('.unchecked');
-                    const checked = label.querySelector('.checked');
-                    if (unchecked && checked) {
-                        unchecked.style.display = cb.checked ? 'none' : '';
-                        checked.style.display = cb.checked ? '' : 'none';
-                    }
-                }
+            document.querySelectorAll('input[name="notify-user"]').forEach(cb => {
+                const label = cb.closest('label'); if (!label) return;
+                const unchecked = label.querySelector('.unchecked'), checked = label.querySelector('.checked');
+                if (unchecked && checked) { unchecked.style.display = cb.checked ? 'none' : ''; checked.style.display = cb.checked ? '' : 'none'; }
             });
         }
 
-        function selectAllNotifyEdit(select) {
-            const checkboxes = document.querySelectorAll('input[name="notify-user-edit"]');
-            checkboxes.forEach(cb => cb.checked = select);
-            updateNotifyCheckboxVisuals();
-            updateNotifyCountEdit();
-        }
+        function selectAllNotify(select) { document.querySelectorAll('input[name="notify-user"]').forEach(cb => cb.checked = select); updateNotifyCheckboxVisuals(); updateNotifyCount(); }
+        function selectUnnotified() { document.querySelectorAll('input[name="notify-user"]').forEach(cb => { const label = cb.closest('label'); cb.checked = !label.innerHTML.includes('>viewed<') && !label.innerHTML.includes('>notified<'); }); updateNotifyCheckboxVisuals(); updateNotifyCount(); }
+        function updateNotifyCount() { const el = document.getElementById('notify-count-num'); if (el) el.textContent = document.querySelectorAll('input[name="notify-user"]:checked').length; }
 
-        function selectUnnotifiedEdit() {
-            const checkboxes = document.querySelectorAll('input[name="notify-user-edit"]');
-            checkboxes.forEach(cb => {
-                const label = cb.closest('label');
-                const hasViewed = label.innerHTML.includes('>viewed<');
-                const hasNotified = label.innerHTML.includes('>notified<');
-                cb.checked = !hasViewed && !hasNotified;
-            });
-            updateNotifyCheckboxVisuals();
-            updateNotifyCountEdit();
-        }
-
-        function updateNotifyCountEdit() {
-            const checkboxes = document.querySelectorAll('input[name="notify-user-edit"]:checked');
-            const countEl = document.getElementById('notify-count-num');
-            if (countEl) {
-                countEl.textContent = checkboxes.length;
-            }
-        }
-
-        function confirmAndSendNotifyEdit() {
-            const checkboxes = document.querySelectorAll('input[name="notify-user-edit"]:checked');
+        function confirmAndSendNotify() {
+            const checkboxes = document.querySelectorAll('input[name="notify-user"]:checked');
             const userIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
-            if (userIds.length === 0) {
-                alert('No users selected');
-                return;
-            }
-            const userNames = Array.from(checkboxes).map(cb => {
-                const label = cb.closest('label');
-                return label.querySelector('span').textContent.trim();
-            });
-            const nameList = userNames.length <= 5
-                ? userNames.join(', ')
-                : userNames.slice(0, 5).join(', ') + ` and ${userNames.length - 5} more`;
-
-            if (confirm(`Send notification email to ${userIds.length} user${userIds.length !== 1 ? 's' : ''}?\n\n${nameList}`)) {
-                sendNotifyEdit('selected', userIds);
-            }
+            if (!userIds.length) return alert('No users selected');
+            const names = Array.from(checkboxes).map(cb => cb.closest('label').querySelector('span:not(.custom-checkbox-notify)').textContent.trim());
+            const nameList = names.length <= 5 ? names.join(', ') : names.slice(0, 5).join(', ') + ` and ${names.length - 5} more`;
+            if (confirm(`Send notification email to ${userIds.length} user${userIds.length !== 1 ? 's' : ''}?\n\n${nameList}`)) sendNotify(userIds);
         }
 
-        function sendSelectedNotifyEdit() {
-            const checkboxes = document.querySelectorAll('input[name="notify-user-edit"]:checked');
-            const userIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
-            if (userIds.length === 0) {
-                alert('No users selected');
-                return;
-            }
-            sendNotifyEdit('selected', userIds);
-        }
-
-        async function sendNotifyEdit(mode, userIds) {
-            const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.notify : { start: () => true, end: () => {} };
-            if (!guard.start()) return;
-
-            const token = localStorage.getItem('comment_token');
-            const slug = getPostSlug();
-
+        async function sendNotify(userIds) {
+            const guard = loadingGuards.notify; if (!guard.start()) return;
             try {
-                const response = await fetch(`${API_BASE}/admin/posts/${slug}/notify`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ mode, user_ids: userIds })
-                });
-
+                const response = await fetch(`${API_BASE}/admin/posts/${getPostSlug()}/notify`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('comment_token')}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'selected', user_ids: userIds }) });
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.sent > 0) {
-                        alert(`Notified ${data.sent} user${data.sent !== 1 ? 's' : ''}`);
-                    } else if (data.status === 'no_users') {
-                        alert('No users to notify');
-                    } else {
-                        alert('Failed to send notifications');
-                    }
-                    closeNotifyModalEdit();
-                    // Refresh stats
-                    const statsRes = await fetch(`${API_BASE}/admin/posts/${slug}/stats`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    if (statsRes.ok) {
-                        editPostStats = await statsRes.json();
-                        updateEditModalStats(editPostStats, true);
-                    }
-                } else {
-                    const error = await response.json();
-                    alert(error.detail || 'Failed to send notifications');
-                }
-            } catch (error) {
-                alert('Failed to send notifications');
-            } finally {
-                guard.end();
-            }
+                    alert(data.sent > 0 ? `Notified ${data.sent} user${data.sent !== 1 ? 's' : ''}` : 'No users to notify');
+                    closeModal('notify-modal');
+                    const statsRes = await fetch(`${API_BASE}/admin/posts/${getPostSlug()}/stats`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('comment_token')}` } });
+                    if (statsRes.ok) { editPostStats = await statsRes.json(); updateEditModalStats(editPostStats, true); }
+                } else { alert((await response.json()).detail || 'Failed'); }
+            } catch (e) { alert('Failed'); } finally { guard.end(); }
         }
 
-        // Store original values to detect changes
-        let editModalOriginalValues = {};
-
-        // Check if there are unsaved changes
-        function hasUnsavedChanges() {
-            const title = document.getElementById('edit-post-title')?.value || '';
-            const excerpt = document.getElementById('edit-post-excerpt')?.value || '';
-            const content = document.getElementById('edit-post-content')?.value || '';
-
-            return title !== editModalOriginalValues.title ||
-                   excerpt !== editModalOriginalValues.excerpt ||
-                   content !== editModalOriginalValues.content;
-        }
-
-        // Close with confirmation if there are unsaved changes
-        function confirmCloseEditModal() {
-            if (hasUnsavedChanges()) {
-                if (confirm('You have unsaved changes. Are you sure you want to close?')) {
-                    document.getElementById('edit-post-modal')?.remove();
-                }
-            } else {
-                document.getElementById('edit-post-modal')?.remove();
-            }
-        }
-
-        // Write/Preview tab switching for edit modal
-        function showEditTab(tab) {
-            const tabs = document.querySelectorAll('.md-editor-tab');
-            const textarea = document.getElementById('edit-post-content');
-            const preview = document.getElementById('edit-preview-content');
-
-            if (!tabs.length || !textarea || !preview) return;
-
-            tabs.forEach((t, i) => {
-                const isActive = (tab === 'write' && i === 0) || (tab === 'preview' && i === 1);
-                t.classList.toggle('active', isActive);
-                // Update active tab styling
-                t.style.background = isActive ? 'var(--accent-primary, #e5a54b)' : 'var(--bg-tertiary, #1e1c21)';
-                t.style.color = isActive ? 'var(--bg-primary, #0c0b0d)' : 'var(--text-primary, #f5f2ed)';
-            });
-
-            if (tab === 'write') {
-                textarea.style.display = 'block';
-                preview.style.display = 'none';
-            } else {
-                textarea.style.display = 'none';
-                preview.style.display = 'block';
-                // Render markdown preview
-                const content = textarea.value;
-                preview.innerHTML = marked.parse(content);
-            }
-        }
-
-        // Global save handler for edit modal (called via onclick)
-        function handleEditSave() {
-            const slug = getPostSlug();
-            if (!slug) return;
-
-            const btn = event.target;
-            btn.disabled = true;
-            btn.textContent = 'Saving...';
-
-            const token = localStorage.getItem('comment_token');
-
-            // Get visibility fields from the new selector
-            const visibilityFields = getEditVisibilityFields();
-
-            // Get values directly from form
-            const postData = {
-                title: document.getElementById('edit-post-title')?.value || '',
-                excerpt: document.getElementById('edit-post-excerpt')?.value || '',
-                content: document.getElementById('edit-post-content')?.value || '',
-                ...visibilityFields
-            };
-
-            // Send save request
-            fetch(`${API_BASE}/admin/posts/${slug}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(postData)
-            }).catch(() => {});
-
-            // Close modal and reload after brief delay
-            setTimeout(function() {
-                document.getElementById('edit-post-modal')?.remove();
-                loadPost();
-            }, 300);
-        }
-
-        function closeEditModal() {
-            console.log('closeEditModal called');
-            // Try multiple approaches to find and remove the modal
-            try {
-                const modal = document.getElementById('edit-post-modal');
-                if (modal) {
-                    modal.remove();
-                    console.log('Modal removed via getElementById');
-                    return;
-                }
-            } catch (e) { console.error('getElementById failed:', e); }
-
-            try {
-                const modalAlt = document.querySelector('#edit-post-modal');
-                if (modalAlt) {
-                    modalAlt.remove();
-                    console.log('Modal removed via querySelector');
-                    return;
-                }
-            } catch (e) { console.error('querySelector failed:', e); }
-
-            // Nuclear option: remove any fixed overlay with z-index 1000
-            try {
-                document.querySelectorAll('div').forEach(el => {
-                    const style = window.getComputedStyle(el);
-                    if (style.position === 'fixed' && style.zIndex === '1000' && style.background.includes('rgba')) {
-                        el.remove();
-                        console.log('Modal removed via style matching');
-                    }
-                });
-            } catch (e) { console.error('Fallback removal failed:', e); }
-        }
-
-        async function savePostEdit(slug) {
-            const token = localStorage.getItem('comment_token');
-            const saveBtn = document.querySelector('#edit-post-form button[type="submit"]');
-
-            // Disable button and show saving state
-            if (saveBtn) {
-                saveBtn.disabled = true;
-                saveBtn.textContent = 'Saving...';
-            }
-
-            try {
-                // Get visibility fields from the new selector
-                const visibilityFields = getEditVisibilityFields();
-
-                const postData = {
-                    title: document.getElementById('edit-post-title').value,
-                    excerpt: document.getElementById('edit-post-excerpt').value,
-                    content: document.getElementById('edit-post-content').value,
-                    ...visibilityFields
-                };
-
-                // Fire and forget - close modal immediately, reload post
-                fetch(`${API_BASE}/admin/posts/${slug}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(postData)
-                }).catch(() => {});
-            } catch (err) {
-                console.error('Error saving post:', err);
-            }
-
-            // ALWAYS close modal and reload, even if there was an error
-            setTimeout(() => {
-                closeEditModal();
-                loadPost();
-            }, 300);
-        }
-
-        // Delete post
+        // Delete Post
         async function deletePost() {
             const slug = getPostSlug();
-            if (!slug) return;
-
-            if (!confirm('Are you sure you want to delete this post? This will also delete all comments.')) return;
-
-            const token = localStorage.getItem('comment_token');
-
+            if (!slug || !confirm('Are you sure you want to delete this post? This will also delete all comments.')) return;
             try {
-                const response = await fetch(`${API_BASE}/admin/posts/${slug}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (response.ok) {
-                    window.location.href = '/socialnet.html';
-                } else {
-                    alert('Failed to delete post');
-                }
-            } catch (error) {
-                alert('Failed to delete post');
-            }
+                const response = await fetch(`${API_BASE}/admin/posts/${slug}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('comment_token')}` } });
+                if (response.ok) window.location.href = '/socialnet.html'; else alert('Failed to delete post');
+            } catch (e) { alert('Failed to delete post'); }
         }
 
-        // Run after page loads
-        document.addEventListener('DOMContentLoaded', checkAdminActions);
-
         // Reactions
-        let userReacted = false;
-        let userReactionId = null;
-        let maxReactionDepth = 3;
-        let currentUser = null;
-        let reactionsPreloaded = false;
-
-        // Initialize reactions with pre-loaded data from batched endpoint
         function initReactionsWithData(reactionsData) {
             reactionsPreloaded = true;
-            const userStr = localStorage.getItem('comment_user');
-            if (userStr) currentUser = JSON.parse(userStr);
-
-            userReacted = reactionsData.user_reacted;
-            userReactionId = reactionsData.reaction_id;
-            maxReactionDepth = reactionsData.max_depth;
-            updateReactionUI(reactionsData.count, reactionsData.user_reacted);
+            const userStr = localStorage.getItem('comment_user'); if (userStr) currentUser = JSON.parse(userStr);
+            userReacted = reactionsData.user_reacted; userReactionId = reactionsData.reaction_id; maxReactionDepth = reactionsData.max_depth;
             renderReactionTree(reactionsData.tree);
         }
 
         async function loadReactions() {
-            // Skip if already loaded via batched endpoint
             if (reactionsPreloaded) return;
-
-            const slug = getPostSlug();
-            if (!slug) return;
-
-            const token = localStorage.getItem('comment_token');
-            const userStr = localStorage.getItem('comment_user');
+            const slug = getPostSlug(); if (!slug) return;
+            const token = localStorage.getItem('comment_token'), userStr = localStorage.getItem('comment_user');
             if (userStr) currentUser = JSON.parse(userStr);
-
-            // Load top-level reaction status
-            const endpoint = token ? `${API_BASE}/reactions/${slug}/me` : `${API_BASE}/reactions/${slug}`;
             try {
-                const response = await fetch(endpoint, {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {},
-                    credentials: 'include'
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    userReacted = data.user_reacted;
-                    userReactionId = data.reaction_id;
-                    updateReactionUI(data.count, data.user_reacted);
-                }
-            } catch (error) {
-                console.log('Could not load reactions');
-            }
-
-            // Load reaction tree
+                const endpoint = token ? `${API_BASE}/reactions/${slug}/me` : `${API_BASE}/reactions/${slug}`;
+                const response = await fetch(endpoint, { headers: token ? { 'Authorization': `Bearer ${token}` } : {}, credentials: 'include' });
+                if (response.ok) { const data = await response.json(); userReacted = data.user_reacted; userReactionId = data.reaction_id; }
+            } catch (e) {}
             loadReactionTree();
         }
 
         async function loadReactionTree() {
-            const slug = getPostSlug();
-            const token = localStorage.getItem('comment_token');
+            const slug = getPostSlug(), token = localStorage.getItem('comment_token');
             try {
-                const response = await fetch(`${API_BASE}/reactions/${slug}/tree`, {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {},
-                    credentials: 'include'
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    maxReactionDepth = data.max_depth;
-                    renderReactionTree(data.reactions);
-                }
-            } catch (error) {
-                console.log('Could not load reaction tree');
-            }
-        }
-
-        let forestView = 'tree'; // 'tree' or 'graph'
-        let cachedReactions = null;
-
-        function openReactionForest() {
-            const modal = document.createElement('div');
-            modal.id = 'forest-modal';
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.5);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 1000;
-                padding: 1rem;
-            `;
-
-            const token = localStorage.getItem('comment_token');
-            let legendHtml = '<span>Click to react</span>';
-            if (token) {
-                legendHtml += '<span>Right-click to remove</span>';
-            }
-
-            modal.innerHTML = `
-                <div style="background: var(--bg-elevated, #262329); color: var(--text-primary, #f5f2ed); padding: 1.5rem; border-radius: 16px; max-width: 600px; width: 95%; max-height: 80vh; overflow-y: auto; border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                        <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary, #f5f2ed);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10v.2A3 3 0 0 1 8.9 16H5a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z"/><path d="M7 16v6"/><path d="M13 19v3"/><path d="M12 19h8.3a1 1 0 0 0 .7-1.7L18 14h.3a1 1 0 0 0 .7-1.7L16 9h.2a1 1 0 0 0 .8-1.7L13 3l-1.4 1.5"/></svg> Reaction Forest</h3>
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div id="modal-view-toggle" style="display: flex; gap: 0.25rem; background: var(--bg-tertiary, #1e1c21); padding: 0.2rem; border-radius: 6px;">
-                                <button onclick="setForestView('tree')" id="view-tree-btn" style="padding: 0.3rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; background: var(--bg-hover, #2d2a31); color: var(--text-primary, #f5f2ed);">Tree</button>
-                                <button onclick="setForestView('graph')" id="view-graph-btn" style="padding: 0.3rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; background: transparent; color: var(--text-muted, #8a857c);">Graph</button>
-                            </div>
-                            <button onclick="closeForestModal()" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; color: var(--text-muted, #8a857c);">&times;</button>
-                        </div>
-                    </div>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Click on hearts to react to reactions</p>
-                    <div id="forest-tree" style="min-height: 100px;"></div>
-                    <div id="forest-graph" style="display: none; height: 350px; border-radius: 12px; background: var(--bg-tertiary, #1e1c21); border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));"></div>
-                    <div id="forest-legend" style="display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted); flex-wrap: wrap; justify-content: center;">
-                        ${legendHtml}
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeForestModal();
-            });
-
-            // Render the tree view
-            if (cachedReactions) {
-                if (forestView === 'tree') {
-                    renderTreeView(cachedReactions);
-                } else {
-                    renderGraphView(cachedReactions);
-                }
-            }
-        }
-
-        function closeForestModal() {
-            const modal = document.getElementById('forest-modal');
-            if (modal) modal.remove();
-            // Clean up tooltip
-            const tooltip = document.getElementById('cy-tooltip');
-            if (tooltip) tooltip.remove();
-        }
-
-        function setForestView(view) {
-            forestView = view;
-            const treeBtn = document.getElementById('view-tree-btn');
-            const graphBtn = document.getElementById('view-graph-btn');
-            if (treeBtn) {
-                treeBtn.style.background = view === 'tree' ? 'var(--bg-hover, #2d2a31)' : 'transparent';
-                treeBtn.style.color = view === 'tree' ? 'var(--text-primary, #f5f2ed)' : 'var(--text-muted, #8a857c)';
-            }
-            if (graphBtn) {
-                graphBtn.style.background = view === 'graph' ? 'var(--bg-hover, #2d2a31)' : 'transparent';
-                graphBtn.style.color = view === 'graph' ? 'var(--text-primary, #f5f2ed)' : 'var(--text-muted, #8a857c)';
-            }
-
-            const tree = document.getElementById('forest-tree');
-            const graph = document.getElementById('forest-graph');
-
-            if (view === 'tree') {
-                if (tree) tree.style.display = 'block';
-                if (graph) graph.style.display = 'none';
-                if (cachedReactions) renderTreeView(cachedReactions);
-            } else {
-                if (tree) tree.style.display = 'none';
-                if (graph) graph.style.display = 'block';
-                if (cachedReactions) renderGraphView(cachedReactions);
-            }
-        }
-
-        function getDistinctUsers(reaction) {
-            // Get all distinct user IDs in this reaction's subtree
-            const users = new Set([reaction.user_id]);
-            if (reaction.children) {
-                for (const child of reaction.children) {
-                    const childUsers = getDistinctUsers(child);
-                    childUsers.forEach(u => users.add(u));
-                }
-            }
-            return users;
-        }
-
-        let cy = null; // Cytoscape instance
-
-        function renderReactionTree(reactions) {
-            cachedReactions = reactions;
-            const token = localStorage.getItem('comment_token');
-
-            // Calculate total distinct users
-            const allUsers = new Set();
-            function collectUsers(r) {
-                allUsers.add(r.user_id);
-                if (r.children) r.children.forEach(collectUsers);
-            }
-            reactions.forEach(collectUsers);
-            const count = allUsers.size;
-
-            // Update forest link count
-            const forestCountEl = document.getElementById('forest-count');
-            if (forestCountEl) {
-                forestCountEl.textContent = count > 0 ? `(${count} ${count === 1 ? 'person' : 'people'})` : '';
-            }
-
-            // Update the top heart count with total distinct users
-            document.getElementById('reaction-count').textContent = count;
-
-            // Check if current user has any reaction in the forest
-            const userHasReaction = currentUser && allUsers.has(currentUser.id);
-            const iconEl = document.getElementById('reaction-icon');
-            if (userHasReaction) {
-                iconEl.classList.add('active');
-            } else {
-                iconEl.classList.remove('active');
-            }
-            document.getElementById('reaction-btn').style.background = userHasReaction ? 'rgba(239, 68, 68, 0.1)' : 'none';
-
-            // If modal is open, render into it
-            const modalTree = document.getElementById('forest-tree');
-            const modalGraph = document.getElementById('forest-graph');
-
-            if (!reactions || reactions.length === 0) {
-                const emptyHtml = `
-                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
-                        <div style="margin-bottom: 0.75rem;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V12"/><path d="M12 12C12 12 8 9 8 6c0-2.2 1.8-4 4-4s4 1.8 4 4c0 3-4 6-4 6z"/><path d="M12 12c0 0-4-1-6-3"/><path d="M12 12c0 0 4-1 6-3"/></svg></div>
-                        <div style="font-size: 1.1rem;">No reactions yet</div>
-                        <div style="margin-top: 0.5rem;">Be the first to plant a heart!</div>
-                        ${token ? `<button onclick="toggleReaction(); closeForestModal();" style="margin-top: 1.25rem; padding: 0.6rem 1.25rem; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; box-shadow: 0 2px 8px rgba(239,68,68,0.3); display: inline-flex; align-items: center; gap: 0.5rem;"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z"/></svg> Add Reaction</button>` : ''}
-                    </div>
-                `;
-                if (modalTree) modalTree.innerHTML = emptyHtml;
-                if (modalGraph) modalGraph.innerHTML = emptyHtml;
-                return;
-            }
-
-            // Render active view if modal is open
-            if (modalTree || modalGraph) {
-                if (forestView === 'tree') {
-                    renderTreeView(reactions);
-                } else {
-                    renderGraphView(reactions);
-                }
-            }
-        }
-
-        function renderTreeView(reactions) {
-            const container = document.getElementById('forest-tree');
-            const token = localStorage.getItem('comment_token');
-
-            function renderNode(r, depth = 0) {
-                const indent = depth > 0 ? `<span style="color: #ddd; margin-right: 0.25rem;">${'│ '.repeat(depth - 1)}├─</span>` : '';
-                const isOwn = currentUser && currentUser.id === r.user_id;
-                const canReact = token && r.depth < maxReactionDepth;
-                const canDelete = isOwn || (currentUser && currentUser.is_admin);
-
-                let childrenHtml = '';
-                if (r.children && r.children.length > 0) {
-                    childrenHtml = r.children.map(c => renderNode(c, depth + 1)).join('');
-                }
-
-                const heartColor = '#ef4444';
-                const heartSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="${heartColor}" stroke="none" style="cursor: ${canReact ? 'pointer' : 'default'}; vertical-align: middle;" onclick="${canReact ? `reactToReaction(${r.id})` : ''}" title="${canReact ? 'Click to react' : ''}"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z"/></svg>`;
-
-                return `
-                    <div class="tree-node" style="padding: 0.35rem 0; font-size: 0.95rem; display: flex; align-items: center; gap: 0.4rem;">
-                        ${indent}
-                        ${heartSvg}
-                        <a href="/profile.html?id=${r.user_id}" style="font-weight: 500; color: inherit; text-decoration: none;" onmouseover="this.style.color='var(--primary-color)'" onmouseout="this.style.color='inherit'">${r.user_name}</a>
-                        ${canDelete ? `<button onclick="removeReaction(${r.id})" style="background: none; border: none; cursor: pointer; color: #ccc; font-size: 0.8rem; padding: 0 0.25rem;" title="Remove">✕</button>` : ''}
-                    </div>
-                    ${childrenHtml}
-                `;
-            }
-
-            container.innerHTML = reactions.map(r => renderNode(r, 0)).join('');
-        }
-
-        function renderGraphView(reactions) {
-            const container = document.getElementById('forest-graph');
-            const token = localStorage.getItem('comment_token');
-
-            container.innerHTML = '';
-            container.style.height = '350px';
-
-            // SVG heart with initial badge as data URL for Cytoscape nodes
-            function makeHeartWithInitial(name) {
-                const initial = name ? name.charAt(0).toUpperCase() : '?';
-                // Heart fills most of viewBox, small avatar badge at top-left corner
-                const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z" fill="#ef4444"/><circle cx="5" cy="5" r="4.5" fill="#e5a54b"/><text x="5" y="6.5" text-anchor="middle" fill="#0c0b0d" font-size="6" font-weight="600">' + initial + '</text></svg>';
-                return 'data:image/svg+xml,' + encodeURIComponent(svg);
-            }
-
-            // Build nodes and edges for Cytoscape
-            const elements = [];
-
-            function addNodes(r, parentId = null) {
-                const isOwn = currentUser && currentUser.id === r.user_id;
-                elements.push({
-                    data: {
-                        id: 'r' + r.id,
-                        heartImg: makeHeartWithInitial(r.user_name),
-                        name: r.user_name,
-                        reactionId: r.id,
-                        depth: r.depth,
-                        isOwn: isOwn
-                    }
-                });
-
-                if (parentId) {
-                    elements.push({
-                        data: {
-                            source: parentId,
-                            target: 'r' + r.id
-                        }
-                    });
-                }
-
-                if (r.children) {
-                    r.children.forEach(child => addNodes(child, 'r' + r.id));
-                }
-            }
-
-            reactions.forEach(r => addNodes(r));
-
-            // Initialize Cytoscape
-            cy = cytoscape({
-                container: container,
-                elements: elements,
-                style: [
-                    {
-                        selector: 'node',
-                        style: {
-                            'width': 85,
-                            'height': 85,
-                            'background-opacity': 0,
-                            'background-image': 'data(heartImg)',
-                            'background-fit': 'contain',
-                            'background-width': '100%',
-                            'background-height': '100%',
-                            'border-width': 0,
-                            'cursor': 'pointer'
-                        }
-                    },
-                    {
-                        selector: 'edge',
-                        style: {
-                            'width': 2,
-                            'line-color': '#d1d5db',
-                            'curve-style': 'straight',
-                            'target-arrow-shape': 'none',
-                            'source-endpoint': 'outside-to-node',
-                            'target-endpoint': 'outside-to-node'
-                        }
-                    }
-                ],
-                layout: {
-                    name: 'breadthfirst',
-                    directed: true,
-                    padding: 20,
-                    spacingFactor: 1.4,
-                    avoidOverlap: true
-                },
-                userZoomingEnabled: false,
-                userPanningEnabled: true,
-                boxSelectionEnabled: false
-            });
-
-            // Remove old tooltip if exists
-            const oldTooltip = document.getElementById('cy-tooltip');
-            if (oldTooltip) oldTooltip.remove();
-
-            // Show name on hover
-            const tooltip = document.createElement('div');
-            tooltip.id = 'cy-tooltip';
-            tooltip.style.cssText = 'position: fixed; background: #333; color: white; padding: 6px 12px; border-radius: 6px; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); pointer-events: none; display: none; z-index: 1000;';
-            document.body.appendChild(tooltip);
-
-            cy.on('mouseover', 'node', function(e) {
-                const node = e.target;
-                tooltip.textContent = node.data('name');
-                tooltip.style.display = 'block';
-            });
-
-            cy.on('mousemove', 'node', function(e) {
-                tooltip.style.left = e.originalEvent.clientX + 15 + 'px';
-                tooltip.style.top = e.originalEvent.clientY - 10 + 'px';
-            });
-
-            cy.on('mouseout', 'node', function(e) {
-                tooltip.style.display = 'none';
-            });
-
-            // Click to react (not delete)
-            cy.on('tap', 'node', function(e) {
-                const node = e.target;
-                const reactionId = node.data('reactionId');
-                const depth = node.data('depth');
-
-                if (token && depth < maxReactionDepth) {
-                    reactToReaction(reactionId);
-                } else if (!token) {
-                    showFriendsOnlyModal('react');
-                } else {
-                    alert('Maximum reaction depth reached');
-                }
-            });
-
-            // Right-click to delete (if own or admin)
-            cy.on('cxttap', 'node', function(e) {
-                const node = e.target;
-                const reactionId = node.data('reactionId');
-                const isOwn = node.data('isOwn');
-
-                if (isOwn || (currentUser && currentUser.is_admin)) {
-                    if (confirm(`Remove ${node.data('name')}'s reaction?`)) {
-                        removeReaction(reactionId);
-                    }
-                }
-            });
-
-            cy.fit(30);
-        }
-
-        function updateReactionUI(count, reacted, totalDistinct = null) {
-            userReacted = reacted;
-            // Note: Icon state is set by renderReactionTree() based on whether
-            // user has ANY reaction in the forest, not just top-level.
-            // This function only updates the count display.
-            // totalDistinct is no longer used here - count comes from renderReactionTree.
+                const response = await fetch(`${API_BASE}/reactions/${slug}/tree`, { headers: token ? { 'Authorization': `Bearer ${token}` } : {}, credentials: 'include' });
+                if (response.ok) { const data = await response.json(); maxReactionDepth = data.max_depth; renderReactionTree(data.reactions); }
+            } catch (e) {}
         }
 
         async function toggleReaction() {
-            const guard = typeof loadingGuards !== 'undefined' ? loadingGuards.reaction : { start: () => true, end: () => {} };
-            if (!guard.start()) return;
-
+            const guard = loadingGuards.reaction; if (!guard.start()) return;
             const token = localStorage.getItem('comment_token');
-            if (!token) {
-                showFriendsOnlyModal('react');
-                guard.end();
-                return;
-            }
-
-            const slug = getPostSlug();
-            // Only toggle top-level reaction - add if no top-level, remove if has top-level
-            const method = userReacted ? 'DELETE' : 'POST';
-
+            if (!token) { showFriendsOnlyModal('react'); guard.end(); return; }
             try {
-                const response = await fetch(`${API_BASE}/reactions/${slug}`, {
-                    method,
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    userReacted = data.user_reacted;
-                    userReactionId = data.reaction_id;
-                    loadReactionTree(); // Refresh the tree (this also updates the top count)
-                } else if (response.status === 401) {
-                    showFriendsOnlyModal('react');
-                } else if (response.status === 400) {
-                    // Already reacted at top level
-                    const err = await response.json();
-                    console.log(err.detail);
-                }
-            } catch (error) {
-                console.log('Could not update reaction');
-            } finally {
-                guard.end();
-            }
+                const response = await fetch(`${API_BASE}/reactions/${getPostSlug()}`, { method: userReacted ? 'DELETE' : 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+                if (response.ok) { const data = await response.json(); userReacted = data.user_reacted; userReactionId = data.reaction_id; loadReactionTree(); }
+                else if (response.status === 401) showFriendsOnlyModal('react');
+            } catch (e) {} finally { guard.end(); }
         }
 
         async function reactToReaction(parentId) {
-            const guard = typeof getOrCreateGuard === 'function'
-                ? getOrCreateGuard(loadingGuards?.reactionNested || {}, parentId)
-                : { start: () => true, end: () => {} };
-            if (!guard.start()) return;
-
+            const guard = getOrCreateGuard(loadingGuards.reactionNested, parentId); if (!guard.start()) return;
             const token = localStorage.getItem('comment_token');
-            if (!token) {
-                showFriendsOnlyModal('react');
-                guard.end();
-                return;
-            }
-
-            const slug = getPostSlug();
+            if (!token) { showFriendsOnlyModal('react'); guard.end(); return; }
             try {
-                const response = await fetch(`${API_BASE}/reactions/${slug}/${parentId}`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (response.ok) {
-                    loadReactionTree(); // Refresh the tree
-                } else {
-                    const error = await response.json();
-                    alert(error.detail || 'Could not add reaction');
-                }
-            } catch (error) {
-                console.log('Could not add reaction');
-            } finally {
-                guard.end();
-            }
+                const response = await fetch(`${API_BASE}/reactions/${getPostSlug()}/${parentId}`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+                if (response.ok) loadReactionTree(); else { const e = await response.json(); alert(e.detail || 'Could not add reaction'); }
+            } catch (e) {} finally { guard.end(); }
         }
 
         async function removeReaction(reactionId) {
             const token = localStorage.getItem('comment_token');
-            if (!token) return;
+            if (!token || !confirm('Remove this reaction and all nested reactions?')) return;
+            const guard = getOrCreateGuard(loadingGuards.reactionNested, 'del-' + reactionId); if (!guard.start()) return;
+            try { const response = await fetch(`${API_BASE}/reactions/${getPostSlug()}/${reactionId}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); if (response.ok) loadReactions(); }
+            catch (e) {} finally { guard.end(); }
+        }
 
-            if (!confirm('Remove this reaction and all nested reactions?')) return;
+        // Reaction Forest Modal
+        function openReactionForest() {
+            const token = localStorage.getItem('comment_token');
+            const legend = '<span>Click to react</span>' + (token ? '<span>Right-click to remove</span>' : '');
+            const content = `<div class="flex items-center justify-between mb-2"><h3 style="margin:0;display:flex;align-items:center;gap:0.5rem">${ICONS.forest} Reaction Forest</h3><div class="flex items-center gap-2"><div class="view-toggle"><button onclick="setForestView('tree')" id="view-tree-btn" class="view-toggle-btn active">Tree</button><button onclick="setForestView('graph')" id="view-graph-btn" class="view-toggle-btn">Graph</button></div><button onclick="closeModal('forest-modal')" class="modal-close">&times;</button></div></div><p class="text-muted text-small mb-2">Click on hearts to react to reactions</p><div id="forest-tree" style="min-height:100px"></div><div id="forest-graph" style="display:none;height:350px;border-radius:12px;background:var(--bg-tertiary);border:1px solid var(--border-default)"></div><div class="flex gap-3 mt-2 text-small text-muted flex-wrap justify-center">${legend}</div>`;
+            createModal('forest-modal', content);
+            if (cachedReactions) forestView === 'tree' ? renderTreeView(cachedReactions) : renderGraphView(cachedReactions);
+        }
 
-            const guard = typeof getOrCreateGuard === 'function'
-                ? getOrCreateGuard(loadingGuards?.reactionNested || {}, 'del-' + reactionId)
-                : { start: () => true, end: () => {} };
-            if (!guard.start()) return;
+        function setForestView(view) {
+            forestView = view;
+            document.getElementById('view-tree-btn').classList.toggle('active', view === 'tree');
+            document.getElementById('view-graph-btn').classList.toggle('active', view === 'graph');
+            document.getElementById('forest-tree').style.display = view === 'tree' ? 'block' : 'none';
+            document.getElementById('forest-graph').style.display = view === 'graph' ? 'block' : 'none';
+            if (cachedReactions) view === 'tree' ? renderTreeView(cachedReactions) : renderGraphView(cachedReactions);
+        }
 
-            const slug = getPostSlug();
-            try {
-                const response = await fetch(`${API_BASE}/reactions/${slug}/${reactionId}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (response.ok) {
-                    // Refresh everything
-                    loadReactions();
-                }
-            } catch (error) {
-                console.log('Could not remove reaction');
-            } finally {
-                guard.end();
+        function renderReactionTree(reactions) {
+            cachedReactions = reactions;
+            const allUsers = new Set();
+            function collectUsers(r) { allUsers.add(r.user_id); if (r.children) r.children.forEach(collectUsers); }
+            reactions.forEach(collectUsers);
+            const count = allUsers.size;
+            const forestCountEl = document.getElementById('forest-count');
+            if (forestCountEl) forestCountEl.textContent = count > 0 ? `(${count} ${count === 1 ? 'person' : 'people'})` : '';
+            document.getElementById('reaction-count').textContent = count;
+            const userHasReaction = currentUser && allUsers.has(currentUser.id);
+            const iconEl = document.getElementById('reaction-icon');
+            iconEl.classList.toggle('active', userHasReaction);
+            document.getElementById('reaction-btn').style.background = userHasReaction ? 'rgba(239, 68, 68, 0.1)' : 'none';
+            const modalTree = document.getElementById('forest-tree'), modalGraph = document.getElementById('forest-graph');
+            if (!reactions?.length) {
+                const token = localStorage.getItem('comment_token');
+                const emptyHtml = `<div class="empty-state"><div class="empty-state-icon">${ICONS.seedling}</div><div class="empty-state-title">No reactions yet</div><div>Be the first to plant a heart!</div>${token ? `<button onclick="toggleReaction(); closeModal('forest-modal');" class="empty-state-btn">${ICONS.heart} Add Reaction</button>` : ''}</div>`;
+                if (modalTree) modalTree.innerHTML = emptyHtml;
+                if (modalGraph) modalGraph.innerHTML = emptyHtml;
+                return;
             }
+            if (modalTree || modalGraph) forestView === 'tree' ? renderTreeView(reactions) : renderGraphView(reactions);
+        }
+
+        function renderTreeView(reactions) {
+            const container = document.getElementById('forest-tree'), token = localStorage.getItem('comment_token');
+            function renderNode(r, depth = 0) {
+                const indent = depth > 0 ? `<span style="color:#ddd;margin-right:0.25rem">${'│ '.repeat(depth - 1)}├─</span>` : '';
+                const isOwn = currentUser && currentUser.id === r.user_id, canReact = token && r.depth < maxReactionDepth, canDelete = isOwn || (currentUser && currentUser.is_admin);
+                const childrenHtml = r.children?.length ? r.children.map(c => renderNode(c, depth + 1)).join('') : '';
+                const heartSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="#ef4444" stroke="none" style="cursor:${canReact ? 'pointer' : 'default'};vertical-align:middle" onclick="${canReact ? `reactToReaction(${r.id})` : ''}" title="${canReact ? 'Click to react' : ''}"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z"/></svg>`;
+                return `<div class="tree-node">${indent}${heartSvg}<a href="/profile.html?id=${r.user_id}">${escapeHtml(r.user_name)}</a>${canDelete ? `<button onclick="removeReaction(${r.id})" class="btn-icon" title="Remove">✕</button>` : ''}</div>${childrenHtml}`;
+            }
+            container.innerHTML = reactions.map(r => renderNode(r, 0)).join('');
+        }
+
+        function renderGraphView(reactions) {
+            const container = document.getElementById('forest-graph'), token = localStorage.getItem('comment_token');
+            container.innerHTML = ''; container.style.height = '350px';
+            function makeHeartWithInitial(name) {
+                const initial = name ? name.charAt(0).toUpperCase() : '?';
+                const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 21C12 21 3 14.5 3 8.5C3 5.5 5.5 3 8.5 3C10.24 3 11.91 3.81 12 5C12.09 3.81 13.76 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14.5 12 21 12 21Z" fill="#ef4444"/><circle cx="5" cy="5" r="4.5" fill="#e5a54b"/><text x="5" y="6.5" text-anchor="middle" fill="#0c0b0d" font-size="6" font-weight="600">' + initial + '</text></svg>';
+                return 'data:image/svg+xml,' + encodeURIComponent(svg);
+            }
+            const elements = [];
+            function addNodes(r, parentId = null) {
+                const isOwn = currentUser && currentUser.id === r.user_id;
+                elements.push({ data: { id: 'r' + r.id, heartImg: makeHeartWithInitial(r.user_name), name: r.user_name, reactionId: r.id, depth: r.depth, isOwn } });
+                if (parentId) elements.push({ data: { source: parentId, target: 'r' + r.id } });
+                if (r.children) r.children.forEach(child => addNodes(child, 'r' + r.id));
+            }
+            reactions.forEach(r => addNodes(r));
+            cy = cytoscape({
+                container, elements,
+                style: [
+                    { selector: 'node', style: { 'width': 85, 'height': 85, 'background-opacity': 0, 'background-image': 'data(heartImg)', 'background-fit': 'contain', 'background-width': '100%', 'background-height': '100%', 'border-width': 0, 'cursor': 'pointer' } },
+                    { selector: 'edge', style: { 'width': 2, 'line-color': '#d1d5db', 'curve-style': 'straight', 'target-arrow-shape': 'none' } }
+                ],
+                layout: { name: 'breadthfirst', directed: true, padding: 20, spacingFactor: 1.4, avoidOverlap: true },
+                userZoomingEnabled: false, userPanningEnabled: true, boxSelectionEnabled: false
+            });
+            const oldTooltip = document.getElementById('cy-tooltip'); if (oldTooltip) oldTooltip.remove();
+            const tooltip = document.createElement('div'); tooltip.id = 'cy-tooltip';
+            tooltip.style.cssText = 'position:fixed;background:#333;color:white;padding:6px 12px;border-radius:6px;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.2);pointer-events:none;display:none;z-index:1000';
+            document.body.appendChild(tooltip);
+            cy.on('mouseover', 'node', e => { tooltip.textContent = e.target.data('name'); tooltip.style.display = 'block'; });
+            cy.on('mousemove', 'node', e => { tooltip.style.left = e.originalEvent.clientX + 15 + 'px'; tooltip.style.top = e.originalEvent.clientY - 10 + 'px'; });
+            cy.on('mouseout', 'node', () => { tooltip.style.display = 'none'; });
+            cy.on('tap', 'node', e => {
+                const node = e.target;
+                if (token && node.data('depth') < maxReactionDepth) reactToReaction(node.data('reactionId'));
+                else if (!token) showFriendsOnlyModal('react');
+                else alert('Maximum reaction depth reached');
+            });
+            cy.on('cxttap', 'node', e => {
+                const node = e.target;
+                if ((node.data('isOwn') || (currentUser && currentUser.is_admin)) && confirm(`Remove ${node.data('name')}'s reaction?`)) removeReaction(node.data('reactionId'));
+            });
+            cy.fit(30);
         }
 
         document.addEventListener('DOMContentLoaded', loadReactions);

@@ -46,6 +46,30 @@ const HEART_FILLED = `<svg class="comment-heart-icon active" width="16" height="
                 color: #fca5a5;
             }
 
+            /* Comment author avatar */
+            .comment-author-link {
+                flex-shrink: 0;
+            }
+            .comment-author-avatar {
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                object-fit: cover;
+                vertical-align: middle;
+            }
+            .comment-author-initial {
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a));
+                color: var(--bg-primary, #0c0b0d);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.75rem;
+                font-weight: 600;
+            }
+
             /* Nested comments */
             .comment-replies {
                 margin-left: 0.75rem;
@@ -314,10 +338,16 @@ function renderSingleComment(comment, user, isReply = false, showReplyContext = 
         </a>
     ` : '';
 
+    // Author avatar
+    const authorAvatar = comment.author_profile_picture_url
+        ? `<img src="${comment.author_profile_picture_url}" alt="" class="comment-author-avatar">`
+        : `<span class="comment-author-initial">${comment.author_name ? comment.author_name.charAt(0).toUpperCase() : '?'}</span>`;
+
     return `
         <div class="comment" id="comment-${comment.id}" data-id="${comment.id}" data-parent-id="${comment.parent_id || ''}">
             <div class="comment-header">
                 ${replyContextHtml}
+                <a href="/profile.html?id=${comment.author_id}" class="comment-author-link">${authorAvatar}</a>
                 <a href="/profile.html?id=${comment.author_id}" class="comment-author">${escapeHtml(comment.author_name)}</a>
                 <span class="comment-date">${formatDate(comment.created_at)}</span>
                 ${canEdit || canDelete ? `
@@ -1393,7 +1423,12 @@ function showLikersModal(likers, title = 'Liked by') {
     `;
 
     const likersList = likers.length > 0
-        ? likers.map(l => `<li style="padding: 0.5rem 0; border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));"><a href="/profile.html?id=${l.id}" style="color: var(--text-primary, #f5f2ed); text-decoration: none; font-weight: 500;">${escapeHtml(l.name)}</a> <span style="color: var(--text-muted, #8a857c); font-size: 0.85rem;">(${new Date(l.liked_at).toLocaleDateString()})</span></li>`).join('')
+        ? likers.map(l => {
+            const avatar = l.profile_picture_url
+                ? `<img src="${l.profile_picture_url}" alt="" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; margin-right: 0.5rem;">`
+                : `<span style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-primary, #e5a54b), var(--accent-primary-dim, #c48a3a)); color: var(--bg-primary, #0c0b0d); display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; margin-right: 0.5rem;">${l.name ? l.name.charAt(0).toUpperCase() : '?'}</span>`;
+            return `<li style="padding: 0.5rem 0; border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06)); display: flex; align-items: center;"><a href="/profile.html?id=${l.id}" style="color: var(--text-primary, #f5f2ed); text-decoration: none; font-weight: 500; display: flex; align-items: center;">${avatar}${escapeHtml(l.name)}</a> <span style="color: var(--text-muted, #8a857c); font-size: 0.85rem; margin-left: 0.5rem;">(${new Date(l.liked_at).toLocaleDateString()})</span></li>`;
+        }).join('')
         : '<li style="color: var(--text-muted, #8a857c);">No likes yet</li>';
 
     modal.innerHTML = `

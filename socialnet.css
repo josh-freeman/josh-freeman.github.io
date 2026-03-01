@@ -510,29 +510,20 @@ a.post-thumbnail,
 /* Early Access post styling - preview treatment */
 .post-preview.is-early-access {
     position: relative;
-    border-color: rgba(91, 154, 139, 0.3);
+    border-color: rgba(91, 154, 139, 0.5);
+    background: linear-gradient(
+        135deg,
+        rgba(91, 154, 139, 0.08) 0%,
+        rgba(91, 154, 139, 0.03) 50%,
+        transparent 100%
+    );
+    box-shadow:
+        0 0 0 1px rgba(91, 154, 139, 0.15),
+        0 4px 20px rgba(91, 154, 139, 0.1);
 }
 
 .post-preview.is-early-access::before {
     background: linear-gradient(135deg, #5b9a8b, #7ab8a8);
-}
-
-.post-preview.is-early-access::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: repeating-linear-gradient(
-        -45deg,
-        transparent,
-        transparent 10px,
-        rgba(91, 154, 139, 0.02) 10px,
-        rgba(91, 154, 139, 0.02) 20px
-    );
-    pointer-events: none;
-    border-radius: inherit;
 }
 
 /* ========================================

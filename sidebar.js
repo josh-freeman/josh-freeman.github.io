@@ -73,6 +73,37 @@ function loadNavbarDiv() {
         ? '<submenu><a href="/subscribe.html" style="color: var(--accent-primary);">Subscribe</a></submenu>'
         : '';
 
+    // Account widget - shows login link or user info with logout
+    let accountWidget = '';
+    if (isUserLoggedIn()) {
+        try {
+            const user = JSON.parse(localStorage.getItem('comment_user'));
+            const userName = user.name || 'User';
+            accountWidget = `
+                <div class="sidebar-account">
+                    <div class="sidebar-account-info">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>${userName}</span>
+                    </div>
+                    <button onclick="sidebarLogout()" class="sidebar-logout-btn" title="Log out">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
+                    </button>
+                </div>
+            `;
+        } catch (e) {
+            accountWidget = '';
+        }
+    } else {
+        accountWidget = `
+            <div class="sidebar-account">
+                <a href="/login.html" class="sidebar-login-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/></svg>
+                    <span>Log in</span>
+                </a>
+            </div>
+        `;
+    }
+
     const editProfileBtn = isAdminLoggedIn()
         ? '<button onclick="openProfileEditModal()" style="position:absolute; bottom:10px; right:10px; background:var(--accent-primary, #e5a54b); border:2px solid var(--bg-primary, #0c0b0d); border-radius:50%; width:30px; height:30px; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;" title="Edit Profile"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bg-primary, #0c0b0d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>'
         : '';
@@ -120,6 +151,8 @@ function loadNavbarDiv() {
 
             ${adminLink}
             ${subscribeLink}
+
+            ${accountWidget}
         </div>
 
         <button id="menubtn" class="openbtn" onclick="openNav()">
@@ -135,6 +168,83 @@ function loadNavbarDiv() {
         el.innerHTML = navbarHTML;
     });
 }
+
+// Logout function for sidebar
+function sidebarLogout() {
+    localStorage.removeItem('comment_token');
+    localStorage.removeItem('comment_user');
+    window.location.reload();
+}
+
+// Inject sidebar account styles
+(function() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .sidebar-account {
+            margin-top: auto;
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+        .sidebar-account-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary, #c4bfb6);
+            font-size: 0.9rem;
+            font-family: var(--font-ui, 'DM Sans', sans-serif);
+            min-width: 0;
+        }
+        .sidebar-account-info span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .sidebar-account-info svg {
+            flex-shrink: 0;
+            color: var(--text-muted, #8a857c);
+        }
+        .sidebar-logout-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.4rem;
+            border-radius: 6px;
+            color: var(--text-muted, #8a857c);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar-logout-btn:hover {
+            background: rgba(212, 114, 106, 0.15);
+            color: var(--error, #d4726a);
+        }
+        .sidebar-login-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary, #c4bfb6);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-family: var(--font-ui, 'DM Sans', sans-serif);
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        .sidebar-login-link:hover {
+            background: rgba(229, 165, 75, 0.1);
+            color: var(--accent-primary, #e5a54b);
+        }
+        .sidebar-login-link svg {
+            color: var(--accent-primary, #e5a54b);
+        }
+    `;
+    document.head.appendChild(style);
+})();
 
 // Initialize sidebar
 loadNavbarDiv();

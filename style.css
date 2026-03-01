@@ -148,6 +148,8 @@ small {
     overflow-y: auto;
     transition: width var(--transition-base) ease;
     padding-top: var(--space-6);
+    display: flex;
+    flex-direction: column;
 }
 
 /* Sidebar decorative top accent */
